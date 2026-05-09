@@ -23,6 +23,7 @@ interface AppStore {
   // App settings
   theme: 'light' | 'dark';
   language: LanguageCode;
+  currency: 'UZS' | 'USD' | 'EUR' | 'JPY';
   
   // Actions
   setToken: (token: string) => void;
@@ -32,6 +33,7 @@ interface AppStore {
   initializeAuth: () => Promise<void>;
   setTheme: (theme: 'light' | 'dark') => void;
   setLanguage: (language: LanguageCode) => void;
+  setCurrency: (currency: 'UZS' | 'USD' | 'EUR' | 'JPY') => void;
 }
 
 export const useAppStore = create<AppStore>()(
@@ -43,6 +45,7 @@ export const useAppStore = create<AppStore>()(
       isLoading: false,
       theme: 'light',
       language: DEFAULT_LANGUAGE,
+      currency: 'UZS',
 
       // Auth actions
       setToken: (token: string) => {
@@ -100,6 +103,7 @@ export const useAppStore = create<AppStore>()(
       // App settings actions
       setTheme: (theme) => set({ theme }),
       setLanguage: (language) => set({ language }),
+      setCurrency: (currency) => set({ currency }),
     }),
     {
       name: 'app-store',
@@ -107,6 +111,7 @@ export const useAppStore = create<AppStore>()(
       partialize: (state) => ({
         theme: state.theme,
         language: state.language,
+        currency: state.currency,
         // Не сохраняем токен и пользователя в AsyncStorage, 
         // так как токен сохраняется отдельно в SecureStore
       }),

@@ -33,6 +33,14 @@
             "usesCleartextTraffic": true
           }
         }
+      ],
+      "expo-localization",
+      "expo-secure-store",
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Ovozli xabarlar yozish uchun mikrofonga ruxsat bering."
+        }
       ]
     ],
     "experiments": {

@@ -85,7 +85,7 @@ export default function TopBar({ title, greeting = false }: Props) {
             {requestsCount > 0 && (
               <Circle
                 size={10}
-                backgroundColor="#2ECC71"
+                backgroundColor="#007AFF"
                 position="absolute"
                 top={-2}
                 right={-2}

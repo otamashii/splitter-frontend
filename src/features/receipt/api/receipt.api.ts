@@ -1,4 +1,4 @@
-﻿import { apiClient } from '@/features/auth/api';
+import { apiClient } from '@/features/auth/api';
 
 export type ReceiptImagePayload = {
   mimeType: string;
@@ -8,7 +8,8 @@ export type ReceiptImagePayload = {
 export interface ParseReceiptRequest {
   sessionName: string;
   language: string;
-  image: ReceiptImagePayload;
+  image?: ReceiptImagePayload;
+  qrData?: string;
 }
 
 export type ParsedReceiptItemKind = 'item' | 'fee' | 'discount' | string;
@@ -119,15 +120,17 @@ export const ReceiptApi = {
 
   async finalize(payload: FinalizeReceiptRequest): Promise<FinalizeReceiptResponse> {
     try {
-      console.log('[API] POST /sessions/finalize');
-      console.log('[API] Request data:', JSON.stringify(payload, null, 2));
-
       const { data } = await apiClient.post<FinalizeReceiptResponse>('/sessions/finalize', payload);
-
-      console.log('[API] Response:', JSON.stringify(data, null, 2));
       return data;
     } catch (error) {
-      console.error('[API] Error (finalize):', error);
+      throw normalizeError(error);
+    }
+  },
+
+  async close(sessionId: number): Promise<void> {
+    try {
+      await apiClient.patch(`/sessions/${sessionId}/close`);
+    } catch (error) {
       throw normalizeError(error);
     }
   },

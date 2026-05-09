@@ -60,20 +60,31 @@ export default function LoginForm() {
 
   return (
     <ScreenFormContainer>
-      <YStack space="$6">
+      <YStack space="$6" pt="$6">
         {/* Header */}
-        <YStack alignItems="center" space="$4">
-          <Text fontSize="$8" fontWeight="900" color="$gray12">
-            {t('auth.signIn', 'Sign In')}
+        <YStack alignItems="center" space="$3" pb="$4">
+          <Text fontSize={32} fontWeight="900" color="$gray12" textAlign="center" letterSpacing={-0.5}>
+            {t('auth.signIn', 'Tizimga kirish')}
           </Text>
-          <Text fontSize="$4" color="$gray10" textAlign="center">
-            {t('auth.signInDesc', 'Welcome back! Please sign in to continue')}
+          <Text fontSize={16} color="$gray10" textAlign="center" paddingHorizontal="$4" lineHeight={24}>
+            {t('auth.signInDesc', 'Xush kelibsiz! Davom etish uchun hisobingizga kiring')}
           </Text>
         </YStack>
 
         {/* Form Card */}
-        <Card>
-          <YStack space="$5">
+        <YStack 
+          backgroundColor="$background" 
+          borderRadius={28}
+          padding="$5"
+          space="$5"
+          shadowColor="#007AFF"
+          shadowOffset={{ width: 0, height: 12 }}
+          shadowOpacity={0.06}
+          shadowRadius={30}
+          elevation={12}
+          borderWidth={1}
+          borderColor="$gray3"
+        >
             {/* Email */}
             <Controller
               control={control}
@@ -81,15 +92,15 @@ export default function LoginForm() {
               render={({ field: { onChange, value } }) => (
                 <XStack space="$3" alignItems="flex-start">
                   <YStack
-                    width={40}
-                    height={40}
-                    backgroundColor="$gray3"
-                    borderRadius="$6"
+                    width={48}
+                    height={48}
+                    backgroundColor="rgba(0, 122, 255, 0.1)"
+                    borderRadius={24}
                     alignItems="center"
                     justifyContent="center"
-                    marginTop="$6"
+                    marginTop="$4"
                   >
-                    <Mail size={20} color="$gray11" />
+                    <Mail size={22} color="#007AFF" />
                   </YStack>
                   <YStack flex={1}>
                     <Input
@@ -114,15 +125,15 @@ export default function LoginForm() {
               render={({ field: { onChange, value } }) => (
                 <XStack space="$3" alignItems="flex-start">
                   <YStack
-                    width={40}
-                    height={40}
-                    backgroundColor="$gray3"
-                    borderRadius="$6"
+                    width={48}
+                    height={48}
+                    backgroundColor="rgba(0, 122, 255, 0.1)"
+                    borderRadius={24}
                     alignItems="center"
                     justifyContent="center"
-                    marginTop="$6"
+                    marginTop="$4"
                   >
-                    <Lock size={20} color="$gray11" />
+                    <Lock size={22} color="#007AFF" />
                   </YStack>
                   <YStack flex={1}>
                     <PasswordInput
@@ -139,35 +150,52 @@ export default function LoginForm() {
             />
 
             {/* Forgot */}
-            <XStack justifyContent="flex-end">
-              <Text fontSize="$3" color="#2ECC71" fontWeight="500">
-                {t('auth.forgotPassword', 'Forgot Password?')}
+            <XStack justifyContent="flex-end" mt="$-2">
+              <Text fontSize={14} color="#007AFF" fontWeight="600">
+                {t('auth.forgotPassword', 'Parolni unutdingizmi?')}
               </Text>
             </XStack>
 
             {/* Submit */}
-            <Button
-              title={isLoading ? t('common.loading', 'Loading...') : t('auth.signIn', 'Sign In')}
-              variant="primary"
-              size="large"
-              onPress={handleSubmit(onSubmit)}
-              disabled={isLoading}
-            />
-          </YStack>
-        </Card>
+            <YStack mt="$2">
+              <Button
+                title={isLoading ? t('common.loading', 'Yuklanmoqda...') : t('auth.signIn', 'Kirish')}
+                onPress={handleSubmit(onSubmit)}
+                disabled={isLoading}
+                backgroundColor="#007AFF"
+                color="white"
+                borderRadius={24}
+                height={56}
+                fontSize={18}
+                fontWeight="700"
+                shadowColor="#007AFF"
+                shadowOffset={{ width: 0, height: 4 }}
+                shadowOpacity={0.2}
+                shadowRadius={8}
+              />
+            </YStack>
+        </YStack>
 
         {/* Footer */}
-        <YStack alignItems="center" space="$3">
-          <XStack alignItems="center" space="$1">
-            <YStack width={80} height={1} backgroundColor="$gray6" />
-            <Text fontSize="$3" color="$gray9" paddingHorizontal="$3">
-              {t('auth.noAccount', "Don't have an account?")}
+        <YStack alignItems="center" space="$4" mt="$2">
+          <XStack alignItems="center" space="$3">
+            <YStack flex={1} height={1} backgroundColor="$gray5" />
+            <Text fontSize={14} color="$gray9" fontWeight="500">
+              {t('auth.noAccount', 'Hisobingiz yo\'qmi?')}
             </Text>
-            <YStack width={80} height={1} backgroundColor="$gray6" />
+            <YStack flex={1} height={1} backgroundColor="$gray5" />
           </XStack>
 
           <Link href="/register" asChild>
-            <Button title={t('auth.createAccount', 'Create Account')} variant="outline" size="medium" />
+            <Button 
+              title={t('auth.createAccount', 'Hisob yaratish')} 
+              variant="outline" 
+              borderColor="rgba(0, 122, 255, 0.3)"
+              color="#007AFF"
+              borderRadius={24}
+              height={50}
+              width="100%" 
+            />
           </Link>
         </YStack>
       </YStack>

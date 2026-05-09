@@ -1,4 +1,4 @@
-﻿import { create } from 'zustand';
+import { create } from 'zustand';
 import type {
   FinalizeReceiptResponse,
   FinalizeReceiptItemPayload,
@@ -79,6 +79,7 @@ interface ReceiptSessionStore {
 
   parseReceipt: (payload: ParseReceiptRequest) => Promise<ParseReceiptResponse>;
   finalizeSession: () => Promise<FinalizeReceiptResponse>;
+  closeSession: () => Promise<void>;
   reset: () => void;
 }
 
@@ -219,6 +220,20 @@ export const useReceiptSessionStore = create<ReceiptSessionStore>((set, get) => 
       return response;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to finalize session';
+      set({ finalizing: false, finalizeError: message });
+      throw error;
+    }
+  },
+
+  closeSession: async () => {
+    const { session } = get();
+    if (!session?.sessionId) return;
+    set({ finalizing: true });
+    try {
+      await ReceiptApi.close(session.sessionId);
+      get().reset();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to close session';
       set({ finalizing: false, finalizeError: message });
       throw error;
     }

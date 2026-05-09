@@ -2,8 +2,10 @@ import { memo } from 'react';
 import { Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { XStack, YStack, Paragraph, Button, Text } from 'tamagui';
-import { Trash2 } from '@tamagui/lucide-icons';
+import { Trash2, MessageCircle } from '@tamagui/lucide-icons';
 import { useFriendsStore } from '../model/friends.store';
+import { useRouter } from 'expo-router';
+import { apiClient as api } from '@/features/auth/api';
 import UserAvatar from '@/shared/ui/UserAvatar';
 
 function pickTitle(f: any) {
@@ -44,6 +46,7 @@ function pickAvatar(f: any): string | null {
 export const FriendListItem = memo(function FriendListItem({ friend }: { friend: any }) {
   const { remove } = useFriendsStore();
   const { t } = useTranslation();
+  const router = useRouter();
 
   const title = pickTitle(friend);
   const subtitle = pickSubtitle(friend);
@@ -69,6 +72,16 @@ export const FriendListItem = memo(function FriendListItem({ friend }: { friend:
     );
   };
 
+  const handleChat = async () => {
+    if (!uniqueId) return;
+    try {
+      const res = await api.post('/chats', { uniqueId });
+      router.push({ pathname: '/tabs/chat/[id]', params: { id: res.data.id, title } });
+    } catch (err) {
+      console.error('Failed to create/open chat', err);
+    }
+  };
+
   return (
     <XStack h={60} ai="center" jc="space-between" px="$4" bg="$background">
       <XStack ai="center" gap="$3">
@@ -85,14 +98,24 @@ export const FriendListItem = memo(function FriendListItem({ friend }: { friend:
         </YStack>
       </XStack>
 
-      <Button
-        icon={<Trash2 size={20} color="$red10" />}
-        chromeless
-        circular
-        onPress={handleRemove}
-        pressStyle={{ bg: '$red3' }}
-        disabled={!uniqueId}
-      />
+      <XStack gap="$2" ai="center">
+        <Button
+          icon={<MessageCircle size={20} color="$blue10" />}
+          chromeless
+          circular
+          onPress={handleChat}
+          pressStyle={{ bg: '$blue3' }}
+          disabled={!uniqueId}
+        />
+        <Button
+          icon={<Trash2 size={20} color="$red10" />}
+          chromeless
+          circular
+          onPress={handleRemove}
+          pressStyle={{ bg: '$red3' }}
+          disabled={!uniqueId}
+        />
+      </XStack>
     </XStack>
   );
 });

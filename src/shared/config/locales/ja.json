@@ -43,7 +43,9 @@
     "cancel": "キャンセル",
     "confirm": "確認",
     "continue": "続ける",
-    "back": "戻る"
+    "back": "戻る",
+    "delete": "削除",
+    "edit": "編集"
   },
   "friends": {
     "title": "友だち",
@@ -54,7 +56,64 @@
     "send": "リクエストを送信",
     "remove": "削除",
     "loading": "読み込み中...",
-    "error": "読み込みに失敗しました"
+    "error": "読み込みに失敗しました",
+    "common": {
+      "unknownUser": "不明なユーザー"
+    },
+    "search": {
+      "noResults": "結果が見つかりませんでした",
+      "error": "検索に失敗しました",
+      "inviteSent": "{{target}}さんに招待を送信しました",
+      "inviteFailed": "招待を送信できませんでした",
+      "placeholder": "ニックネームまたはユーザーID...",
+      "hint": "ユーザーIDで友だちを検索します"
+    },
+    "status": {
+      "add": "追加",
+      "you": "あなた",
+      "friend": "友だち",
+      "requested": "申請中",
+      "incoming": "承認待ち"
+    }
+  },
+  "chat": {
+    "title": "チャット",
+    "placeholder": "メッセージを入力...",
+    "replyingTo": "返信先",
+    "replyToSelf": "自分への返信",
+    "editing": "メッセージを編集",
+    "edited": "編集済み",
+    "forwarded": "転送元: {{username}}",
+    "forwardTo": "誰に転送しますか？",
+    "noFriends": "友だちが見つかりませんでした",
+    "actions": {
+      "reply": "返信",
+      "edit": "編集",
+      "forward": "転送",
+      "delete": "チャットを削除",
+      "clear": "履歴を消去",
+      "search": "メッセージを検索",
+      "mute": "通知をオフ"
+    },
+    "attachments": {
+      "gallery": "ギャラリー",
+      "location": "位置情報",
+      "file": "ファイル",
+      "soon": "近日公開予定です！",
+      "myLocation": "📍 現在地:"
+    },
+    "recording": {
+      "delete": "削除",
+      "error": "録音を開始できませんでした。もう一度お試しください。"
+    },
+    "alerts": {
+      "clearTitle": "履歴を消去",
+      "clearMessage": "このチャットの履歴を消去してもよろしいですか？",
+      "deleteTitle": "チャットを削除",
+      "deleteMessage": "このチャットを削除してもよろしいですか？",
+      "locationError": "位置情報を共有するには権限が必要です",
+      "locationFail": "位置情報の取得に失敗しました"
+    }
   },
   "home": {
     "header": {
@@ -178,7 +237,8 @@
     "itemsSplit": "アイテムの分割",
     "finish": "完了",
     "history": "最近の明細",
-    "historyDetails": "明細の詳細"
+    "historyDetails": "明細の詳細",
+    "search": "検索"
   },
   "settings": {
     "language": {
@@ -189,6 +249,37 @@
         "ja": "日本語",
         "uz": "ウズベク語"
       }
+    }
+  },
+  "calculator": {
+    "title": "電卓"
+  },
+  "scan": {
+    "permissions": {
+      "title": "カメラの許可が必要です",
+      "message": "QRコードをスキャンするためにカメラの使用を許可してください",
+      "button": "許可する"
+    },
+    "scanner": {
+      "tip": "友だちのコードをスキャンしてください",
+      "title": "スキャナー",
+      "gallery": "ギャラリー",
+      "myQr": "マイQR"
+    },
+    "myQr": {
+      "share": "共有",
+      "copy": "コピー",
+      "copied": "コピーしました！",
+      "hint": "友だちがこのコードをスキャンしてあなたを追加できます"
+    },
+    "result": {
+      "addFriend": "友だちに追加",
+      "error": "QRコードが見つからないか無効です"
+    }
+  },
+  "friends": {
+    "search": {
+      "findTitle": "ユーザーを見つける"
     }
   }
 }

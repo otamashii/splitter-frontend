@@ -1,185 +1,161 @@
-import { useEffect, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useMemo } from 'react';
+import { Pressable, ScrollView, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Scan } from '@tamagui/lucide-icons';
-import {
-  YStack,
-  Paragraph,
-  Card,
-  XStack,
-  Spinner,
-  Separator,
-  View,
-  Button,
-} from 'tamagui';
+import { YStack, XStack, Text, View, Circle, Spinner, Separator, Button } from 'tamagui';
+import { 
+  ChevronLeft, Plus, Users, ChevronRight, 
+  Scan, Info, Layers, UserCheck 
+} from '@tamagui/lucide-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 
 import { useGroupsStore } from '@/features/groups/model/groups.store';
-import type { GroupMember } from '@/features/groups/api/groups.api';
 import UserAvatar from '@/shared/ui/UserAvatar';
-import Fab from '@/shared/ui/Fab';
+import { useAppStore } from '@/shared/lib/stores/app-store';
 
-function AvatarStack({
-  members,
-  totalCount,
-  max = 5,
-}: {
-  members?: GroupMember[];
-  totalCount?: number;
-  max?: number;
-}) {
-  const list = Array.isArray(members) ? members : [];
-  const total = typeof totalCount === 'number' ? totalCount : list.length;
-  const shownMembers = list.slice(0, Math.min(max, list.length));
-  const hasMembers = shownMembers.length > 0;
-  const placeholderCount = hasMembers ? 0 : Math.min(total, max);
-  const extra = Math.max(0, total - (hasMembers ? shownMembers.length : placeholderCount));
+function AvatarStack({ members, totalCount, max = 4 }: { members?: any[], totalCount?: number, max?: number }) {
+  const list = members || [];
+  const total = totalCount || list.length;
+  const shown = list.slice(0, max);
+  const extra = Math.max(0, total - shown.length);
 
-  if (!hasMembers && placeholderCount === 0) {
-    return null;
-  }
-
-  const labelFor = (member: GroupMember) => {
-    const source = member.displayName || member.username || member.uniqueId || '';
-    return source.trim().charAt(0).toUpperCase() || 'U';
-  };
+  const theme = useAppStore(s => s.theme);
+  const isDark = theme === 'dark';
 
   return (
     <XStack ai="center">
-      {shownMembers.map((member, index) => (
-        <View key={`${member.uniqueId ?? 'member'}-${index}`} ml={index === 0 ? 0 : -10}>
-          <UserAvatar
-            uri={member.avatarUrl ?? member.user?.avatarUrl ?? undefined}
-            label={labelFor(member)}
-            size={34}
-            textSize={14}
-            backgroundColor="$gray5"
+      {shown.map((m, i) => (
+        <View key={i} ml={i === 0 ? 0 : -12} shadowColor="#000" shadowOpacity={0.1} shadowRadius={5}>
+          <UserAvatar 
+            label={(m.username || 'U').slice(0, 1).toUpperCase()} 
+            size={34} 
+            borderWidth={2} 
+            borderColor={isDark ? '#1C1C1E' : 'white'} 
           />
         </View>
       ))}
-      {!hasMembers &&
-        Array.from({ length: placeholderCount }).map((_, index) => (
-          <View key={`placeholder-${index}`} w={34} h={34} br={17} bg="$gray5" ml={index === 0 ? 0 : -10} />
-        ))}
       {extra > 0 && (
-        <View
-          w={28}
-          h={28}
-          br={14}
-          bg="$gray8"
-          ai="center"
-          jc="center"
-          ml={hasMembers || placeholderCount > 0 ? -10 : 0}
-        >
-          <Paragraph size="$1" col="white">
-            +{extra}
-          </Paragraph>
-        </View>
+        <Circle size={34} bg={isDark ? '#475569' : '$gray12'} ml={-12} bw={2} bc={isDark ? '#1C1C1E' : 'white'} ai="center" jc="center">
+          <Text col="white" fos={10} fow="900">+{extra}</Text>
+        </Circle>
       )}
     </XStack>
   );
 }
 
-export default function GroupsListScreen() {
+export default function GroupsScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { groups, counts, loading, error, fetchGroups } = useGroupsStore();
+  const { groups, counts, loading, fetchGroups } = useGroupsStore();
 
-  useEffect(() => {
-    fetchGroups();
-  }, [fetchGroups]);
+  useEffect(() => { fetchGroups(); }, []);
 
-  const hasNoGroups = groups.length === 0;
-
-  const cards = useMemo(
-    () =>
-      groups.map((group) => {
-        const members = Array.isArray(group.members) ? group.members : [];
-        const storedCount = counts?.[group.id];
-        const apiCount = typeof group.counts?.members === 'number' ? group.counts.members : undefined;
-        const memberCount =
-          typeof storedCount === 'number'
-            ? storedCount
-            : typeof apiCount === 'number'
-            ? apiCount
-            : members.length;
-
-        const countLabel = t('groups.list.members', { count: memberCount });
-        const groupName = group.name ?? t('groups.common.untitled', 'Group');
-        const emptyMembersLabel = t('groups.list.members_zero', 'No members yet');
-
-        return (
-          <Card
-            key={group.id}
-            pressStyle={{ scale: 0.98 }}
-            onPress={() =>
-              router.push({
-                pathname: '/tabs/groups/[groupId]',
-                params: { groupId: String(group.id) },
-              } as never)
-            }
-            h={62}
-            br={12}
-            bw={1}
-            bc="$gray5"
-            px="$4"
-            ai="center"
-            jc="center"
-          >
-            <XStack w="100%" jc="space-between" ai="center">
-              <YStack>
-                <Paragraph fow="700" fos={16}>
-                  {groupName}
-                </Paragraph>
-                <Paragraph size={12} col="$gray10">
-                  {memberCount === 0 ? emptyMembersLabel : countLabel}
-                </Paragraph>
-              </YStack>
-              <AvatarStack members={members} totalCount={memberCount} />
-            </XStack>
-          </Card>
-        );
-      }),
-    [counts, groups, router, t]
-  );
-
-  if (loading && hasNoGroups) {
-    return (
-      <YStack f={1} ai="center" jc="center">
-        <Spinner />
-      </YStack>
-    );
-  }
+  const theme = useAppStore(s => s.theme);
+  const isDark = theme === 'dark';
 
   return (
-    <YStack f={1} p="$4" gap="$3" bg="$background">
-      <Paragraph fow="700" fos="$7">
-        {t('groups.title', 'Groups')}
-      </Paragraph>
-      <Separator />
+    <YStack f={1} bg={isDark ? '#000000' : '#F8F9FA'}>
+      {/* Ultra-Premium Header */}
+      <LinearGradient
+        colors={isDark ? ['#0F172A', '#1E293B'] : ['#007AFF', '#00C6FF']}
+        style={{
+          paddingTop: insets.top + 10,
+          paddingBottom: 25,
+          paddingHorizontal: 20,
+          borderBottomLeftRadius: 32,
+          borderBottomRightRadius: 32,
+        }}
+      >
+        <XStack ai="center" jc="space-between" mb="$5">
+          <Pressable onPress={() => router.back()}>
+            <YStack p="$2" br={12} bg="rgba(255,255,255,0.1)">
+              <ChevronLeft size={24} color="white" />
+            </YStack>
+          </Pressable>
+          <Text col="white" fos={20} fow="900">Guruhlar</Text>
+          <XStack gap="$2">
+            <Pressable onPress={() => router.push('/tabs/scan-invite')}>
+              <YStack p="$2" br={12} bg="rgba(255,255,255,0.1)">
+                <Scan size={22} color="white" />
+              </YStack>
+            </Pressable>
+            <Pressable onPress={() => router.push('/tabs/groups/create')}>
+              <YStack p="$2" br={12} bg="#007AFF">
+                <Plus size={22} color="white" />
+              </YStack>
+            </Pressable>
+          </XStack>
+        </XStack>
+      </LinearGradient>
 
-      <XStack jc="flex-end" ai="center">
-        <Button
-          onPress={() =>
-            router.push({ pathname: '/tabs/scan-invite', params: { from: 'groups-index' } } as never)
-          }
-          size="$3"
-          borderRadius="$3"
-          theme="active"
-          icon={<Scan size={18} />}
-        >
-          {t('groups.actions.scanInvite', 'Scan invite')}
-        </Button>
-      </XStack>
-
-      {error && <Paragraph col="$red10">{error}</Paragraph>}
-
-      {hasNoGroups ? (
-        <Paragraph col="$gray10">{t('groups.empty', 'No groups yet. Tap + to create.')}</Paragraph>
-      ) : (
-        <YStack gap="$3">{cards}</YStack>
-      )}
-
-      <Fab onPress={() => router.push('/tabs/groups/create' as never)} />
+      <ScrollView 
+        f={1} 
+        p="$5" 
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={loading} onRefresh={fetchGroups} />}
+      >
+        <YStack gap="$4" pb="$20">
+          {loading && !groups.length ? (
+            <YStack ai="center" py="$10"><Spinner color="#007AFF" /></YStack>
+          ) : groups.map((g) => (
+            <Pressable 
+              key={g.id} 
+              onPress={() => router.push(`/tabs/groups/${g.id}`)}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.8 : 1,
+                transform: [{ scale: pressed ? 0.98 : 1 }]
+              })}
+            >
+              <YStack 
+                bg={isDark ? '#1C1C1E' : 'white'} 
+                br={28} 
+                p="$5" 
+                gap="$4"
+                shadowColor="#000"
+                shadowOpacity={isDark ? 0.3 : 0.05}
+                shadowRadius={15}
+                elevation={5}
+                borderWidth={1}
+                borderColor={isDark ? '#2C2C2E' : '$gray3'}
+              >
+                <XStack jc="space-between" ai="center">
+                   <YStack gap="$1">
+                      <Text fontSize={18} fontWeight="900" col={isDark ? 'white' : '#1E293B'}>{g.name}</Text>
+                      <XStack ai="center" gap="$2">
+                         <Layers size={14} color="$gray9" />
+                         <Text fontSize={12} col="$gray9" fontWeight="600">{counts?.[g.id] || g.members?.length || 0} ta a'zo</Text>
+                      </XStack>
+                   </YStack>
+                   <AvatarStack members={g.members} totalCount={counts?.[g.id]} />
+                </XStack>
+                
+                <Separator borderColor={isDark ? '#2C2C2E' : '$gray2'} />
+                
+                <XStack jc="space-between" ai="center">
+                   <XStack ai="center" gap="$2">
+                      <Circle size={8} bg="#10B981" />
+                      <Text fontSize={12} col="$gray10" fontWeight="700">Faol guruh</Text>
+                   </XStack>
+                   <ChevronRight size={18} color="$gray8" />
+                </XStack>
+              </YStack>
+            </Pressable>
+          ))}
+          {!loading && !groups.length && (
+            <YStack ai="center" py="$20" gap="$4">
+              <Circle size={80} bg={isDark ? '#1C1C1E' : '$gray2'} ai="center" jc="center">
+                <Users size={40} color="$gray8" />
+              </Circle>
+              <Text col="$gray9" fow="700" fos={16}>Guruhlar hali yo'q</Text>
+              <Button onPress={() => router.push('/tabs/groups/create')} bg="#007AFF" br={16} h={48} px="$6">
+                <Text col="white" fow="800">Guruh yaratish</Text>
+              </Button>
+            </YStack>
+          )}
+        </YStack>
+      </ScrollView>
     </YStack>
   );
 }

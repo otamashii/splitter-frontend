@@ -10,19 +10,19 @@ const appConfig = createTamagui({
     ...config.themes,
     light: {
       ...config.themes.light,
-      primary: '#2ECC71',
-      primaryHover: '#27AE60',
-      success: '#2ECC71',
-      error: '#F44336',
-      warning: '#FF9800',
+      primary: '#007AFF',
+      primaryHover: '#0062CC',
+      success: '#34C759',
+      error: '#FF3B30',
+      warning: '#FF9500',
     },
     dark: {
       ...config.themes.dark,
-      primary: '#2ECC71',
-      primaryHover: '#58D68D',
-      success: '#2ECC71',
-      error: '#F44336',
-      warning: '#FF9800',
+      primary: '#007AFF',
+      primaryHover: '#0A84FF',
+      success: '#32D74B',
+      error: '#FF453A',
+      warning: '#FF9F0A',
     }
   }
 })
@@ -32,5 +32,5 @@ export default appConfig
 export type Conf = typeof appConfig
 
 declare module '@tamagui/core' {
-  interface TamaguiCustomConfig extends Conf {}
+  interface TamaguiCustomConfig extends Conf { }
 }

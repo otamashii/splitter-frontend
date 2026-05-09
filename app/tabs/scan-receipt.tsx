@@ -1,266 +1,273 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Image, StyleSheet, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { StyleSheet, View, ActivityIndicator, Pressable, Dimensions, Alert } from 'react-native';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useRouter } from 'expo-router';
-import { YStack, XStack, Button, Paragraph, Input, Text, Spinner } from 'tamagui';
-import { ChevronLeft, AlertTriangle, Camera as CameraIcon } from '@tamagui/lucide-icons';
-import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
+import { YStack, XStack, Text, Spinner, Circle } from 'tamagui';
+import { ChevronLeft, QrCode, AlertTriangle, Zap, ZapOff, Camera as CameraIcon, Image as ImageIcon } from '@tamagui/lucide-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BlurView } from 'expo-blur';
+import * as ImagePicker from 'expo-image-picker';
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withRepeat, 
+  withTiming, 
+  withSequence,
+  Easing
+} from 'react-native-reanimated';
+import Svg, { Defs, Rect, Mask } from 'react-native-svg';
 
-import {
-  useReceiptSessionStore,
-  CapturedReceiptImage,
-} from '@/features/receipt/model/receipt-session.store';
+import { useReceiptSessionStore } from '@/features/receipt/model/receipt-session.store';
 import { useAppStore } from '@/shared/lib/stores/app-store';
 import { DEFAULT_LANGUAGE } from '@/shared/config/languages';
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const FRAME_SIZE = 300;
+const FRAME_RADIUS = 32;
+const FRAME_Y = (SCREEN_HEIGHT - FRAME_SIZE) / 2 - 80;
+const FRAME_X = (SCREEN_WIDTH - FRAME_SIZE) / 2;
 
 const getDefaultSessionName = () => {
   const now = new Date();
   const pad = (value: number) => value.toString().padStart(2, '0');
-  const date = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-  const time = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
-  return `${date} ${time}`;
+  return `Chek ${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
 };
-
-function guessMime(uri?: string): string {
-  if (!uri) return 'image/jpeg';
-  const lower = uri.toLowerCase();
-  if (lower.endsWith('.png')) return 'image/png';
-  if (lower.endsWith('.webp')) return 'image/webp';
-  return 'image/jpeg';
-}
 
 export default function ScanReceiptScreen() {
   const [perm, requestPerm] = useCameraPermissions();
   const isFocused = useIsFocused();
   const router = useRouter();
-
-  const cameraRef = useRef<CameraView | null>(null);
+  const insets = useSafeAreaInsets();
 
   const parsing = useReceiptSessionStore((s) => s.parsing);
   const parseReceipt = useReceiptSessionStore((s) => s.parseReceipt);
   const parseError = useReceiptSessionStore((s) => s.parseError);
-  const setCapture = useReceiptSessionStore((s) => s.setCapture);
-  const clearCapture = useReceiptSessionStore((s) => s.clearCapture);
-  const storedCapture = useReceiptSessionStore((s) => s.capture);
   const setSessionNameStore = useReceiptSessionStore((s) => s.setSessionName);
-  const storedSessionName = useReceiptSessionStore((s) => s.session?.sessionName);
-  const appLanguage = useAppStore((s) => s.language);
+  
+  const language = useAppStore((s) => s.language) || DEFAULT_LANGUAGE;
 
-  const [sessionName, setSessionName] = useState(() => storedSessionName || getDefaultSessionName());
-  const [isAutoName, setIsAutoName] = useState(() => !storedSessionName);
+  const [currentQr, setCurrentQr] = useState<string | null>(null);
+  const [scanned, setScanned] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
+  const [flash, setFlash] = useState(false);
 
-  const language = appLanguage || DEFAULT_LANGUAGE;
+  const scanLineY = useSharedValue(0);
 
   useEffect(() => {
     if (isFocused && !perm?.granted) requestPerm();
   }, [isFocused, perm?.granted, requestPerm]);
 
   useEffect(() => {
-    if (storedSessionName) {
-      setIsAutoName(false);
-      setSessionName((prev) => (prev === storedSessionName ? prev : storedSessionName));
-    } else {
-      setIsAutoName(true);
+    if (isFocused && !scanned && !parsing) {
+      scanLineY.value = 0;
+      scanLineY.value = withRepeat(
+        withSequence(
+          withTiming(FRAME_SIZE - 2, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
+          withTiming(0, { duration: 1500, easing: Easing.inOut(Easing.ease) })
+        ),
+        -1,
+        true
+      );
     }
-  }, [storedSessionName]);
+  }, [isFocused, scanned, parsing]);
 
   useFocusEffect(
     useCallback(() => {
-      if (storedSessionName) return;
-      if (!isAutoName) return;
-      const freshName = getDefaultSessionName();
-      setSessionName((prev) => (prev === freshName ? prev : freshName));
-    }, [storedSessionName, isAutoName])
+      setScanned(false);
+      setLocalError(null);
+      setCurrentQr(null);
+    }, [])
   );
 
-  useEffect(() => () => clearCapture(), [clearCapture]);
+  const handleBarcodeScanned = ({ data }: { data: string }) => {
+    if (scanned || parsing) return;
+    setCurrentQr(data);
+  };
 
-  const handleParse = useCallback(async () => {
-    if (!cameraRef.current || parsing) return;
-
+  const handleParse = async (params: { qrData?: string; image?: { mimeType: string; data: string } }) => {
+    if (scanned || parsing) return;
+    setScanned(true);
+    setLocalError(null);
+    
     try {
-      setLocalError(null);
-      const picture = await cameraRef.current.takePictureAsync({
-        quality: 0.7,
-        base64: false,
-        skipProcessing: true,
-      });
-
-      if (!picture?.uri) {
-        throw new Error('Could not capture the receipt photo. Please try again.');
-      }
-
-      const targetWidth = picture.width ? Math.min(picture.width, 1280) : undefined;
-      const manipResult = await manipulateAsync(
-        picture.uri,
-        targetWidth ? [{ resize: { width: targetWidth } }] : [],
-        { compress: 0.45, format: SaveFormat.JPEG, base64: true }
-      );
-
-      if (!manipResult?.base64) {
-        throw new Error('Failed to prepare the receipt photo for upload.');
-      }
-
-      const base64SizeKb = (manipResult.base64.length * 3) / 4 / 1024;
-      if (__DEV__) {
-        console.log('[ReceiptScan] resized image ~KB:', base64SizeKb.toFixed(1), 'dims:', manipResult.width, 'x', manipResult.height);
-      }
-
-      const preparedName = sessionName.trim() || getDefaultSessionName();
-      const capture: CapturedReceiptImage = {
-        uri: manipResult.uri ?? picture.uri,
-        base64: manipResult.base64,
-        mimeType: 'image/jpeg',
-        width: manipResult.width ?? picture.width,
-        height: manipResult.height ?? picture.height,
-      };
-
-      setSessionNameStore(preparedName);
-      setCapture(capture);
+      const sessionName = getDefaultSessionName();
+      setSessionNameStore(sessionName);
 
       await parseReceipt({
-        sessionName: preparedName,
+        sessionName,
         language,
-        image: {
-          data: capture.base64,
-          mimeType: capture.mimeType,
-        },
+        ...params
       });
 
       router.push('/tabs/sessions/participants');
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Something went wrong while sending the receipt';
+      const message = error instanceof Error ? error.message : 'Chekni o\'qishda xatolik yuz berdi';
       setLocalError(message);
+      setTimeout(() => setScanned(false), 3000);
     }
-  }, [cameraRef, parsing, sessionName, setSessionNameStore, setCapture, parseReceipt, language, router]);
+  };
 
-  const useMock = useCallback(() => {
-    router.push({
-      pathname: '/tabs/sessions/participants',
-      params: { receiptId: 'mock-001' },
-    } as never);
-  }, [router]);
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 0.8,
+      base64: true,
+    });
 
-  const goBack = useCallback(() => {
-    router.back();
-  }, [router]);
+    if (!result.canceled && result.assets[0].base64) {
+      const asset = result.assets[0];
+      handleParse({
+        image: {
+          mimeType: asset.mimeType || 'image/jpeg',
+          data: asset.base64,
+        }
+      });
+    }
+  };
 
-  const handleSessionNameChange = useCallback((value: string) => {
-    setIsAutoName(false);
-    setSessionName(value);
-  }, [setIsAutoName, setSessionName]);
+  const scanLineStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: scanLineY.value }],
+    opacity: (scanned || parsing) ? 0 : 1
+  }));
 
-  const disableAction = parsing || !perm?.granted;
   const errorMessage = localError || parseError;
 
   return (
     <View style={S.root}>
-      <View style={S.headerAbs}>
-        <XStack ai="center" jc="space-between" px="$3" py="$2">
-          <Button
-            size="$2"
-            h={28}
-            chromeless
-            onPress={goBack}
-            icon={<ChevronLeft size={18} color="white" />}
-            color="white"
-          >
-            Back
-          </Button>
-          <Paragraph fow="700" fos="$6" col="white">Scan receipt</Paragraph>
-          <YStack w={54} />
-        </XStack>
+      {isFocused && perm?.granted ? (
+        <View style={StyleSheet.absoluteFill}>
+          <CameraView
+            style={StyleSheet.absoluteFill}
+            facing="back"
+            enableTorch={flash}
+            onBarcodeScanned={handleBarcodeScanned}
+            barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+          />
+        </View>
+      ) : (
+        <YStack f={1} ai="center" jc="center" bg="#000">
+          <Spinner color="white" />
+        </YStack>
+      )}
+
+      {/* SVG Mask Overlay */}
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+        <Svg height="100%" width="100%">
+          <Defs>
+            <Mask id="mask">
+              <Rect height="100%" width="100%" fill="#fff" />
+              <Rect 
+                x={FRAME_X} 
+                y={FRAME_Y} 
+                width={FRAME_SIZE} 
+                height={FRAME_SIZE} 
+                rx={FRAME_RADIUS} 
+                fill="#000" 
+              />
+            </Mask>
+          </Defs>
+          <Rect height="100%" width="100%" fill="rgba(0,0,0,0.5)" mask="url(#mask)" />
+        </Svg>
       </View>
 
-      <View style={S.cameraWrap}>
-        {isFocused && perm?.granted ? (
-          <CameraView
-            ref={cameraRef}
-            style={S.camera}
-            facing="back"
-          />
-        ) : (
-          <YStack f={1} ai="center" jc="center">
-            {!perm ? <ActivityIndicator color="white" /> : <Paragraph col="$gray1">Allow camera access</Paragraph>}
-          </YStack>
+      {/* Frame Brackets */}
+      <View style={[S.frameContainer, { top: FRAME_Y, left: FRAME_X }]} pointerEvents="none">
+        <View style={[S.corner, S.topLeft]} />
+        <View style={[S.corner, S.topRight]} />
+        <View style={[S.corner, S.bottomLeft]} />
+        <View style={[S.corner, S.bottomRight]} />
+        <Animated.View style={[S.scanLine, scanLineStyle]} />
+
+        {currentQr && !scanned && !parsing && (
+          <View style={[StyleSheet.absoluteFill, { borderRadius: FRAME_RADIUS, borderWidth: 3, borderColor: '#007AFF', opacity: 0.5 }]} />
         )}
 
-        {parsing && (
-          <View style={S.overlay}>
-            <Spinner size="large" color="white" />
-            <Paragraph mt="$2" col="white">Uploading receipt...</Paragraph>
+        {(scanned || parsing) && (
+          <View style={S.loaderOverlay}>
+            <Spinner size="large" color="#007AFF" />
           </View>
         )}
       </View>
 
-      <View style={S.actions}>
-        <YStack gap="$3">
-          <YStack gap={8}>
-            <Paragraph color="$gray1" fontSize={12}>
-              Session name
-            </Paragraph>
-            <Input
-              value={sessionName}
-              onChangeText={handleSessionNameChange}
-              placeholder="e.g. Cafe on October"
-              height={41}
-              borderRadius={10}
-              px={16}
-              backgroundColor="rgba(255,255,255,0.1)"
-              color="white"
-              borderWidth={1}
-              borderColor="rgba(255,255,255,0.25)"
-            />
-          </YStack>
+      {/* Header */}
+      <View style={[S.headerAbs, { paddingTop: insets.top + 10 }]}>
+        <XStack ai="center" jc="space-between" px="$4">
+          <Pressable onPress={() => router.back()} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, transform: [{ scale: pressed ? 0.9 : 1 }] })}>
+            <BlurView intensity={40} tint="dark" style={S.glassButton}>
+              <ChevronLeft size={28} color="white" />
+            </BlurView>
+          </Pressable>
+          <Text col="white" fow="800" fos={18} style={S.textShadow}>Skanerlash</Text>
+          <Pressable onPress={() => setFlash(!flash)} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, transform: [{ scale: pressed ? 0.9 : 1 }] })}>
+            <BlurView intensity={40} tint="dark" style={S.glassButton}>
+              {flash ? <Zap size={22} color="#FFD60A" /> : <ZapOff size={22} color="white" />}
+            </BlurView>
+          </Pressable>
+        </XStack>
+      </View>
 
-          <Paragraph color="$gray1" fontSize={12}>
-            language: <Text fontWeight="700" color="white">{language}</Text>
-          </Paragraph>
-
-          {storedCapture?.uri && (
-            <XStack ai="center" gap="$2">
-              <Image source={{ uri: storedCapture.uri }} style={S.preview} resizeMode="cover" />
-              <Paragraph color="$gray1" fontSize={12}>
-                Last photo stored; capturing again will overwrite it.
-              </Paragraph>
-            </XStack>
-          )}
-
+      {/* Bottom Controls */}
+      <View style={[S.bottomAbs, { paddingBottom: insets.bottom + 40 }]}>
+        <YStack ai="center" gap="$5">
           {errorMessage && (
-            <XStack ai="center" gap="$2" bg="rgba(255,99,71,0.18)" px="$2" py="$2" borderRadius={8}>
-              <AlertTriangle size={16} color="#FF6B6B" />
-              <Paragraph color="#FF6B6B" flexShrink={1}>{errorMessage}</Paragraph>
-            </XStack>
+            <BlurView intensity={80} tint="dark" style={S.errorToast}>
+              <XStack ai="center" gap="$3">
+                <AlertTriangle size={20} color="#FF3B30" />
+                <Text col="white" fow="600" fos={14} flexShrink={1}>{errorMessage}</Text>
+              </XStack>
+            </BlurView>
           )}
 
-          <XStack ai="center" jc="space-between" gap="$3">
-            <Button
-              size="$3"
-              borderRadius="$3"
-              theme="gray"
-              onPress={goBack}
-              disabled={parsing}
-              opacity={parsing ? 0.6 : 1}
-            >
-              Cancel
-            </Button>
-            <Button
-              size="$3"
-              borderRadius="$3"
-              theme="active"
-              onPress={handleParse}
-              disabled={disableAction}
-              icon={parsing ? undefined : <CameraIcon size={18} color="white" />}
-            >
-              {parsing ? 'Processing...' : 'Scan receipt'}
-            </Button>
-          </XStack>
+          <XStack ai="center" gap="$6" px="$5">
+            <YStack ai="center" gap="$2">
+              <Pressable onPress={pickImage} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, transform: [{ scale: pressed ? 0.9 : 1 }] })}>
+                <BlurView intensity={60} tint="dark" style={S.roundButton}>
+                  <ImageIcon size={26} color="white" />
+                </BlurView>
+              </Pressable>
+              <Text col="white" fos={11} fow="700" opacity={0.8}>Galereya</Text>
+            </YStack>
 
-          <Button size="$2" borderRadius="$3" theme="gray" variant="outlined" onPress={useMock} disabled={parsing}>
-            Use mock receipt
-          </Button>
+            <YStack ai="center" gap="$3">
+              <Pressable 
+                onPress={() => currentQr && handleParse({ qrData: currentQr })}
+                disabled={!currentQr || scanned || parsing}
+                style={({ pressed }) => ({
+                  opacity: pressed ? 0.7 : 1,
+                  transform: [{ scale: (currentQr && !scanned && !parsing && pressed) ? 0.95 : 1 }]
+                })}
+              >
+                <Circle 
+                  size={84} 
+                  bg={currentQr ? "#007AFF" : "rgba(255,255,255,0.15)"} 
+                  borderWidth={5} 
+                  borderColor={currentQr ? "rgba(0,122,255,0.4)" : "rgba(255,255,255,0.2)"}
+                  ai="center" 
+                  jc="center"
+                  shadowColor="#000"
+                  shadowOpacity={0.3}
+                  shadowRadius={20}
+                  elevation={15}
+                >
+                  <CameraIcon size={34} color="white" />
+                </Circle>
+              </Pressable>
+              <Text col="white" fos={14} fow="900" style={S.textShadow}>
+                {currentQr ? 'Tayyor' : 'QR kutilyapti...'}
+              </Text>
+            </YStack>
+
+            <YStack ai="center" gap="$2">
+              <Pressable onPress={() => router.push('/tabs/sessions/create')} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, transform: [{ scale: pressed ? 0.9 : 1 }] })}>
+                <BlurView intensity={60} tint="dark" style={S.roundButton}>
+                   <QrCode size={26} color="white" />
+                </BlurView>
+              </Pressable>
+              <Text col="white" fos={11} fow="700" opacity={0.8}>Qo'lda</Text>
+            </YStack>
+          </XStack>
         </YStack>
       </View>
     </View>
@@ -269,45 +276,20 @@ export default function ScanReceiptScreen() {
 
 const S = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#000' },
-  headerAbs: {
-    position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10,
-    paddingTop: 8, backgroundColor: 'rgba(0,0,0,0.25)',
-  },
-  cameraWrap: { flex: 1, backgroundColor: '#000' },
-  camera: { flex: 1 },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.55)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  actions: {
-    position: 'absolute',
-    bottom: 24, left: 16, right: 16,
-    backgroundColor: 'rgba(0,0,0,0.45)',
-    padding: 16,
-    borderRadius: 16,
-  },
-  preview: {
-    width: 56,
-    height: 56,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.5)',
-  },
+  headerAbs: { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 },
+  bottomAbs: { position: 'absolute', bottom: 120, left: 0, right: 0, zIndex: 10 },
+  frameContainer: { position: 'absolute', width: FRAME_SIZE, height: FRAME_SIZE, zIndex: 5 },
+  corner: { position: 'absolute', width: 45, height: 45, borderColor: '#007AFF' },
+  topLeft: { top: -2, left: -2, borderTopWidth: 6, borderLeftWidth: 6, borderTopLeftRadius: FRAME_RADIUS },
+  topRight: { top: -2, right: -2, borderTopWidth: 6, borderRightWidth: 6, borderTopRightRadius: FRAME_RADIUS },
+  bottomLeft: { bottom: -2, left: -2, borderBottomWidth: 6, borderLeftWidth: 6, borderBottomLeftRadius: FRAME_RADIUS },
+  bottomRight: { bottom: -2, right: -2, borderBottomWidth: 6, borderRightWidth: 6, borderBottomRightRadius: FRAME_RADIUS },
+  scanLine: { position: 'absolute', top: 0, left: 10, right: 10, height: 3, backgroundColor: '#007AFF', shadowColor: '#007AFF', shadowOpacity: 0.8, shadowRadius: 10, elevation: 15 },
+  glassButton: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  roundButton: { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  textShadow: { textShadowColor: 'rgba(0,0,0,0.5)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 },
+  qrDetectedOverlay: { ...StyleSheet.absoluteFillObject, ai: 'center', jc: 'center' },
+  qrIndicator: { padding: 20, borderRadius: 40, overflow: 'hidden' },
+  loaderOverlay: { ...StyleSheet.absoluteFillObject, ai: 'center', jc: 'center', backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: FRAME_RADIUS },
+  errorToast: { paddingHorizontal: 20, paddingVertical: 12, borderRadius: 20, maxWidth: '90%', overflow: 'hidden' },
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

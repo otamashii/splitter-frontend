@@ -54,7 +54,64 @@
     "send": "Send request",
     "remove": "Remove",
     "loading": "Loading...",
-    "error": "Failed to load"
+    "error": "Failed to load",
+    "common": {
+      "unknownUser": "Unknown User"
+    },
+    "search": {
+      "noResults": "No results found",
+      "error": "Search failed",
+      "inviteSent": "Invite sent to {{target}}",
+      "inviteFailed": "Could not send invite",
+      "placeholder": "Nickname or uniqueId...",
+      "hint": "Search friends by their Unique ID"
+    },
+    "status": {
+      "add": "Add",
+      "you": "You",
+      "friend": "Friend",
+      "requested": "Requested",
+      "incoming": "Incoming"
+    }
+  },
+  "chat": {
+    "title": "Chat",
+    "placeholder": "Type a message...",
+    "replyingTo": "Replying to",
+    "replyToSelf": "Reply to yourself",
+    "editing": "Editing message",
+    "edited": "edited",
+    "forwarded": "Forwarded from: {{username}}",
+    "forwardTo": "Forward to whom?",
+    "noFriends": "No friends found",
+    "actions": {
+      "reply": "Reply",
+      "edit": "Edit",
+      "forward": "Forward",
+      "delete": "Delete Chat",
+      "clear": "Clear History",
+      "search": "Search Messages",
+      "mute": "Mute Notifications"
+    },
+    "attachments": {
+      "gallery": "Gallery",
+      "location": "Location",
+      "file": "File",
+      "soon": "Coming soon!",
+      "myLocation": "📍 My Location:"
+    },
+    "recording": {
+      "delete": "Delete",
+      "error": "Failed to start recording. Please try again."
+    },
+    "alerts": {
+      "clearTitle": "Clear History",
+      "clearMessage": "Are you sure you want to clear this chat?",
+      "deleteTitle": "Delete Chat",
+      "deleteMessage": "Are you sure you want to delete this chat?",
+      "locationError": "Permission needed to share location",
+      "locationFail": "Failed to determine location"
+    }
   },
   "home": {
     "header": {
@@ -178,7 +235,8 @@
     "itemsSplit": "Items Split",
     "finish": "Finish",
     "history": "Recent bills",
-    "historyDetails": "Bill details"
+    "historyDetails": "Bill details",
+    "search": "Search"
   },
   "settings": {
     "language": {
@@ -189,6 +247,32 @@
         "ja": "Japanese",
         "uz": "Uzbek"
       }
+    }
+  },
+  "calculator": {
+    "title": "Calculator"
+  },
+  "scan": {
+    "permissions": {
+      "title": "Camera permission required",
+      "message": "Please grant camera permission to scan QR codes",
+      "button": "Grant permission"
+    },
+    "scanner": {
+      "tip": "Scan your friend's code",
+      "title": "Scanner",
+      "gallery": "Gallery",
+      "myQr": "My QR"
+    },
+    "myQr": {
+      "share": "Share",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "hint": "Your friend can scan this code to add you"
+    },
+    "result": {
+      "addFriend": "Add to friends",
+      "error": "QR code not found or invalid"
     }
   }
 }

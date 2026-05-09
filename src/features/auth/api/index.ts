@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import { getToken } from '@/shared/lib/utils/token-storage';
 import { emitUnauthorized } from '@/shared/api/auth-events';
-const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:3001';
 
 export const apiClient = axios.create({
   baseURL: API_URL,
@@ -95,6 +95,7 @@ export interface RegisterRequest {
   username: string;
   email: string;
   password: string;
+  uniqueId?: string;
 }
 
 export interface AuthResponse {

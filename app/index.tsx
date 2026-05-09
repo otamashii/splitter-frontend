@@ -38,7 +38,7 @@ export default function Welcome() {
             {languages.map((lang) => (
               <YStack
                 key={lang.code}
-                backgroundColor={currentLanguage === lang.code ? "#2ECC71" : "transparent"}
+                backgroundColor={currentLanguage === lang.code ? "#007AFF" : "transparent"}
                 borderRadius="$6"
                 paddingHorizontal="$3"
                 paddingVertical="$2"
@@ -64,13 +64,13 @@ export default function Welcome() {
           <YStack alignItems="center" space="$5">
             <Circle 
               size={120}
-              backgroundColor="#2ECC71"
+              backgroundColor="#007AFF"
               alignItems="center" 
               justifyContent="center"
-              shadowColor="$shadowColor"
-              shadowOffset={{ width: 0, height: 4 }}
-              shadowOpacity={0.15}
-              shadowRadius={12}
+              shadowColor="#007AFF"
+              shadowOffset={{ width: 0, height: 8 }}
+              shadowOpacity={0.25}
+              shadowRadius={16}
               elevation={8}
             >
               <ScanLine size={48} color="#FFFFFF" />
@@ -124,8 +124,17 @@ export default function Welcome() {
             <Link href="/register" asChild>
               <Button 
                 title={t('auth.createAccount', 'Create Account')} 
-                variant="primary"
-                size="large"
+                backgroundColor="#007AFF"
+                color="white"
+                borderRadius={24}
+                height={56}
+                fontSize={18}
+                fontWeight="700"
+                width="100%"
+                shadowColor="#007AFF"
+                shadowOffset={{ width: 0, height: 4 }}
+                shadowOpacity={0.2}
+                shadowRadius={8}
               />
             </Link>
           </YStack>
@@ -144,7 +153,11 @@ export default function Welcome() {
               <Button 
                 title={t('auth.signIn', 'Sign In')} 
                 variant="outline"
-                size="medium"
+                borderColor="rgba(0, 122, 255, 0.3)"
+                color="#007AFF"
+                borderRadius={24}
+                height={50}
+                width="100%"
               />
             </Link>
           </YStack>

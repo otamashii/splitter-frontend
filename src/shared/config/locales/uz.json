@@ -41,7 +41,77 @@
     "cancel": "Bekor qilish",
     "confirm": "Tasdiqlash",
     "continue": "Davom etish",
-    "back": "Orqaga"
+    "back": "Orqaga",
+    "delete": "O'chirish",
+    "edit": "Tahrirlash"
+  },
+  "friends": {
+    "title": "Do'stlar",
+    "requests": "So'rovlar",
+    "add": "Do'st qo'shish",
+    "empty": "Hali do'stlar yo'q. Qo'shish uchun + ni bosing.",
+    "searchPlaceholder": "UniqueId kiriting, masalan: USER#1234",
+    "send": "So'rov yuborish",
+    "remove": "O'chirish",
+    "loading": "Yuklanmoqda...",
+    "error": "Yuklab bo'lmadi",
+    "common": {
+      "unknownUser": "Noma'lum foydalanuvchi"
+    },
+    "search": {
+      "noResults": "Natija topilmadi",
+      "error": "Qidiruvda xatolik",
+      "inviteSent": "{{target}}ga so'rov yuborildi",
+      "inviteFailed": "So'rov yuborib bo'lmadi",
+      "placeholder": "Nickname yoki uniqueId...",
+      "hint": "Noyob ID (uniqueId) orqali do'stlaringizni qidiring"
+    },
+    "status": {
+      "add": "Qo'shish",
+      "you": "Siz",
+      "friend": "Do'st",
+      "requested": "Yuborilgan",
+      "incoming": "Kiruvchi"
+    }
+  },
+  "chat": {
+    "title": "Chat",
+    "placeholder": "Xabar yozing...",
+    "replyingTo": "Javob berish",
+    "replyToSelf": "O'zingizga javob",
+    "editing": "Xabarni tahrirlash",
+    "edited": "tahrirlandi",
+    "forwarded": "Yo'naltirildi: {{username}}",
+    "forwardTo": "Kimga yuboramiz?",
+    "noFriends": "Do'stlar topilmadi",
+    "actions": {
+      "reply": "Javob berish",
+      "edit": "Tahrirlash",
+      "forward": "Yo'naltirish",
+      "delete": "Chatni o'chirish",
+      "clear": "Tarixni tozalash",
+      "search": "Xabarlarni qidirish",
+      "mute": "Ovozni o'chirish"
+    },
+    "attachments": {
+      "gallery": "Galereya",
+      "location": "Lokatsiya",
+      "file": "Fayl",
+      "soon": "Yaqinda qo'shiladi!",
+      "myLocation": "📍 Mening lokatsiyam:"
+    },
+    "recording": {
+      "delete": "O'chirish",
+      "error": "Ovoz yozishni boshlab bo'lmadi. Iltimos qaytadan urinib ko'ring."
+    },
+    "alerts": {
+      "clearTitle": "Tarixni tozalash",
+      "clearMessage": "Haqiqatdan ham suhbatni tozalamoqchimisiz?",
+      "deleteTitle": "Chatni o'chirish",
+      "deleteMessage": "Haqiqatdan ham ushbu chatni o'chirmoqchimisiz?",
+      "locationError": "Lokatsiyani ulashish uchun ruxsat kerak",
+      "locationFail": "Lokatsiyani aniqlashda xatolik yuz berdi"
+    }
   },
   "home": {
     "header": {
@@ -165,7 +235,8 @@
     "itemsSplit": "Xarajatlarni bo'lish",
     "finish": "Yakunlash",
     "history": "So'nggi hisoblar",
-    "historyDetails": "Hisob tafsilotlari"
+    "historyDetails": "Hisob tafsilotlari",
+    "search": "Qidiruv"
   },
   "settings": {
     "language": {
@@ -176,6 +247,37 @@
         "ja": "Yapon tili",
         "uz": "O'zbek tili"
       }
+    }
+  },
+  "calculator": {
+    "title": "Kalkulyator"
+  },
+  "scan": {
+    "permissions": {
+      "title": "Kameraga ruxsat zarur",
+      "message": "QR kodni skanerlash uchun kamera ruxsatini bering",
+      "button": "Ruxsat berish"
+    },
+    "scanner": {
+      "tip": "Do'stingizning kodini skanerlang",
+      "title": "Skaner",
+      "gallery": "Galereya",
+      "myQr": "Mening QR"
+    },
+    "myQr": {
+      "share": "Ulashish",
+      "copy": "Nusxa",
+      "copied": "Nusxalandi!",
+      "hint": "Do'stingiz ushbu kodni skanerlab sizni qo'shishi mumkin"
+    },
+    "result": {
+      "addFriend": "Do'stlarga qo'shish",
+      "error": "QR kod topilmadi yoki xato"
+    }
+  },
+  "friends": {
+    "search": {
+      "findTitle": "Foydalanuvchini toping"
     }
   }
 }

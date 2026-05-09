@@ -1,15 +1,18 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Pressable } from 'react-native';
 import {
-  YStack, XStack, Button, Spinner, Text, Input, ScrollView
+  YStack, XStack, Button, Spinner, Text, Input, ScrollView, Circle, View
 } from 'tamagui';
-import { Users as UsersIcon, Check } from '@tamagui/lucide-icons';
+import { Users as UsersIcon, Check, ChevronLeft, Search, UserCheck } from '@tamagui/lucide-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useFriendsStore } from '@/features/friends/model/friends.store';
 import UserAvatar from '@/shared/ui/UserAvatar';
 import { useAppStore } from '@/shared/lib/stores/app-store';
 import { useGroupsStore } from '@/features/groups/model/groups.store';
 import { useReceiptSessionStore } from '@/features/receipt/model/receipt-session.store';
+import { useTranslation } from 'react-i18next';
 
 type LiteUser = { uniqueId: string; username: string; avatarUrl?: string | null };
 
@@ -17,6 +20,7 @@ export default function SessionParticipantsScreen() {
   const { receiptId } = useLocalSearchParams<{ receiptId?: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   // stores
   const me = useAppStore(s => s.user);
@@ -28,13 +32,14 @@ export default function SessionParticipantsScreen() {
 
   // -------- state --------
   const [q, setQ] = useState('');
-  // Инициализируем пусто: «меня» добавим эффектом, когда будет доступен user
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [activeGroupId, setActiveGroupId] = useState<number | null>(null);
   const [groupMembers, setGroupMembers] = useState<Record<number, LiteUser[]>>({});
   const [groupLoading, setGroupLoading] = useState<Record<number, boolean>>({});
-  // авто-добавленные из активной группы (чтобы корректно снимать при переключениях)
   const [autoFromGroup, setAutoFromGroup] = useState<Record<string, number | undefined>>({});
+  const [globalSearchLoading, setGlobalSearchLoading] = useState(false);
+  const [globalResults, setGlobalResults] = useState<LiteUser[]>([]);
+  
   const autoRef = useRef(autoFromGroup);
   useEffect(() => { autoRef.current = autoFromGroup; }, [autoFromGroup]);
 
@@ -42,19 +47,14 @@ export default function SessionParticipantsScreen() {
   useEffect(() => { fetchFriends(); }, [fetchFriends]);
   useEffect(() => { fetchGroups(); }, [fetchGroups]);
 
-  // robust me: берём uniqueId, иначе username, иначе id
-  const meUid = useMemo(() => {
-    return (me?.uniqueId || me?.username || (typeof me?.id === 'number' ? `id:${me.id}` : '')) as string;
-  }, [me?.uniqueId, me?.username, me?.id]);
-  const meName = useMemo(() => (me?.username || 'You') as string, [me?.username]);
+  const meUid = useMemo(() => (me?.uniqueId || me?.username || (typeof me?.id === 'number' ? `id:${me.id}` : '')) as string, [me]);
+  const meName = useMemo(() => (me?.username || 'You') as string, [me]);
 
-  // гарантируем, что «я» всегда в selected = true при появлении user
   useEffect(() => {
     if (!meUid) return;
     setSelected(prev => ({ ...prev, [meUid]: true }));
   }, [meUid]);
 
-  // helpers
   const dedupByUniqueId = (arr: LiteUser[]) => {
     const seen = new Set<string>();
     const out: LiteUser[] = [];
@@ -66,20 +66,18 @@ export default function SessionParticipantsScreen() {
     return out;
   };
 
-  // Me FIRST + Friends («я» всегда есть в кандидатах)
   const basePeople: LiteUser[] = useMemo(() => {
     const res: LiteUser[] = [];
-    if (meUid) res.push({ uniqueId: meUid, username: meName });
+    if (meUid) res.push({ uniqueId: meUid, username: meName, avatarUrl: me?.avatarUrl });
     (friends ?? []).forEach((f: any) => {
       const uid = f?.user?.uniqueId ?? f?.uniqueId;
       if (!uid) return;
       const uname = f?.user?.username ?? f?.username ?? uid;
-      res.push({ uniqueId: uid, username: uname });
+      res.push({ uniqueId: uid, username: uname, avatarUrl: f?.user?.avatarUrl });
     });
     return res;
-  }, [friends, meUid, meName]);
+  }, [friends, meUid, meName, me?.avatarUrl]);
 
-  // cache group members
   async function loadGroupMembers(gid: number): Promise<LiteUser[]> {
     if (groupMembers[gid]) return groupMembers[gid];
     setGroupLoading(m => ({ ...m, [gid]: true }));
@@ -91,6 +89,7 @@ export default function SessionParticipantsScreen() {
         .map((m: any) => ({
           uniqueId: m?.uniqueId ?? '',
           username: m?.username ?? (m?.uniqueId ?? ''),
+          avatarUrl: m?.avatarUrl,
         }))
         .filter((m: LiteUser) => !!m.uniqueId);
       setGroupMembers(mm => ({ ...mm, [gid]: mapped }));
@@ -100,7 +99,6 @@ export default function SessionParticipantsScreen() {
     }
   }
 
-  // снять авто-выбор конкретной группы из selected
   function stripAutoOfGroup(next: Record<string, boolean>, gid: number) {
     const auto = autoRef.current;
     Object.entries(auto).forEach(([uid, g]) => {
@@ -108,13 +106,12 @@ export default function SessionParticipantsScreen() {
     });
   }
 
-  // deactivate current group (toggle off)
   function deactivateGroup(gid: number) {
     setActiveGroupId(null);
     setSelected(prev => {
       const next = { ...prev };
       stripAutoOfGroup(next, gid);
-      if (meUid) next[meUid] = true; // гарантируем «я»
+      if (meUid) next[meUid] = true;
       return next;
     });
     setAutoFromGroup(prev => {
@@ -124,11 +121,8 @@ export default function SessionParticipantsScreen() {
     });
   }
 
-  // activate / toggle group
   async function activateGroup(gid: number) {
     if (activeGroupId === gid) { deactivateGroup(gid); return; }
-
-    // убираем авто-добавления предыдущей группы
     if (typeof activeGroupId === 'number') {
       setSelected(prev => {
         const next = { ...prev };
@@ -142,10 +136,7 @@ export default function SessionParticipantsScreen() {
         return cp;
       });
     }
-
     setActiveGroupId(gid);
-
-    // если есть кэш — сразу применяем; иначе покажем «меня», потом дополним
     if (groupMembers[gid]) {
       const members = groupMembers[gid]!;
       setSelected(prev => {
@@ -160,13 +151,6 @@ export default function SessionParticipantsScreen() {
       });
       return;
     }
-
-    setSelected(prev => {
-      const next = { ...prev };
-      if (meUid) next[meUid] = true;
-      return next;
-    });
-
     const members = await loadGroupMembers(gid);
     setSelected(prev => {
       const next = { ...prev };
@@ -180,11 +164,39 @@ export default function SessionParticipantsScreen() {
     });
   }
 
-  // candidates = Me + Friends + active group members (if any)
   const unionPeople: LiteUser[] = useMemo(() => {
     const fromGroup = activeGroupId ? (groupMembers[activeGroupId] || []) : [];
-    return dedupByUniqueId([...basePeople, ...fromGroup]);
-  }, [basePeople, activeGroupId, groupMembers]);
+    // Combine base people, group members, and any global search results
+    return dedupByUniqueId([...basePeople, ...fromGroup, ...globalResults]);
+  }, [basePeople, activeGroupId, groupMembers, globalResults]);
+
+  // Global search effect
+  const { search: searchGlobal } = useFriendsStore();
+  useEffect(() => {
+    if (!q || q.length < 3) {
+      setGlobalResults([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setGlobalSearchLoading(true);
+      try {
+        const results = await searchGlobal(q);
+        const mapped = (results || []).map((u: any) => ({
+          uniqueId: u.uniqueId || '',
+          username: u.username || u.uniqueId || '',
+          avatarUrl: u.avatarUrl
+        })).filter((u: any) => u.uniqueId);
+        setGlobalResults(mapped);
+      } catch (e) {
+        console.warn('Global search failed:', e);
+      } finally {
+        setGlobalSearchLoading(false);
+      }
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [q, searchGlobal]);
 
   const filtered = useMemo(() => {
     if (!q) return unionPeople;
@@ -194,7 +206,6 @@ export default function SessionParticipantsScreen() {
     );
   }, [unionPeople, q]);
 
-  // manual toggle: если юзера авто-добавила группа — снимаем метку, чтобы он остался при снятии группы
   const toggleUser = (uid: string) => {
     setSelected(s => ({ ...s, [uid]: !s[uid] }));
     setAutoFromGroup(prev => {
@@ -210,184 +221,188 @@ export default function SessionParticipantsScreen() {
   const selectedList = Object.keys(selected).filter(k => selected[k]);
   const canNext = selectedList.length >= 2;
 
-  const fmtUid = (uid: string) => `@${uid.toLowerCase().replace('user#', 'user')}`;
   const goNext = () => {
     const participants = unionPeople
       .filter(p => selected[p.uniqueId])
       .map(p => ({ uniqueId: p.uniqueId, username: p.username }));
 
     setReceiptParticipants(participants);
-
     const sessionId = session?.sessionId ? String(session.sessionId) : undefined;
-    const params = new URLSearchParams();
     const effectiveReceiptId = receiptId ?? sessionId;
-    if (effectiveReceiptId) params.set('receiptId', effectiveReceiptId);
-    if (participants.length > 0) {
-      params.set('participants', encodeURIComponent(JSON.stringify(participants)));
-    }
-    const qs = params.toString();
-    const target = qs ? `/tabs/sessions/items-split?${qs}` : '/tabs/sessions/items-split';
-    router.push(target as any);
+    router.push({
+      pathname: '/tabs/sessions/items-split',
+      params: { 
+        receiptId: effectiveReceiptId,
+        participants: JSON.stringify(participants)
+      }
+    });
   };
 
-  // UI: Select pill (84×29)
-  const SelectPill = ({ on, onPress }: { on: boolean; onPress: () => void }) => (
-    <Button
-      unstyled
-      onPress={onPress}
-      animation="bouncy"
-      pressStyle={{ transform: [{ scale: 0.98 }] }}
-      width={84}
-      height={29}
-      borderRadius={10}
-      borderWidth={1}
-      borderColor="#D9D9D9"
-      backgroundColor={on ? '#2ECC71' : 'transparent'}
-      ai="center"
-      jc="center"
-    >
-      <Text fontSize={14} fontWeight="500" color={on ? '#FFFFFF' : '#2C3D4FCC'}>
-        {on ? 'Selected' : 'Select'}
-      </Text>
-    </Button>
-  );
-
-  // group chip
-  const GroupChip = ({
-    id, name, count, active, loading, onPress,
-  }: { id: number; name: string; count?: number; active?: boolean; loading?: boolean; onPress: () => void }) => (
-    <Button
-      unstyled
-      onPress={onPress}
-      animation="bouncy"
-      pressStyle={{ transform: [{ scale: 0.98 }] }}
-      h={32}
-      px={12}
-      borderRadius={18}
-      borderWidth={1}
-      borderColor={active ? '#2ECC71' : '#D9D9D9'}
-      backgroundColor={active ? '#2ECC71' : 'transparent'}
-      ai="center"
-      jc="center"
-    >
-      <XStack ai="center" gap="$1">
-        <UsersIcon size={14} color={active ? '#FFFFFF' : '#2C3D4FCC'} />
-        <Text fontSize={14} fontWeight="500" color={active ? '#FFFFFF' : '#2C3D4FCC'}>
-          {name}
-        </Text>
-        <Text fontSize={12} color={active ? '#FFFFFF' : '#2C3D4FCC'}>
-          · {typeof count === 'number' ? count : (loading ? '…' : '—')}
-        </Text>
-        {loading && <Spinner size="small" color={active ? 'white' : '$gray10'} />}
-        {active && !loading && <Check size={14} color="#FFFFFF" />}
-      </XStack>
-    </Button>
-  );
-
-  const groupCount = (id: number) =>
-    (typeof counts?.[id] === 'number' ? counts![id] : (groupMembers[id]?.length));
-
-  // space for fixed Next
-  const bottomPad = (insets?.bottom ?? 0) + 72;
-
   return (
-    <YStack f={1} bg="$background" p="$4" position="relative">
-
-      {/* Groups */}
-      {(groups ?? []).length > 0 && (
-        <XStack flexWrap="wrap" gap="$2" mb="$2">
-          {(groups ?? []).map((g: any) => (
-            <GroupChip
-              key={g.id}
-              id={g.id}
-              name={g.name ?? `Group #${g.id}`}
-              count={groupCount(g.id)}
-              active={activeGroupId === g.id}
-              loading={!!groupLoading[g.id]}
-              onPress={() => activateGroup(g.id)}
-            />
-          ))}
-        </XStack>
-      )}
-
-      {/* Search */}
-      <Input
-        placeholder="Search…"
-        value={q}
-        onChangeText={setQ}
-        h={41}
-        px={16}
-        borderRadius={10}
-        bg="$backgroundPress"
-        borderWidth={0}
-        mb="$3"
-      />
-
-      {/* List */}
-      <ScrollView
-        f={1}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: bottomPad }}
+    <YStack f={1} bg="white">
+      {/* Header with Blue Gradient */}
+      <LinearGradient
+        colors={['#007AFF', '#0055FF']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{
+          paddingTop: insets.top + 10,
+          paddingBottom: 25,
+          paddingHorizontal: 20,
+          borderBottomLeftRadius: 32,
+          borderBottomRightRadius: 32,
+        }}
       >
-        <YStack borderWidth={1} borderColor="$gray5" borderRadius={8} overflow="hidden">
-          {(friendsLoading && basePeople.length === 0) && (
-            <XStack h={56} ai="center" jc="center"><Spinner /></XStack>
-          )}
+        <XStack ai="center" jc="space-between">
+          <Pressable onPress={() => router.back()}>
+            <YStack p="$2" br={12} bg="rgba(255,255,255,0.2)">
+              <ChevronLeft size={24} color="white" />
+            </YStack>
+          </Pressable>
+          <Text col="white" fos={20} fow="900">{t('sessions.participants.title', 'Ishtirokchilar')}</Text>
+          <View width={40} />
+        </XStack>
 
-          {!!friendsError && (
-            <XStack h={56} ai="center" jc="center">
-              <Text color="$red10">{String(friendsError)}</Text>
+        <YStack mt="$5" gap="$3">
+          <XStack ai="center" bg="rgba(255,255,255,0.15)" br={16} h={52} px="$4" gap="$3">
+            <Search size={20} color="rgba(255,255,255,0.6)" />
+            <Input
+              f={1}
+              placeholder={t('sessions.participants.search', 'Ism yoki @username...')}
+              placeholderTextColor="rgba(255,255,255,0.5)"
+              value={q}
+              onChangeText={setQ}
+              bg="transparent"
+              borderWidth={0}
+              col="white"
+              fos={16}
+              fow="600"
+            />
+            {globalSearchLoading && <Spinner size="small" color="white" />}
+          </XStack>
+        </YStack>
+      </LinearGradient>
+
+      <ScrollView f={1} p="$5" showsVerticalScrollIndicator={false}>
+        {/* Groups Horizontal List */}
+        <YStack gap="$3" mb="$6">
+          <Text fos={14} fow="800" col="$gray9" textTransform="uppercase">{t('sessions.participants.groups', 'Guruhlar')}</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <XStack gap="$2">
+              {(groups ?? []).map((g: any) => {
+                const active = activeGroupId === g.id;
+                const loading = !!groupLoading[g.id];
+                return (
+                  <Pressable key={g.id} onPress={() => activateGroup(g.id)}>
+                    <XStack 
+                      bg={active ? '#007AFF' : '$gray2'} 
+                      br={16} 
+                      px="$4" 
+                      h={40} 
+                      ai="center" 
+                      gap="$2"
+                      borderWidth={1}
+                      borderColor={active ? '#007AFF' : '$gray3'}
+                    >
+                      <UsersIcon size={16} color={active ? 'white' : '#007AFF'} />
+                      <Text col={active ? 'white' : '$gray12'} fow="700">{g.name}</Text>
+                      {loading && <Spinner size="small" color="white" />}
+                    </XStack>
+                  </Pressable>
+                );
+              })}
             </XStack>
-          )}
+          </ScrollView>
+        </YStack>
 
-          {dedupByUniqueId(filtered).map((p, idx) => {
+        <YStack gap="$3" mb="$10">
+          <XStack jc="space-between" ai="baseline">
+            <Text fos={14} fow="800" col="$gray9" textTransform="uppercase">{t('sessions.participants.people', 'Odamlar')}</Text>
+            <Text fos={12} fow="700" col="#007AFF">{selectedList.length} {t('sessions.participants.selected', 'tanlandi')}</Text>
+          </XStack>
+
+          {filtered.map((p) => {
             const on = !!selected[p.uniqueId];
-            const avatarUrl = p.avatarUrl ?? null;
             return (
-              <React.Fragment key={p.uniqueId}>
-                <XStack h={56} ai="center" jc="space-between" px="$4" bg="$color1">
-                  <XStack ai="center" gap="$3">
-                    <UserAvatar uri={avatarUrl ?? undefined} label={(p.username || "U").slice(0, 1).toUpperCase()} size={32} textSize={12} backgroundColor="$gray5" />
+              <YStack 
+                key={p.uniqueId} 
+                onPress={() => toggleUser(p.uniqueId)}
+                ai="center" 
+                jc="space-between" 
+                p="$3.5" 
+                br={24} 
+                bg="white"
+                borderWidth={2}
+                borderColor={on ? '#007AFF' : '$gray3'}
+                shadowColor={on ? '#007AFF' : '#000'}
+                shadowOffset={{ width: 0, height: 6 }}
+                shadowOpacity={on ? 0.15 : 0.03}
+                shadowRadius={12}
+                elevation={on ? 6 : 2}
+                mb="$3"
+                pressStyle={{ scale: 0.98, bg: on ? 'rgba(0,122,255,0.05)' : '$gray1' }}
+              >
+                <XStack ai="center" jc="space-between" f={1} w="100%">
+                  <XStack ai="center" gap="$3.5">
                     <YStack>
-                      <Text fontSize={16} fontWeight="600">{p.username}</Text>
-                      <Text fontSize={12} color="$gray10">
-                        @{p.uniqueId.toLowerCase().replace('user#', 'user')}
-                      </Text>
+                       <UserAvatar uri={p.avatarUrl ?? undefined} label={(p.username || "U").slice(0, 1).toUpperCase()} size={48} />
+                       {on && (
+                         <Circle pos="absolute" bottom={-2} right={-2} size={18} bg="#007AFF" bw={2} boc="white" ai="center" jc="center">
+                            <Check size={10} color="white" strokeWidth={4} />
+                         </Circle>
+                       )}
+                    </YStack>
+                    <YStack>
+                      <Text fontSize={17} fontWeight="900" color={on ? '#007AFF' : '$gray12'}>{p.username}</Text>
+                      <Text fontSize={13} color="$gray10" fontWeight="600">@{p.uniqueId.toLowerCase()}</Text>
                     </YStack>
                   </XStack>
-                  <SelectPill on={on} onPress={() => toggleUser(p.uniqueId)} />
+                  <Circle 
+                    size={28} 
+                    borderWidth={2.5} 
+                    borderColor={on ? '#007AFF' : '$gray4'} 
+                    bg={on ? '#007AFF' : 'transparent'}
+                    ai="center" 
+                    jc="center"
+                  >
+                    {on && <Check size={14} color="white" strokeWidth={4} />}
+                  </Circle>
                 </XStack>
-                {idx < filtered.length - 1 && <XStack h={1} bg="$gray5" />}
-              </React.Fragment>
+              </YStack>
             );
           })}
         </YStack>
       </ScrollView>
 
-      {/* Fixed Next button */}
-      <YStack
-        position="absolute"
-        left={0}
-        right={0}
-        bottom={(insets?.bottom ?? 0) + 8}
-        ai="center"
-        pointerEvents="box-none"
+      {/* Footer Sticky Button */}
+      <YStack 
+        bg="white" 
+        p="$5" 
+        pb={insets.bottom + 105} 
+        borderTopLeftRadius={32} 
+        borderTopRightRadius={32}
+        shadowColor="#000"
+        shadowOffset={{ width: 0, height: -10 }}
+        shadowOpacity={0.08}
+        shadowRadius={20}
+        elevation={20}
       >
         <Button
-          unstyled
           onPress={goNext}
           disabled={!canNext}
-          width={358}
-          height={41}
-          borderRadius={10}
-          backgroundColor="#2ECC71"
-          ai="center"
-          jc="center"
-          opacity={canNext ? 1 : 0.5}
+          bg={canNext ? "#007AFF" : "$gray8"}
+          h={56}
+          br={16}
+          shadowColor="#007AFF"
+          shadowOffset={{ width: 0, height: 4 }}
+          shadowOpacity={0.2}
+          shadowRadius={8}
+          pressStyle={{ scale: 0.98 }}
         >
-          <Text fontSize={16} fontWeight="500" color="#FFFFFF" style={{ lineHeight: 25 }}>
-            Next
-          </Text>
+          <XStack ai="center" gap="$2">
+            <UserCheck size={20} color="white" />
+            <Text col="white" fos={18} fow="800">{t('common.next', 'Davom etish')}</Text>
+          </XStack>
         </Button>
       </YStack>
     </YStack>
