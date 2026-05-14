@@ -172,9 +172,15 @@ export default function FriendsSearchScreen() {
           borderBottomRightRadius: 32,
         }}
       >
-          <YStack ai="center" jc="space-between" mb="$6">
-          <Pressable onPress={() => router.back()}>
-            <YStack p="$2" br={12} bg="rgba(255,255,255,0.1)">
+          <XStack ai="center" jc="space-between" mb="$6">
+          <Pressable 
+            onPress={() => router.back()}
+            style={({ pressed }) => ({
+              opacity: pressed ? 0.4 : 1,
+              transform: [{ scale: pressed ? 0.85 : 1 }]
+            })}
+          >
+            <YStack p="$2" br={12} bg="rgba(255,255,255,0.15)">
               <ChevronLeft size={24} color="white" />
             </YStack>
           </Pressable>

@@ -27,7 +27,7 @@ const getFullUrl = (uri: string | null | undefined) => {
   }
   // Fallback to a default API URL if it's a relative path
   // Note: In production this should come from config
-  const API_URL = 'http://192.168.100.17:3001'; // Common dev IP in this project
+  const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://10.20.4.65:3001'; // Default to current IP
   return `${API_URL}${uri.startsWith('/') ? '' : '/'}${uri}`;
 };
 

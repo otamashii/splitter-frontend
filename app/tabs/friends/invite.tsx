@@ -1,7 +1,7 @@
 // app/tabs/friends/invite.tsx
 import React, { useEffect, useState } from 'react';
 import { YStack, XStack, Button, Paragraph, Spinner } from 'tamagui';
-import { QrCode } from '@tamagui/lucide-icons';
+import { QrCode, ChevronLeft } from '@tamagui/lucide-icons';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
@@ -17,7 +17,7 @@ export default function FriendInviteScreen() {
   const router = useRouter();
   const { t } = useTranslation();
 
-  const goBack = () => router.replace('/tabs/friends/requests' as never);
+  const goBack = () => router.back();
 
   async function refresh() {
     setLoading(true);
@@ -38,15 +38,15 @@ export default function FriendInviteScreen() {
       <YStack f={1} p="$4" gap="$4" bg="$background">
         {/* Header */}
         <XStack ai="center" jc="space-between">
-          {/* <Button
+          <Button
             size="$2"
             h={28}
             chromeless
             onPress={goBack}
             icon={<ChevronLeft size={18} color="$gray12" />}
           >
-            Back
-          </Button> */}
+            {t('common.back', 'Back')}
+          </Button>
           <XStack ai="center" gap="$2">
             <QrCode size={18} color="$gray12" />
             <Paragraph fow="700" fos="$6">{t('friends.invite.title', 'My Friend QR')}</Paragraph>

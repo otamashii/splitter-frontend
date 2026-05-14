@@ -114,7 +114,7 @@ export default function FriendsRequestsScreen() {
   const [tab, setTab] = useState<'incoming' | 'outgoing'>('incoming');
 
   const goBack = useCallback(() => {
-    router.replace('/tabs/friends');
+    router.back();
   }, [router]);
 
   useEffect(() => {
@@ -165,10 +165,16 @@ export default function FriendsRequestsScreen() {
         }}
       >
         <XStack ai="center" jc="space-between" mb="$6">
-          <Pressable onPress={goBack} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, transform: [{ scale: pressed ? 0.9 : 1 }] })}>
-            <View p="$2.5" br={16} bg="rgba(255,255,255,0.1)">
+          <Pressable 
+            onPress={goBack}
+            style={({ pressed }) => ({
+              opacity: pressed ? 0.4 : 1,
+              transform: [{ scale: pressed ? 0.85 : 1 }]
+            })}
+          >
+            <YStack p="$2" br={12} bg="rgba(255,255,255,0.15)">
               <ChevronLeft size={24} color="white" />
-            </View>
+            </YStack>
           </Pressable>
           <Text col="white" fos={20} fow="900">So'rovlar</Text>
           <View width={44} />

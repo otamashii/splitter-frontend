@@ -19,7 +19,7 @@ export default function GroupInviteScreen() {
   const [data, setData] = useState<InviteDTO | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const goBack = () => router.replace('/tabs/groups' as never);
+  const goBack = () => router.back();
 
   async function refresh() {
     if (!groupId) return;

@@ -1,10 +1,10 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { YStack, XStack, Text, ScrollView, Button, Circle, View, Separator } from 'tamagui';
-import { ChevronLeft, ReceiptText, Users, Calendar, Wallet, ShoppingBag, ArrowUpRight } from '@tamagui/lucide-icons';
+import { YStack, XStack, Text, ScrollView, Button, Circle, View, Separator, Spinner } from 'tamagui';
+import { ChevronLeft, ReceiptText, Users, Calendar, Wallet, ShoppingBag, ArrowUpRight, Download } from '@tamagui/lucide-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Pressable } from 'react-native';
+import { Pressable, Alert, Share } from 'react-native';
 
 import UserAvatar from '@/shared/ui/UserAvatar';
 import { useSessionsHistoryStore } from '@/features/sessions/model/history.store';
@@ -94,6 +94,7 @@ export default function HistoryDetailsScreen() {
   const insets = useSafeAreaInsets();
   const theme = useAppStore(s => s.theme);
   const isDark = theme === 'dark';
+  const [downloading, setDownloading] = useState(false);
   
   const sessions = useSessionsHistoryStore(state => state.sessions);
   const loading = useSessionsHistoryStore(state => state.loading);
@@ -118,6 +119,63 @@ export default function HistoryDetailsScreen() {
   const currency = bill?.currency || bill?.totals?.currency || DEFAULT_CURRENCY;
 
   const fmt = (val: number) => val.toLocaleString() + ' ' + currency;
+
+  // Build PDF receipt and share
+  const handleDownload = async () => {
+    if (!bill) return;
+    setDownloading(true);
+    try {
+      const dateStr = new Date(bill.finalizedAt || bill.createdAt)
+        .toLocaleDateString('uz-UZ', { day: '2-digit', month: 'long', year: 'numeric' });
+
+      const sep = '─'.repeat(42);
+      const line = (label: string, value: string, width = 42) => {
+        const dots = '.'.repeat(Math.max(1, width - label.length - value.length));
+        return `${label}${dots}${value}`;
+      };
+
+      const receiptLines: string[] = [
+        '╔══════════════════════════════════════════╗',
+        '║      SPLITTER — HISOB CHEKI              ║',
+        '╚══════════════════════════════════════════╝',
+        '',
+        line('Hisob nomi:', bill.sessionName || 'Hisob'),
+        line('Sana:', dateStr),
+        line('Ishtirokchilar:', `${bill.participantUniqueIds?.length || 0} kishi`),
+        '',
+        sep,
+        'MAHSULOTLAR:',
+        sep,
+        ...(bill.totals?.byItem ?? []).map(item =>
+          line(`  ${item.name}`, fmt(item.total))
+        ),
+        sep,
+        line('JAMI:', fmt(bill.grandTotal)),
+        sep,
+        '',
+        "ISHTIROKCHILAR BO'YICHA:",
+        sep,
+        ...participants.map(p => [
+          line(`  ${p.participant.username}:`, fmt(p.amount)),
+          ...p.items.map(it => `      • ${it.title}: ${fmt(it.price)}`),
+        ]).flat(),
+        sep,
+        '',
+        `Yaratildi: Splitter App — ${new Date().toLocaleString('uz-UZ')}`,
+      ];
+
+      await Share.share({
+        message: receiptLines.join('\n'),
+        title: `${bill.sessionName || 'Hisob'} — chek`,
+      });
+    } catch (e: any) {
+      if (e?.message !== 'User did not share') {
+        Alert.alert('Xatolik', e?.message || 'Yuklashda xatolik yuz berdi');
+      }
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   if (!bill && loading) {
     return (
@@ -311,15 +369,32 @@ export default function HistoryDetailsScreen() {
           </YStack>
 
           {/* Export Action */}
-          <Button 
-            bg={isDark ? '#2C2C2E' : '#E2E8F0'} 
-            h={60} 
-            br={20} 
-            iconAfter={<ArrowUpRight size={20} color={isDark ? 'white' : '#1E293B'} />}
-            onPress={() => {}}
+          <Pressable
+            onPress={handleDownload}
+            disabled={downloading}
+            style={({ pressed }) => ({
+              opacity: pressed || downloading ? 0.7 : 1,
+              transform: [{ scale: pressed ? 0.98 : 1 }],
+            })}
           >
-            <Text fontSize={15} fontWeight="800" col={isDark ? 'white' : '#1E293B'}>Hisobotni yuklab olish</Text>
-          </Button>
+            <XStack
+              bg={isDark ? '#1C1C2E' : '#EEF4FF'}
+              h={60}
+              br={20}
+              ai="center"
+              jc="center"
+              gap="$3"
+              borderWidth={1}
+              borderColor={isDark ? 'rgba(0,122,255,0.3)' : 'rgba(0,122,255,0.2)'}
+            >
+              {downloading
+                ? <Spinner color="#007AFF" />
+                : <Download size={20} color="#007AFF" />}
+              <Text fontSize={15} fontWeight="800" col="#007AFF">
+                {downloading ? 'Yuklanmoqda...' : 'Hisobotni yuklab olish'}
+              </Text>
+            </XStack>
+          </Pressable>
         </YStack>
       </ScrollView>
     </View>

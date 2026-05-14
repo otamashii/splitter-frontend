@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { View, Text, XStack, YStack, Circle, Sheet, Spinner, Separator, ScrollView } from 'tamagui';
 import { StyleSheet, Pressable, TextInput, KeyboardAvoidingView, Platform, FlatList, ActivityIndicator, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ChevronLeft, Send, MoreVertical, Plus, User, AtSign, Calendar, MessageCircle, ArrowUpRight, MapPin, Image as ImageIcon, FileText, Search as SearchIcon, Trash, Eraser, BellOff, Mic, Play, Pause, Square, Volume2 } from '@tamagui/lucide-icons';
+import { ChevronLeft, Send, MoreVertical, Plus, User, AtSign, Calendar, MessageCircle, ArrowUpRight, MapPin, Image as ImageIcon, FileText, Search as SearchIcon, Trash, Eraser, BellOff, Mic, Play, Pause, Square, Volume2, Users as UsersIcon, MessageSquare } from '@tamagui/lucide-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from '@/shared/lib/stores/app-store';
@@ -473,7 +473,13 @@ export default function ChatRoomScreen() {
       >
         <XStack ai="center" jc="space-between" px="$2">
           <XStack ai="center" f={1}>
-            <Pressable onPress={() => router.back()} style={({ pressed }) => [S.backBtn, pressed && { opacity: 0.6 }]}>
+            <Pressable 
+              onPress={() => router.back()} 
+              style={({ pressed }) => [
+                S.backBtn, 
+                { opacity: pressed ? 0.6 : 1, transform: [{ scale: pressed ? 0.92 : 1 }] }
+              ]}
+            >
               <ChevronLeft size={28} color={isDark ? '#0A84FF' : '#007AFF'} />
             </Pressable>
             
@@ -487,8 +493,14 @@ export default function ChatRoomScreen() {
                 <Text fontSize={17} fontWeight="800" color={isDark ? '#FFFFFF' : '#1A1A1A'} numberOfLines={1}>
                   {displayTitle}
                 </Text>
-                {otherMember?.uniqueId && (
-                  <Text fontSize={12} color="$gray10" fontWeight="600">@{otherMember.uniqueId}</Text>
+                {chat?.type === 'GROUP' ? (
+                  <Text fontSize={12} color="$gray10" fontWeight="600">
+                    {chat.members?.length || 0} {t('chat.members', 'a\'zolar')}
+                  </Text>
+                ) : (
+                  otherMember?.uniqueId && (
+                    <Text fontSize={12} color="$gray10" fontWeight="600">@{otherMember.uniqueId}</Text>
+                  )
                 )}
               </YStack>
             </Pressable>
@@ -638,40 +650,58 @@ export default function ChatRoomScreen() {
           <Sheet.Handle bg="$gray5" />
           <YStack ai="center" gap="$5" mt="$4">
             <View p="$1" br={50} bg="$blue3">
-               <UserAvatar uri={otherMember?.avatarUrl} label={displayTitle.slice(0, 1).toUpperCase()} size={120} />
+               {chat?.type === 'GROUP' ? (
+                 <Circle size={120} bg="$blue3" ai="center" jc="center">
+                   <UsersIcon size={60} color="#007AFF" />
+                 </Circle>
+               ) : (
+                 <UserAvatar uri={otherMember?.avatarUrl} label={displayTitle.slice(0, 1).toUpperCase()} size={120} />
+               )}
             </View>
             
             <YStack ai="center" gap="$2">
               <Text fontSize={28} fontWeight="900" col={isDark ? 'white' : '#0F172A'}>{displayTitle}</Text>
-              <View bg="$blue2" px="$3" py="$1" br={12}>
-                 <Text fontSize={16} fontWeight="700" col="#007AFF">@{otherMember?.uniqueId || 'username'}</Text>
-              </View>
+              {chat?.type === 'GROUP' ? (
+                <View bg="$blue2" px="$3" py="$1" br={12}>
+                   <Text fontSize={16} fontWeight="700" col="#007AFF">{t('chat.groupChat', 'Guruh suhbati')}</Text>
+                </View>
+              ) : (
+                <View bg="$blue2" px="$3" py="$1" br={12}>
+                   <Text fontSize={16} fontWeight="700" col="#007AFF">@{otherMember?.uniqueId || 'username'}</Text>
+                </View>
+              )}
             </YStack>
 
             <Separator w="100%" borderColor="$gray3" />
 
             <YStack w="100%" gap="$4">
               <XStack ai="center" gap="$4">
-                <Circle size={44} bg="$gray2"><User size={20} color="$gray10" /></Circle>
+                <Circle size={44} bg="$gray2"><UsersIcon size={20} color="$gray10" /></Circle>
                 <YStack>
-                   <Text fontSize={12} col="$gray9" fontWeight="600">{t('profile.info.usernameLabel').toUpperCase()}</Text>
-                   <Text fontSize={16} fontWeight="700" col={isDark ? 'white' : '#1A1A1A'}>{otherMember?.username || t('friends.common.unknownUser')}</Text>
+                   <Text fontSize={12} col="$gray9" fontWeight="600">{t('chat.type', 'TUR')}</Text>
+                   <Text fontSize={16} fontWeight="700" col={isDark ? 'white' : '#1A1A1A'}>
+                     {chat?.type === 'GROUP' ? t('chat.group', 'Guruh') : t('chat.private', 'Shaxsiy')}
+                   </Text>
                 </YStack>
               </XStack>
 
-              <XStack ai="center" gap="$4">
-                <Circle size={44} bg="$gray2"><AtSign size={20} color="$gray10" /></Circle>
-                <YStack>
-                   <Text fontSize={12} col="$gray9" fontWeight="600">NICKNAME</Text>
-                   <Text fontSize={16} fontWeight="700" col={isDark ? 'white' : '#1A1A1A'}>@{otherMember?.uniqueId || t('friends.common.unknownUser')}</Text>
-                </YStack>
-              </XStack>
+              {chat?.type !== 'GROUP' && (
+                <XStack ai="center" gap="$4">
+                  <Circle size={44} bg="$gray2"><AtSign size={20} color="$gray10" /></Circle>
+                  <YStack>
+                     <Text fontSize={12} col="$gray9" fontWeight="600">NICKNAME</Text>
+                     <Text fontSize={16} fontWeight="700" col={isDark ? 'white' : '#1A1A1A'}>@{otherMember?.uniqueId || t('friends.common.unknownUser')}</Text>
+                  </YStack>
+                </XStack>
+              )}
 
               <XStack ai="center" gap="$4">
-                <Circle size={44} bg="$gray2"><MessageCircle size={20} color="$gray10" /></Circle>
+                <Circle size={44} bg="$gray2"><MessageSquare size={20} color="$gray10" /></Circle>
                 <YStack>
                    <Text fontSize={12} col="$gray9" fontWeight="600">BIO</Text>
-                   <Text fontSize={16} fontWeight="700" col={isDark ? 'white' : '#1A1A1A'}>Splitter ilovasi orqali bog'lanish</Text>
+                   <Text fontSize={16} fontWeight="700" col={isDark ? 'white' : '#1A1A1A'}>
+                     {chat?.type === 'GROUP' ? t('chat.groupBio', 'Splitter guruhi orqali bog\'lanish') : t('chat.privateBio', 'Splitter ilovasi orqali bog\'lanish')}
+                   </Text>
                 </YStack>
               </XStack>
             </YStack>

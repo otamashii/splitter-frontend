@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Animated, KeyboardAvoidingView, Platform, ScrollView, Pressable, Dimensions } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useRootNavigation } from 'expo-router';
+import { useNavigation, CommonActions } from '@react-navigation/native';
 import * as Clipboard from 'expo-clipboard';
 import * as ImagePicker from 'expo-image-picker';
 import { YStack, XStack, Text, Button, Separator, Spinner, Circle, View } from 'tamagui';
@@ -43,6 +44,7 @@ function ProfileMenuItem({ icon: Icon, label, color = '#007AFF', onPress, rightC
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const rootNavigation = useRootNavigation();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const user = useAppStore(s => s.user);
@@ -52,13 +54,31 @@ export default function ProfileScreen() {
   const isDark = theme === 'dark';
 
   const handleLogout = () => {
-    Alert.alert(t('profile.logout_confirm', 'Chiqish'), t('profile.logout_message', 'Haqiqatan ham chiqmoqchimisiz?'), [
-      { text: t('common.cancel', 'Bekor qilish'), style: 'cancel' },
-      { text: t('profile.logout', 'Chiqish'), style: 'destructive', onPress: () => {
-        logout();
-        router.replace('/auth/login');
-      }},
-    ]);
+    Alert.alert(
+      t('profile.logout_confirm', 'Chiqish'),
+      t('profile.logout_message', 'Haqiqatan ham chiqmoqchimisiz?'),
+      [
+        { text: t('common.cancel', 'Bekor qilish'), style: 'cancel' },
+        {
+          text: t('profile.logout', 'Chiqish'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await logout();
+            } catch (e) {
+              console.error('Logout error:', e);
+            } finally {
+              rootNavigation?.dispatch(
+                CommonActions.reset({
+                  index: 0,
+                  routes: [{ name: 'login' }],
+                })
+              );
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (

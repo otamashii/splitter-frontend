@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Pressable } from 'react-native';
 import {
   YStack,
   XStack,
@@ -11,8 +12,10 @@ import {
 } from 'tamagui';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
-import { Plus, Check, X as IconX, Crown } from '@tamagui/lucide-icons';
+import { Plus, Check, X as IconX, Crown, ChevronLeft } from '@tamagui/lucide-icons';
 import { useTranslation } from 'react-i18next';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useGroupsStore } from '@/features/groups/model/groups.store';
 import { useFriendsStore } from '@/features/friends/model/friends.store';
@@ -67,6 +70,7 @@ function pickSubtitle(friend: any) {
 
 export default function GroupCreateScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const notice = useAutoNotice();
   const { t } = useTranslation();
 
@@ -173,17 +177,36 @@ export default function GroupCreateScreen() {
   }
 
   return (
-    <YStack f={1} p="$4" gap="$3" bg="$background">
-      <XStack>
-        <Button onPress={() => router.replace('/tabs/groups' as never)} size="$2" w={124} h={22} br={6}>
-          {t('groups.create.back', 'Back to Groups')}
-        </Button>
-      </XStack>
+    <YStack f={1} bg="$background">
+      <LinearGradient
+        colors={['#007AFF', '#00C6FF']}
+        style={{
+          paddingTop: insets.top + 10,
+          paddingBottom: 25,
+          paddingHorizontal: 20,
+          borderBottomLeftRadius: 32,
+          borderBottomRightRadius: 32,
+        }}
+      >
+        <XStack ai="center" jc="space-between">
+          <Pressable 
+            onPress={() => router.back()}
+            style={({ pressed }) => ({
+              opacity: pressed ? 0.4 : 1,
+              transform: [{ scale: pressed ? 0.85 : 1 }]
+            })}
+          >
+            <YStack p="$2" br={12} bg="rgba(255,255,255,0.15)">
+              <ChevronLeft size={24} color="white" />
+            </YStack>
+          </Pressable>
+          <Text col="white" fos={18} fow="900">{t('groups.create.title', 'Guruh yaratish')}</Text>
+          <YStack w={40} />
+        </XStack>
+      </LinearGradient>
 
-      <Paragraph fow="700" fos="$7">
-        {t('groups.create.title', 'Create group')}
-      </Paragraph>
-      {notice.node}
+      <YStack f={1} p="$4" gap="$4">
+        {notice.node}
 
       <XStack gap="$2" ai="center">
         <Input
@@ -300,6 +323,7 @@ export default function GroupCreateScreen() {
           )}
         </>
       )}
+      </YStack>
     </YStack>
   );
 }

@@ -109,7 +109,7 @@ export default function FinishScreen() {
         }}
       >
         <XStack ai="center" jc="space-between" mb="$6">
-          <Pressable onPress={() => router.push('/tabs')}>
+          <Pressable onPress={() => router.back()}>
             <YStack p="$2" br={12} bg="rgba(255,255,255,0.2)">
               <ChevronLeft size={24} color="white" />
             </YStack>
@@ -264,7 +264,7 @@ export default function FinishScreen() {
         <XStack gap="$3">
           <Button
             f={1}
-            onPress={() => router.push('/tabs')}
+            onPress={() => router.back()}
             bg="$gray2"
             h={56}
             br={16}

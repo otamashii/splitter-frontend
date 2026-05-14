@@ -1,7 +1,14 @@
+import Constants from 'expo-constants';
 import axios, { AxiosError } from 'axios';
 import { getToken } from '@/shared/lib/utils/token-storage';
 import { emitUnauthorized } from '@/shared/api/auth-events';
-const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:3001';
+
+const host = Constants.expoConfig?.hostUri?.split(':')[0];
+const API_URL = process.env.EXPO_PUBLIC_API_URL || (host ? `http://${host}:3001` : 'http://10.0.2.2:3001');
+
+if (__DEV__) {
+  console.log('[API] Using Base URL:', API_URL);
+}
 
 export const apiClient = axios.create({
   baseURL: API_URL,

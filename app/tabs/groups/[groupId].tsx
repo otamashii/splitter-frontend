@@ -4,7 +4,8 @@ import {
   YStack, XStack, Paragraph, Separator, Button, Input, Spinner, Text
 } from 'tamagui';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Crown, Pencil, Trash2, Check, X as IconX, ChevronLeft, QrCode } from '@tamagui/lucide-icons';
+import { Crown, Pencil, Trash2, Check, X as IconX, ChevronLeft, QrCode, MessageCircle } from '@tamagui/lucide-icons';
+import { apiClient as api } from '@/features/auth/api';
 
 import { useGroupsStore } from '@/features/groups/model/groups.store';
 import { useFriendsStore } from '@/features/friends/model/friends.store';
@@ -39,6 +40,7 @@ export default function GroupDetailsScreen() {
   const [filter, setFilter] = useState('');
   const [opUid, setOpUid] = useState<string | null>(null);
   const [busyHdr, setBusyHdr] = useState<string | number | undefined>();
+  const [chatLoading, setChatLoading] = useState(false);
 
   useEffect(() => { if (gid) openGroup(gid); }, [gid, openGroup]);
   useEffect(() => { if (!friends?.length) fetchFriends(); }, [friends?.length, fetchFriends]);
@@ -122,6 +124,23 @@ export default function GroupDetailsScreen() {
     router.push({ pathname: '/tabs/groups/invite', params: { groupId } });
   };
 
+  const openGroupChat = async () => {
+    if (!gid) return;
+    setChatLoading(true);
+    try {
+      const res = await api.get(`/chats/group/${gid}`);
+      const { chatId, groupName } = res.data;
+      router.push({
+        pathname: '/tabs/chat/[id]',
+        params: { id: String(chatId), title: groupName || title },
+      });
+    } catch (e: any) {
+      Alert.alert('Xatolik', e?.response?.data?.error || 'Chat ochishda xatolik');
+    } finally {
+      setChatLoading(false);
+    }
+  };
+
   if (loading && !current) return <YStack f={1} ai="center" jc="center"><Spinner /></YStack>;
   if (error) return <YStack f={1} p="$4"><Paragraph col="$red10">{error}</Paragraph></YStack>;
   if (!current) return <YStack f={1} p="$4"><Paragraph>No group</Paragraph></YStack>;
@@ -131,7 +150,7 @@ export default function GroupDetailsScreen() {
       {/* Back (text-only) with chevron) */}
       <XStack>
         <Button
-          onPress={() => router.replace('/tabs/groups' as never)}
+          onPress={() => router.back()}
           size="$2"
           h={22}
           px={0}
@@ -219,23 +238,32 @@ export default function GroupDetailsScreen() {
         )}
       </XStack>
 
-      {/* INVITE ACTIONS — только QR (сканер перенесён на список групп) */}
-      {canManage && (
-        <>
-          <XStack jc="flex-end" ai="center" py="$2">
-            <Button
-              onPress={openGroupQR}
-              theme="gray"
-              size="$3"
-              borderRadius="$3"
-              icon={<QrCode size={18} />}
-            >
-              Show group QR
-            </Button>
-          </XStack>
-          <Separator />
-        </>
-      )}
+      {/* CHAT + INVITE ACTIONS */}
+      <XStack jc="space-between" ai="center" py="$2" gap="$2">
+        <Button
+          onPress={openGroupChat}
+          theme="blue"
+          size="$3"
+          f={1}
+          borderRadius="$3"
+          icon={chatLoading ? <Spinner size="small" /> : <MessageCircle size={18} />}
+          disabled={chatLoading}
+        >
+          Guruh chati
+        </Button>
+        {canManage && (
+          <Button
+            onPress={openGroupQR}
+            theme="gray"
+            size="$3"
+            borderRadius="$3"
+            icon={<QrCode size={18} />}
+          >
+            QR
+          </Button>
+        )}
+      </XStack>
+      <Separator />
 
       {/* MEMBERS */}
       <Paragraph fow="700" fos="$6">Members</Paragraph>

@@ -159,9 +159,26 @@ export default function HomePage() {
   const setTheme = useAppStore(s => s.setTheme);
   const isDark = theme === 'dark';
 
-  useEffect(() => { fetchHistory(5); }, []);
+  useEffect(() => { fetchHistory(50); }, []);
 
   const toggleTheme = () => setTheme(isDark ? 'light' : 'dark');
+
+  // Umumiy xarajatlar — barcha sessiyalar yig'indisi
+  const totalSpent = useMemo(() =>
+    sessions.reduce((sum, s) => sum + (s.grandTotal || 0), 0),
+    [sessions]
+  );
+
+  // Joriy oy nomi va shu oydagi sessiyalar soni
+  const { currentMonthName, currentMonthCount } = useMemo(() => {
+    const now = new Date();
+    const monthName = now.toLocaleDateString('uz-UZ', { month: 'long' });
+    const count = sessions.filter(s => {
+      const d = new Date(s.finalizedAt || s.createdAt);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    }).length;
+    return { currentMonthName: monthName, currentMonthCount: count };
+  }, [sessions]);
 
   return (
     <View f={1} bg={isDark ? '#000000' : '#F8F9FA'}>
@@ -208,7 +225,7 @@ export default function HomePage() {
             <YStack gap="$1" ai="center">
                <Text col="white" opacity={0.7} fontSize={13} fontWeight="700">{t('home.total_spent', 'Umumiy xarajatlar')}</Text>
                <XStack ai="baseline" gap="$2">
-                  <Text col="white" fontSize={42} fontWeight="900">1,240,000</Text>
+                  <Text col="white" fontSize={42} fontWeight="900">{totalSpent.toLocaleString()}</Text>
                   <Text col="white" fontSize={18} fontWeight="900" opacity={0.9}>{currency}</Text>
                </XStack>
             </YStack>
@@ -216,6 +233,16 @@ export default function HomePage() {
 
           {/* Floating Balance Card */}
           <YStack px="$6" mt="$-10">
+            <Pressable
+              onPress={() => {
+                const now = new Date();
+                router.push({
+                  pathname: '/tabs/sessions/history',
+                  params: { month: String(now.getMonth() + 1), year: String(now.getFullYear()) },
+                });
+              }}
+              style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] })}
+            >
             <YStack 
               bg={isDark ? '#1C1C1E' : 'white'} 
               br={32} 
@@ -232,13 +259,18 @@ export default function HomePage() {
                     <TrendingUp size={20} color="#007AFF" />
                   </Circle>
                   <YStack>
-                    <Text col={isDark ? 'white' : '#1E293B'} fontSize={15} fontWeight="800">Yanvar oyi</Text>
-                    <Text col="$gray9" fontSize={11} fontWeight="600">+12% o'sish</Text>
+                    <Text col={isDark ? 'white' : '#1E293B'} fontSize={15} fontWeight="800" textTransform="capitalize">{currentMonthName}</Text>
+                    <Text col="$gray9" fontSize={11} fontWeight="600">
+                      {currentMonthCount > 0
+                        ? t('home.month_sessions', { count: currentMonthCount, defaultValue: `${currentMonthCount} ta hisob` })
+                        : t('home.no_sessions_this_month', 'Bu oy hisob yo\'q')}
+                    </Text>
                   </YStack>
                 </XStack>
                 <ChevronRight size={20} color="$gray8" />
               </XStack>
             </YStack>
+            </Pressable>
           </YStack>
         </YStack>
 

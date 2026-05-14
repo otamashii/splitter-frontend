@@ -118,12 +118,8 @@ export default function ScanInviteScreen() {
   }, [status]);
 
   const goBack = useCallback(() => {
-    if (from === 'friends-requests') {
-      router.replace('/tabs/friends/requests');
-    } else {
-      router.replace('/tabs/friends');
-    }
-  }, [from, router]);
+    router.back();
+  }, [router]);
 
   useEffect(() => {
     const onBack = () => {
@@ -434,143 +430,6 @@ export default function ScanInviteScreen() {
   );
 }
 
-const S = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#000' },
-  headerAbs: { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 },
-  modalContainerAbs: { position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 100 },
-  tipAbs: { position: 'absolute', left: 0, right: 0, zIndex: 5, alignItems: 'center' },
-  bottomControlsAbs: { position: 'absolute', left: 0, right: 0, zIndex: 50 },
-  
-  tipBadge: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-  },
-
-  frameContainer: {
-    position: 'absolute',
-    width: FRAME_SIZE,
-    height: FRAME_SIZE,
-    zIndex: 5,
-  },
-  corner: {
-    position: 'absolute',
-    width: 50,
-    height: 50,
-    borderColor: '#0A84FF',
-  },
-  topLeft: { top: 0, left: 0, borderTopWidth: 6, borderLeftWidth: 6, borderTopLeftRadius: FRAME_RADIUS },
-  topRight: { top: 0, right: 0, borderTopWidth: 6, borderRightWidth: 6, borderTopRightRadius: FRAME_RADIUS },
-  bottomLeft: { bottom: 0, left: 0, borderBottomWidth: 6, borderLeftWidth: 6, borderBottomLeftRadius: FRAME_RADIUS },
-  bottomRight: { bottom: 0, right: 0, borderBottomWidth: 6, borderRightWidth: 6, borderBottomRightRadius: FRAME_RADIUS },
-
-  scanLine: {
-    position: 'absolute',
-    top: 0,
-    left: 25,
-    right: 25,
-    height: 4,
-    backgroundColor: '#0A84FF',
-    borderRadius: 2,
-    shadowColor: '#0A84FF',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 20,
-    elevation: 10,
-  },
-  qrDetectedOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(10, 132, 255, 0.15)',
-    borderRadius: FRAME_RADIUS,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  glassButton: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-  },
-  roundButton: {
-    width: 68,
-    height: 68,
-    borderRadius: 34,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-  },
-  qrPremiumCard: {
-    padding: 30,
-    borderRadius: 40,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.15)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 0.5,
-    shadowRadius: 30,
-  },
-  glassCard: {
-    paddingHorizontal: 24,
-    paddingVertical: 35,
-    borderRadius: 45,
-    overflow: 'hidden',
-    width: '100%',
-    backgroundColor: 'rgba(15,23,42,0.95)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
-  },
-  errorCard: {
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    borderRadius: 20,
-    width: '100%',
-    backgroundColor: 'rgba(255,59,48,0.9)',
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
-  },
-  textShadow: {
-    textShadowColor: 'rgba(0,0,0,0.7)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 5,
-  },
-  scanButton: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 20,
-    paddingHorizontal: 35,
-    borderRadius: 25,
-    width: '100%',
-    shadowColor: '#007AFF',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.5,
-    shadowRadius: 15,
-    elevation: 10,
-  },
-  successIconWrap: {
-    backgroundColor: 'rgba(52, 199, 89, 0.15)',
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(52, 199, 89, 0.3)',
-  }
-});
 const S = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#000' },
   headerAbs: { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 },
