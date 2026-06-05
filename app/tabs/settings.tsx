@@ -14,9 +14,10 @@ import { changePassword, updateUsername } from '@/features/auth/api';
 import { LANGUAGE_OPTIONS, type LanguageCode } from '@/shared/config/languages';
 
 export default function SettingsScreen() {
-  const { user, setUser, language, setLanguage } = useAppStore();
+  const { user, setUser, language, setLanguage, theme } = useAppStore();
   const { t, i18n } = useTranslation();
   const isLoggedIn = !!user;
+  const isDark = theme === 'dark';
 
   const [usernameValue, setUsernameValue] = useState(user?.username ?? '');
   const [usernameError, setUsernameError] = useState<string | null>(null);
@@ -136,7 +137,7 @@ export default function SettingsScreen() {
   }, [currentPassword, newPassword, confirmPassword, passwordError]);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? '#000000' : 'white' }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -151,26 +152,26 @@ export default function SettingsScreen() {
             <YStack space="$5">
               {/* Header */}
               <YStack space="$3" mt="$4">
-                <Text fontSize={20} fontWeight="700">
+                <Text fontSize={20} fontWeight="700" color={isDark ? 'white' : '#1E293B'}>
                   {t('profile.info.title', 'Account settings')}
                 </Text>
-                <Text color="$gray10">
+                <Text color={isDark ? '#94A3B8' : '$gray10'}>
                   {t('profile.password.requirements', 'Update your username and password using the forms below.')}
                 </Text>
               </YStack>
 
               {/* LANGUAGE */}
               <YStack space="$3">
-                <Text fontSize={16} fontWeight="600">
+                <Text fontSize={16} fontWeight="600" color={isDark ? 'white' : '#1E293B'}>
                   {t('settings.language.title', 'Language')}
                 </Text>
-                <Text fontSize={14} color="$gray10">
+                <Text fontSize={14} color={isDark ? '#94A3B8' : '$gray10'}>
                   {t('settings.language.description', 'Choose the language used across the app.')}
                 </Text>
 
                 <XStack
                   space="$2"
-                  backgroundColor="$gray3"
+                  backgroundColor={isDark ? '#2C2C2E' : '$gray3'}
                   borderRadius="$8"
                   padding="$1"
                   flexWrap="wrap"
@@ -194,11 +195,11 @@ export default function SettingsScreen() {
                 </XStack>
               </YStack>
 
-              <Separator />
+              <Separator borderColor={isDark ? '#2C2C2E' : '$gray3'} />
 
               {/* USERNAME */}
               <YStack space="$3">
-                <Text fontSize={16} fontWeight="600">{t('profile.info.usernameLabel', 'Username')}</Text>
+                <Text fontSize={16} fontWeight="600" color={isDark ? 'white' : '#1E293B'}>{t('profile.info.usernameLabel', 'Username')}</Text>
                 <Input
                   value={usernameValue}
                   onChangeText={setUsernameValue}
@@ -224,11 +225,11 @@ export default function SettingsScreen() {
                 </XStack>
               </YStack>
 
-              <Separator />
+              <Separator borderColor={isDark ? '#2C2C2E' : '$gray3'} />
 
               {/* PASSWORD */}
               <YStack space="$3">
-                <Text fontSize={16} fontWeight="600">{t('profile.password.title', 'Password')}</Text>
+                <Text fontSize={16} fontWeight="600" color={isDark ? 'white' : '#1E293B'}>{t('profile.password.title', 'Password')}</Text>
                 <PasswordInput
                   value={currentPassword}
                   onChangeText={setCurrentPassword}
@@ -241,7 +242,7 @@ export default function SettingsScreen() {
                   placeholder={t('profile.password.newPlaceholder', 'New password')}
                   textInputProps={{ returnKeyType: 'next' }}
                 />
-                <Text fontSize={12} color="$gray10">
+                <Text fontSize={12} color={isDark ? '#94A3B8' : '$gray10'}>
                   {t('profile.password.requirements', 'Password must be at least 8 characters and include uppercase, lowercase, number, and special symbol.')}
                 </Text>
                 <PasswordInput

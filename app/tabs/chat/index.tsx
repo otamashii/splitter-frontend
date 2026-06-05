@@ -3,7 +3,7 @@ import { Pressable, ScrollView, RefreshControl } from 'react-native';
 import { useRouter, Link } from 'expo-router';
 import { YStack, XStack, Text, View, Circle, Spinner, Input } from 'tamagui';
 import { 
-  Search, MessageSquare, Users
+  Search, MessageSquare, Users, ChevronLeft
 } from '@tamagui/lucide-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -65,7 +65,20 @@ export default function ChatListScreen() {
         }}
       >
         <XStack ai="center" jc="space-between">
-          <Text col="white" fos={24} fow="900">{t('chat.title', 'Chats')}</Text>
+          <XStack ai="center" gap="$3">
+            <Pressable 
+              onPress={() => router.back()}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.4 : 1,
+                transform: [{ scale: pressed ? 0.85 : 1 }]
+              })}
+            >
+              <YStack p="$2" br={12} bg="rgba(255,255,255,0.15)">
+                <ChevronLeft size={24} color="white" />
+              </YStack>
+            </Pressable>
+            <Text col="white" fos={24} fow="900">{t('chat.title', 'Chats')}</Text>
+          </XStack>
           <XStack gap="$3">
             <Link href="/tabs/friends" asChild>
               <Pressable>

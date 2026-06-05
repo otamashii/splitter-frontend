@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Splitter",
+    "name": "Receipt Splitter",
     "subtitle": "Split bills easily with friends"
   },
   "features": {
@@ -13,7 +13,7 @@
   },
   "welcome": {
     "message": "Welcome! Let's get started",
-    "newUser": "New to Splitter?",
+    "newUser": "New to Receipt Splitter?",
     "newUserDesc": "Create an account and start splitting",
     "existingUser": "Already have an account?"
   },
@@ -57,6 +57,10 @@
     "my_friends": "My Friends",
     "not_found": "No friends found",
     "empty": "No friends yet",
+    "friend_profile": "Friend Profile",
+    "invite_banner_title": "Find New Friends",
+    "invite_banner_desc": "Search by nickname or scan QR code invites",
+    "delete_confirm": "Are you sure you want to remove {{name}} from your friends list?",
     "common": {
       "unknownUser": "Unknown user"
     },
@@ -159,8 +163,8 @@
     "type_label": "TYPE",
     "private_type": "Private",
     "group_type": "Group",
-    "private_bio": "Connected via Splitter app",
-    "group_bio": "Connected via Splitter group",
+    "private_bio": "Connected via Receipt Splitter app",
+    "group_bio": "Connected via Receipt Splitter group",
     "actions": {
       "markAllRead": "Mark all as read",
       "markAllReadSuccess": "All messages marked as read",
@@ -361,14 +365,14 @@
     "not_found": "Information not found",
     "back": "Go back",
     "report": {
-      "header": "SPLITTER — RECEIPT",
+      "header": "RECEIPT SPLITTER — RECEIPT",
       "name": "Session name:",
       "date": "Date:",
       "participants": "Participants:",
       "items": "ITEMS:",
       "total": "TOTAL:",
       "by_participants": "BY PARTICIPANTS:",
-      "footer": "Generated via Splitter App"
+      "footer": "Generated via Receipt Splitter App"
     }
   },
   "settings": {
@@ -436,7 +440,7 @@
       "share_plan": "👥 Settlement Plan:",
       "debt": "Debt",
       "paid": "Paid",
-      "share_footer": "Calculated via Splitter app. 📱",
+      "share_footer": "Calculated via Receipt Splitter app. 📱",
       "note_prefix": "📌 Note on \"{{name}}\":",
       "total_share": "Total Share",
       "paid_label": "Paid",

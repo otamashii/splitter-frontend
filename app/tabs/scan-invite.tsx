@@ -139,7 +139,7 @@ export default function ScanInviteScreen() {
       setUserData({
         name: 'Sardorbek',
         username: 'sardor_dev',
-        bio: 'Mobile Developer | Splitter User'
+        bio: 'Mobile Developer | Receipt Splitter User'
       });
       setStatus('ok');
     }, 1500);
@@ -339,7 +339,7 @@ export default function ScanInviteScreen() {
                    <YStack bg="white" p="$5" br={32} ai="center" mb="$6" shadowColor="#000" shadowOpacity={0.3} shadowRadius={20}>
                       <QrCode size={220} color="#0F172A" />
                       <TView pos="absolute" top="42%" bg="white" p="$2" br={12} shadowColor="#000" shadowOpacity={0.1} shadowRadius={5}>
-                         <Text fow="900" fos={10} col="#007AFF">SPLITTER</Text>
+                         <Text fow="900" fos={10} col="#007AFF">RECEIPT SPLITTER</Text>
                       </TView>
                    </YStack>
 

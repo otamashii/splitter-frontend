@@ -37,8 +37,10 @@ export default function TabsLayout() {
 
   return (
     <Tabs
+      sceneContainerStyle={{ backgroundColor: isDark ? '#000000' : '#F2F2F7' }}
       screenOptions={{
         headerShown: false,
+        tabBarHideOnKeyboard: true,
         tabBarActiveTintColor: '#007AFF',
         tabBarInactiveTintColor: isDark ? '#64748B' : '#94A3B8',
         tabBarBackground: () => (

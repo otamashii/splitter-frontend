@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { InviteQR } from '@/shared/ui/InviteQR';
 import { FriendsApi } from '@/features/friends/api/friends.api';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
+import { useAppStore } from '@/shared/lib/stores/app-store';
 
 type InviteDTO = { url: string; expiresAt: string };
 
@@ -16,6 +17,8 @@ export default function FriendInviteScreen() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { t } = useTranslation();
+  const theme = useAppStore(s => s.theme);
+  const isDark = theme === 'dark';
 
   const goBack = () => router.back();
 
@@ -35,7 +38,7 @@ export default function FriendInviteScreen() {
 
   return (
     <ScreenContainer>
-      <YStack f={1} p="$4" gap="$4" bg="$background">
+      <YStack f={1} p="$4" gap="$4" bg={isDark ? '#000000' : 'white'}>
         {/* Header */}
         <XStack ai="center" jc="space-between">
           <Button
@@ -43,13 +46,14 @@ export default function FriendInviteScreen() {
             h={28}
             chromeless
             onPress={goBack}
-            icon={<ChevronLeft size={18} color="$gray12" />}
+            color={isDark ? 'white' : '$gray12'}
+            icon={<ChevronLeft size={18} color={isDark ? 'white' : '$gray12'} />}
           >
             {t('common.back', 'Back')}
           </Button>
           <XStack ai="center" gap="$2">
-            <QrCode size={18} color="$gray12" />
-            <Paragraph fow="700" fos="$6">{t('friends.invite.title', 'My Friend QR')}</Paragraph>
+            <QrCode size={18} color={isDark ? 'white' : '$gray12'} />
+            <Paragraph fow="700" fos="$6" color={isDark ? 'white' : '#1E293B'}>{t('friends.invite.title', 'My Friend QR')}</Paragraph>
           </XStack>
           <YStack w={54} />{/* spacer */}
         </XStack>
@@ -66,14 +70,15 @@ export default function FriendInviteScreen() {
                 expiresAt={data.expiresAt}
               />
               <Button onPress={refresh} size="$3" borderRadius="$3">
-                {t('friends.invite.new', 'New QR')}
+                <Paragraph color="white" fow="800">
+                  {t('friends.invite.new', 'New QR')}
+                </Paragraph>
               </Button>
             </>
           ) : (
             <>
-              <Paragraph>{t('friends.invite.error', 'Failed to get invite')}</Paragraph>
+              <Paragraph color={isDark ? '#94A3B8' : '$gray12'}>{t('friends.invite.error', 'Failed to get invite')}</Paragraph>
               <Button onPress={refresh}>{t('common.retry', 'Retry')}</Button>
-              {/* <Button onPress={goBack} variant="outlined">Back</Button> */}
             </>
           )}
         </YStack>

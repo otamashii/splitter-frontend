@@ -137,7 +137,7 @@ export const useReceiptSessionStore = create<ReceiptSessionStore>((set, get) => 
         quantity: item.quantity,
         totalPrice: item.totalPrice,
         kind: item.kind,
-        splitMode: Number.isInteger(item.quantity) && item.quantity > 1 ? 'count' : 'equal',
+        splitMode: Number.isInteger(Number(item.quantity)) && Number(item.quantity) > 1 ? 'count' : 'equal',
         assignedTo: [],
         perPersonCount: {},
       }));

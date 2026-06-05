@@ -188,7 +188,7 @@ export default function ProfileScreen() {
           </Button>
 
           <YStack ai="center" mt="$4" mb="$10">
-             <Text col="$gray9" fontSize={12} fontWeight="600">Splitter v2.4.0</Text>
+             <Text col="$gray9" fontSize={12} fontWeight="600">Receipt Splitter v2.4.0</Text>
              <Text col="$gray9" fontSize={12} fontWeight="600">Google Deepmind © 2026</Text>
           </YStack>
         </YStack>

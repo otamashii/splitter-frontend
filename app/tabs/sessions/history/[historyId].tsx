@@ -317,24 +317,24 @@ export default function HistoryDetailsScreen() {
                   shadowOpacity={0.03}
                   shadowRadius={10}
                 >
-                  <XStack jc="space-between" ai="center">
-                    <XStack ai="center" gap="$3">
+                  <XStack jc="space-between" ai="center" gap="$2">
+                    <XStack ai="center" gap="$3" style={{ flex: 1 }}>
                        <UserAvatar uri={avatarUrl ?? undefined} label={participant.username[0]} size={40} />
-                       <YStack>
-                         <Text fontSize={15} fontWeight="800" col={isDark ? 'white' : '#1E293B'}>{participant.username}</Text>
+                       <YStack style={{ flex: 1 }}>
+                         <Text fontSize={15} fontWeight="800" col={isDark ? 'white' : '#1E293B'} numberOfLines={1}>{participant.username}</Text>
                          <Text fontSize={11} col="$gray9" fontWeight="600">{t('navigation.items_count', { count: items.length })}</Text>
                        </YStack>
                     </XStack>
-                    <Text fontSize={16} fontWeight="900" col="#007AFF">{fmt(amount)}</Text>
+                    <Text fontSize={16} fontWeight="900" col="#007AFF" style={{ flexShrink: 0 }}>{fmt(amount)}</Text>
                   </XStack>
                   
                   <Separator opacity={0.1} />
                   
                   <YStack gap="$2">
                     {items.map(item => (
-                      <XStack key={item.id} jc="space-between">
-                        <Text fontSize={13} col={isDark ? '$gray11' : '$gray10'} fontWeight="600">{item.title}</Text>
-                        <Text fontSize={13} col={isDark ? 'white' : '#1E293B'} fontWeight="700">{fmt(item.price)}</Text>
+                      <XStack key={item.id} jc="space-between" ai="center" gap="$2">
+                        <Text fontSize={13} col={isDark ? '$gray11' : '$gray10'} fontWeight="600" numberOfLines={2} style={{ flex: 1 }}>{item.title}</Text>
+                        <Text fontSize={13} col={isDark ? 'white' : '#1E293B'} fontWeight="700" style={{ flexShrink: 0 }}>{fmt(item.price)}</Text>
                       </XStack>
                     ))}
                   </YStack>
@@ -352,13 +352,13 @@ export default function HistoryDetailsScreen() {
             
             <YStack bg={isDark ? '#1C1C1E' : 'white'} br={32} p="$5" gap="$4">
                {bill.totals?.byItem?.map(item => (
-                 <XStack key={item.itemId} jc="space-between" ai="center">
-                   <YStack gap="$0.5">
-                     <Text fontSize={14} fontWeight="800" col={isDark ? 'white' : '#1E293B'}>{item.name}</Text>
-                     <Text fontSize={11} col="$gray9" fontWeight="600">{t('navigation.item_id', 'Item ID')}: {item.itemId.slice(0, 8)}</Text>
-                   </YStack>
-                   <Text fontSize={14} fontWeight="900" col={isDark ? 'white' : '#1E293B'}>{fmt(item.total)}</Text>
-                 </XStack>
+                  <XStack key={item.itemId} jc="space-between" ai="center" gap="$3">
+                    <YStack gap="$0.5" style={{ flex: 1 }}>
+                      <Text fontSize={14} fontWeight="800" col={isDark ? 'white' : '#1E293B'} numberOfLines={2}>{item.name}</Text>
+                      <Text fontSize={11} col="$gray9" fontWeight="600">{t('navigation.item_id', 'Item ID')}: {item.itemId.slice(0, 8)}</Text>
+                    </YStack>
+                    <Text fontSize={14} fontWeight="900" col={isDark ? 'white' : '#1E293B'} style={{ flexShrink: 0 }}>{fmt(item.total)}</Text>
+                  </XStack>
                ))}
                
                <Separator borderStyle="dashed" opacity={0.2} mt="$2" />

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { View, Text, XStack, YStack, Circle, Sheet, Spinner, Separator, ScrollView } from 'tamagui';
-import { StyleSheet, Pressable, TextInput, KeyboardAvoidingView, Platform, FlatList, ActivityIndicator, Alert } from 'react-native';
+import { StyleSheet, Pressable, TextInput, KeyboardAvoidingView, Platform, FlatList, ActivityIndicator, Alert, Keyboard } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ChevronLeft, Send, MoreVertical, Plus, User, AtSign, Calendar, MessageCircle, ArrowUpRight, MapPin, Image as ImageIcon, FileText, Search as SearchIcon, Trash, Eraser, BellOff, Mic, Play, Pause, Square, Volume2, Users as UsersIcon, MessageSquare } from '@tamagui/lucide-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -125,6 +125,20 @@ export default function ChatRoomScreen() {
   const [showHeaderMenu, setShowHeaderMenu] = useState(false);
   const [friends, setFriends] = useState<any[]>([]);
   const [friendsLoading, setFriendsLoading] = useState(false);
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const showSubscription = Keyboard.addListener(showEvent, () => setKeyboardVisible(true));
+    const hideSubscription = Keyboard.addListener(hideEvent, () => setKeyboardVisible(false));
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
   
   const recordingRef = useRef<Audio.Recording | null>(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -479,11 +493,12 @@ export default function ChatRoomScreen() {
   };
 
   return (
-    <KeyboardAvoidingView 
-      style={{ flex: 1, backgroundColor: isDark ? '#000000' : '#F2F2F7' }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-    >
+    <View style={{ flex: 1, backgroundColor: isDark ? '#000000' : '#F2F2F7' }}>
+      <KeyboardAvoidingView 
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={0}
+      >
       <View 
         backgroundColor={isDark ? '#1C1C1E' : '#FFFFFF'} 
         pt={insets.top + 10} 
@@ -560,7 +575,7 @@ export default function ChatRoomScreen() {
       <View 
         backgroundColor={isDark ? '#1C1C1E' : '#FFFFFF'} 
         mx="$4"
-        mb={Platform.OS === 'ios' ? insets.bottom + 90 : insets.bottom + 100}
+        mb={8}
         br={24}
         p="$2"
         shadowColor="#000"
@@ -930,6 +945,8 @@ export default function ChatRoomScreen() {
         </Sheet.Frame>
       </Sheet>
     </KeyboardAvoidingView>
+    <View style={{ height: isKeyboardVisible ? 0 : 83 }} />
+  </View>
   );
 }
 

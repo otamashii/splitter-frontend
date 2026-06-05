@@ -164,11 +164,26 @@ export default function HomePage() {
 
   const toggleTheme = () => setTheme(isDark ? 'light' : 'dark');
 
-  // Umumiy xarajatlar — barcha sessiyalar yig'indisi
-  const totalSpent = useMemo(() =>
-    sessions.reduce((sum, s) => sum + (s.grandTotal || 0), 0),
-    [sessions]
-  );
+  // Umumiy xarajatlar — foydalanuvchining barcha sessiyalardagi o'z ulushlari yig'indisi
+  const totalSpent = useMemo(() => {
+    if (!user?.uniqueId) return 0;
+    const myUid = user.uniqueId.toUpperCase();
+    
+    return sessions.reduce((sum, s) => {
+      const byParticipant = s.totals?.byParticipant || s.payload?.totals?.byParticipant;
+      if (byParticipant && byParticipant.length > 0) {
+        const myTotal = byParticipant.find(p => p.uniqueId?.toUpperCase() === myUid);
+        if (myTotal) {
+          return sum + (myTotal.amountOwed || 0);
+        }
+        return sum;
+      }
+      if (s.isCreator) {
+        return sum + (s.grandTotal || 0);
+      }
+      return sum;
+    }, 0);
+  }, [sessions, user?.uniqueId]);
 
   // Joriy oy nomi va shu oydagi sessiyalar soni
   const { currentMonthName, currentMonthCount } = useMemo(() => {
@@ -207,7 +222,7 @@ export default function HomePage() {
                    <UserAvatar uri={user?.avatarUrl} label={user?.username?.slice(0, 1).toUpperCase()} size={44} />
                 </Pressable>
                 <YStack>
-                  <Text col="white" opacity={0.8} fontSize={12} fontWeight="700" textTransform="uppercase">Splitter Pro</Text>
+                  <Text col="white" opacity={0.8} fontSize={12} fontWeight="700" textTransform="uppercase">Receipt Splitter</Text>
                   <Text col="white" fontSize={18} fontWeight="900">{user?.username || 'User'}</Text>
                 </YStack>
               </XStack>
@@ -347,7 +362,7 @@ export default function HomePage() {
            >
               <XStack ai="center" jc="space-between">
                  <YStack gap="$1" f={1}>
-                    <Text col="white" fontSize={18} fontWeight="900">Premium Splitter</Text>
+                    <Text col="white" fontSize={18} fontWeight="900">Premium Receipt Splitter</Text>
                     <Text col="white" opacity={0.8} fontSize={13} fontWeight="600">{t('welcome.newUserDesc', 'Barcha funksiyalardan cheksiz foydalaning')}</Text>
                  </YStack>
                  <Circle size={56} bg="rgba(255,255,255,0.2)" ai="center" jc="center">

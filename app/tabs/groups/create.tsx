@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Pressable } from 'react-native';
+import { Pressable, ScrollView } from 'react-native';
 import {
   YStack,
   XStack,
@@ -20,6 +20,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useGroupsStore } from '@/features/groups/model/groups.store';
 import { useFriendsStore } from '@/features/friends/model/friends.store';
 import UserAvatar from '@/shared/ui/UserAvatar';
+import { useAppStore } from '@/shared/lib/stores/app-store';
 
 function useAutoNotice() {
   const [text, setText] = useState<string | undefined>();
@@ -75,6 +76,8 @@ export default function GroupCreateScreen() {
   const { t } = useTranslation();
 
   const { createGroup, openGroup, addMember, removeMember, current, loading, clearCurrent } = useGroupsStore();
+  const theme = useAppStore(s => s.theme);
+  const isDark = theme === 'dark';
   const { friends, fetchAll: fetchFriends } = useFriendsStore();
 
   const [name, setName] = useState('');
@@ -177,7 +180,7 @@ export default function GroupCreateScreen() {
   }
 
   return (
-    <YStack f={1} bg="$background">
+    <YStack f={1} bg={isDark ? '#000000' : 'white'}>
       <LinearGradient
         colors={['#007AFF', '#00C6FF']}
         style={{
@@ -205,125 +208,137 @@ export default function GroupCreateScreen() {
         </XStack>
       </LinearGradient>
 
-      <YStack f={1} p="$4" gap="$4">
-        {notice.node}
+      <ScrollView f={1}>
+        <YStack f={1} p="$4" gap="$4">
+          {notice.node}
 
-      <XStack gap="$2" ai="center">
-          <Input
-            f={1}
-            value={name}
-            onChangeText={setName}
-            placeholder={t('groups.new.namePlaceholder', 'Group name')}
-            editable={!groupId}
-            returnKeyType="done"
-            onSubmitEditing={onCreate}
-          />
-          <Button onPress={onCreate} disabled={!!groupId || creating}>
-            {creating ? '...' : t('groups.new.action', 'Create')}
-          </Button>
-        </XStack>
-  
-        <Separator />
-  
-        {!groupId ? (
-          <Paragraph col="$gray10">
-            {t('groups.new.emptyState', 'Create a group to add members.')}
-          </Paragraph>
-        ) : loading && !current ? (
-          <Spinner />
-        ) : (
-          <>
-            <Paragraph fow="700" fos="$6">
-              {t('groups.new.manageMembers', 'Add or remove members')}
-            </Paragraph>
+          <XStack gap="$2" ai="center">
             <Input
-              value={filter}
-              onChangeText={setFilter}
-              placeholder={t('groups.new.searchPlaceholder', 'Search friends…')}
-              returnKeyType="search"
+              f={1}
+              value={name}
+              onChangeText={setName}
+              placeholder={t('groups.new.namePlaceholder', 'Group name')}
+              editable={!groupId}
+              returnKeyType="done"
+              onSubmitEditing={onCreate}
+              bg={isDark ? '#2C2C2E' : '$background'}
+              color={isDark ? 'white' : '$gray12'}
+              placeholderTextColor={isDark ? '#94A3B8' : '$gray10'}
+              borderWidth={0}
             />
-
-          {(rows ?? []).length === 0 ? (
-            <Paragraph col="$gray10">
-              {t('groups.new.noFriends', 'No friends to display')}
+            <Button onPress={onCreate} disabled={!!groupId || creating} bg="#007AFF">
+              <Text col="white" fow="800">
+                {creating ? '...' : t('groups.new.action', 'Create')}
+              </Text>
+            </Button>
+          </XStack>
+    
+          <Separator borderColor={isDark ? '#2C2C2E' : '$gray3'} />
+    
+          {!groupId ? (
+            <Paragraph col={isDark ? '#94A3B8' : '$gray10'}>
+              {t('groups.new.emptyState', 'Create a group to add members.')}
             </Paragraph>
+          ) : loading && !current ? (
+            <Spinner />
           ) : (
-            <YStack borderWidth={1} borderColor="$gray5" borderRadius={8} overflow="hidden">
-              {rows.map((row, index) => {
-                const isOwner = row.role === 'owner';
-                const isMember = !!row.role;
-                const busy = opUid === row.uid;
-                const avatarLabel = (row.label || 'U').slice(0, 1).toUpperCase();
+            <>
+              <Paragraph fow="700" fos="$6" color={isDark ? 'white' : '#1E293B'}>
+                {t('groups.new.manageMembers', 'Add or remove members')}
+              </Paragraph>
+              <Input
+                value={filter}
+                onChangeText={setFilter}
+                placeholder={t('groups.new.searchPlaceholder', 'Search friends…')}
+                returnKeyType="search"
+                bg={isDark ? '#2C2C2E' : '$background'}
+                color={isDark ? 'white' : '$gray12'}
+                placeholderTextColor={isDark ? '#94A3B8' : '$gray10'}
+                borderWidth={0}
+              />
 
-                return (
-                  <React.Fragment key={row.uid ?? row.label ?? index}>
-                    <XStack
-                      h={60}
-                      ai="center"
-                      jc="space-between"
-                      px="$4"
-                      bg="$background"
-                    >
-                      <XStack ai="center" gap="$3">
-                        <UserAvatar
-                          uri={row.avatarUrl ?? undefined}
-                          label={avatarLabel}
-                          size={36}
-                          textSize={14}
-                          backgroundColor="$gray5"
-                        />
-                        <YStack>
-                          <Text fontSize={17} fontWeight="600">
-                            {row.label}
-                          </Text>
-                          {!!row.subtitle && (
-                            <Paragraph fontSize={14} color="$gray10">
-                              {row.subtitle}
-                            </Paragraph>
-                          )}
-                        </YStack>
-                      </XStack>
+              {(rows ?? []).length === 0 ? (
+                <Paragraph col={isDark ? '#94A3B8' : '$gray10'}>
+                  {t('groups.new.noFriends', 'No friends to display')}
+                </Paragraph>
+              ) : (
+                <YStack borderWidth={1} borderColor={isDark ? '#2C2C2E' : '$gray5'} borderRadius={8} overflow="hidden">
+                  {rows.map((row, index) => {
+                    const isOwner = row.role === 'owner';
+                    const isMember = !!row.role;
+                    const busy = opUid === row.uid;
+                    const avatarLabel = (row.label || 'U').slice(0, 1).toUpperCase();
 
-                      <XStack ai="center" gap="$2">
-                        {isOwner ? (
-                          <Crown size={18} color="$yellow10" />
-                        ) : isMember ? (
-                          <>
-                            <Check size={18} color="$green10" />
-                            <Button
-                              size="$2"
-                              chromeless
-                              circular
-                              icon={<IconX size={18} color="$red10" />}
-                              onPress={() => row.uid && onRemove(row.uid)}
-                              disabled={!row.uid || busy}
-                              pressStyle={{ bg: '$red3' }}
-                              aria-label={t('groups.new.removeMember', 'Remove member')}
+                    return (
+                      <React.Fragment key={row.uid ?? row.label ?? index}>
+                        <XStack
+                          h={60}
+                          ai="center"
+                          jc="space-between"
+                          px="$4"
+                          bg={isDark ? '#1C1C1E' : 'white'}
+                        >
+                          <XStack ai="center" gap="$3">
+                            <UserAvatar
+                              uri={row.avatarUrl ?? undefined}
+                              label={avatarLabel}
+                              size={36}
+                              textSize={14}
+                              backgroundColor={isDark ? '#2C2C2E' : '$gray5'}
                             />
-                          </>
-                        ) : (
-                          <Button
-                            size="$2"
-                            chromeless
-                            circular
-                            icon={<Plus size={18} color="$blue10" />}
-                            onPress={() => row.uid && onAdd(row.uid)}
-                            disabled={!row.uid || busy}
-                            pressStyle={{ bg: '$blue3' }}
-                            aria-label={t('groups.new.addMember', 'Add member')}
-                          />
-                        )}
-                      </XStack>
-                    </XStack>
-                    {index < rows.length - 1 && <Separator />}
-                  </React.Fragment>
-                );
-              })}
-            </YStack>
-          )}
-        </>
-      )}
-      </YStack>
+                            <YStack>
+                              <Text fontSize={17} fontWeight="600" color={isDark ? 'white' : '$gray12'}>
+                                {row.label}
+                              </Text>
+                              {!!row.subtitle && (
+                                <Paragraph fontSize={14} color={isDark ? '#94A3B8' : '$gray10'}>
+                                  {row.subtitle}
+                                </Paragraph>
+                              )}
+                            </YStack>
+                          </XStack>
+
+                          <XStack ai="center" gap="$2">
+                            {isOwner ? (
+                              <Crown size={18} color="$yellow10" />
+                            ) : isMember ? (
+                              <>
+                                <Check size={18} color="$green10" />
+                                <Button
+                                  size="$2"
+                                  chromeless
+                                  circular
+                                  icon={<IconX size={18} color="$red10" />}
+                                  onPress={() => row.uid && onRemove(row.uid)}
+                                  disabled={!row.uid || busy}
+                                  pressStyle={{ bg: '$red3' }}
+                                  aria-label={t('groups.new.removeMember', 'Remove member')}
+                                />
+                              </>
+                            ) : (
+                              <Button
+                                size="$2"
+                                chromeless
+                                  circular
+                                  icon={<Plus size={18} color="$blue10" />}
+                                  onPress={() => row.uid && onAdd(row.uid)}
+                                  disabled={!row.uid || busy}
+                                  pressStyle={{ bg: '$blue3' }}
+                                  aria-label={t('groups.new.addMember', 'Add member')}
+                                />
+                              )}
+                            </XStack>
+                          </XStack>
+                          {index < rows.length - 1 && <Separator borderColor={isDark ? '#2C2C2E' : '$gray3'} />}
+                        </React.Fragment>
+                      );
+                    })}
+                  </YStack>
+                )}
+              </>
+            )}
+        </YStack>
+      </ScrollView>
     </YStack>
   );
 }

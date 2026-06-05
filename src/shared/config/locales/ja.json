@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Splitter",
+    "name": "Receipt Splitter",
     "subtitle": "友だちと簡単に割り勘"
   },
   "features": {
@@ -13,7 +13,7 @@
   },
   "welcome": {
     "message": "ようこそ！さっそく始めましょう",
-    "newUser": "Splitterは初めてですか？",
+    "newUser": "Receipt Splitterは初めてですか？",
     "newUserDesc": "アカウントを作成して割り勘を始めましょう",
     "existingUser": "すでにアカウントをお持ちですか？"
   },
@@ -57,6 +57,10 @@
     "my_friends": "マイフレンド",
     "not_found": "友だちが見つかりませんでした",
     "empty": "まだ友だちがいません",
+    "friend_profile": "友だちのプロフィール",
+    "invite_banner_title": "新しい友だちを見つける",
+    "invite_banner_desc": "ユーザー名で検索するか、招待QRコードをスキャンします",
+    "delete_confirm": "本当に{{name}}さんを友だちリストから削除しますか？",
     "common": {
       "unknownUser": "不明なユーザー"
     },
@@ -159,8 +163,8 @@
     "type_label": "タイプ",
     "private_type": "プライベート",
     "group_type": "グループ",
-    "private_bio": "Splitterアプリで接続",
-    "group_bio": "Splitterグループで接続",
+    "private_bio": "Receipt Splitterアプリで接続",
+    "group_bio": "Receipt Splitterグループで接続",
     "actions": {
       "markAllRead": "すべて既読にする",
       "markAllReadSuccess": "すべてのメッセージを既読にしました",
@@ -361,14 +365,14 @@
     "not_found": "情報が見つかりませんでした",
     "back": "戻る",
     "report": {
-      "header": "SPLITTER — 領収書",
+      "header": "RECEIPT SPLITTER — 領収書",
       "name": "セッション名:",
       "date": "日付:",
       "participants": "参加者:",
       "items": "アイテム:",
       "total": "合計:",
       "by_participants": "参加者ごとの詳細:",
-      "footer": "Splitterアプリで作成"
+      "footer": "Receipt Splitterアプリで作成"
     }
   },
   "settings": {
@@ -436,7 +440,7 @@
       "share_plan": "👥 清算プラン:",
       "debt": "未払い",
       "paid": "支払い済み",
-      "share_footer": "Splitterアプリで計算されました。 📱",
+      "share_footer": "Receipt Splitterアプリで計算されました。 📱",
       "note_prefix": "📌 \"{{name}}\" に関するメモ:",
       "total_share": "合計負担額",
       "paid_label": "支払い",

@@ -24,6 +24,8 @@ export default function SessionParticipantsScreen() {
 
   // stores
   const me = useAppStore(s => s.user);
+  const theme = useAppStore(s => s.theme);
+  const isDark = theme === 'dark';
   const { friends, loading: friendsLoading, error: friendsError, fetchAll: fetchFriends } = useFriendsStore();
   const { groups, counts, fetchGroups, openGroup } = useGroupsStore();
 
@@ -233,13 +235,14 @@ export default function SessionParticipantsScreen() {
       pathname: '/tabs/sessions/items-split',
       params: { 
         receiptId: effectiveReceiptId,
-        participants: JSON.stringify(participants)
+        participants: JSON.stringify(participants),
+        groupId: activeGroupId != null ? String(activeGroupId) : undefined
       }
     });
   };
 
   return (
-    <YStack f={1} bg="white">
+    <YStack f={1} bg={isDark ? '#000000' : 'white'}>
       {/* Header with Blue Gradient */}
       <LinearGradient
         colors={['#007AFF', '#0055FF']}
@@ -286,7 +289,7 @@ export default function SessionParticipantsScreen() {
       <ScrollView f={1} p="$5" showsVerticalScrollIndicator={false}>
         {/* Groups Horizontal List */}
         <YStack gap="$3" mb="$6">
-          <Text fos={14} fow="800" col="$gray9" textTransform="uppercase">{t('sessions.participants.groups', 'Guruhlar')}</Text>
+          <Text fos={14} fow="800" col={isDark ? '#94A3B8' : '$gray9'} textTransform="uppercase">{t('sessions.participants.groups', 'Guruhlar')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <XStack gap="$2">
               {(groups ?? []).map((g: any) => {
@@ -295,17 +298,17 @@ export default function SessionParticipantsScreen() {
                 return (
                   <Pressable key={g.id} onPress={() => activateGroup(g.id)}>
                     <XStack 
-                      bg={active ? '#007AFF' : '$gray2'} 
+                      bg={active ? '#007AFF' : (isDark ? '#1C1C1E' : '$gray2')} 
                       br={16} 
                       px="$4" 
                       h={40} 
                       ai="center" 
                       gap="$2"
                       borderWidth={1}
-                      borderColor={active ? '#007AFF' : '$gray3'}
+                      borderColor={active ? '#007AFF' : (isDark ? '#2C2C2E' : '$gray3')}
                     >
                       <UsersIcon size={16} color={active ? 'white' : '#007AFF'} />
-                      <Text col={active ? 'white' : '$gray12'} fow="700">{g.name}</Text>
+                      <Text col={active ? 'white' : (isDark ? 'white' : '$gray12')} fow="700">{g.name}</Text>
                       {loading && <Spinner size="small" color="white" />}
                     </XStack>
                   </Pressable>
@@ -317,7 +320,7 @@ export default function SessionParticipantsScreen() {
 
         <YStack gap="$3" mb="$10">
           <XStack jc="space-between" ai="baseline">
-            <Text fos={14} fow="800" col="$gray9" textTransform="uppercase">{t('sessions.participants.people', 'Odamlar')}</Text>
+            <Text fos={14} fow="800" col={isDark ? '#94A3B8' : '$gray9'} textTransform="uppercase">{t('sessions.participants.people', 'Odamlar')}</Text>
             <Text fos={12} fow="700" col="#007AFF">{selectedList.length} {t('sessions.participants.selected', 'tanlandi')}</Text>
           </XStack>
 
@@ -331,36 +334,36 @@ export default function SessionParticipantsScreen() {
                 jc="space-between" 
                 p="$3.5" 
                 br={24} 
-                bg="white"
+                bg={isDark ? '#1C1C1E' : 'white'}
                 borderWidth={2}
-                borderColor={on ? '#007AFF' : '$gray3'}
+                borderColor={on ? '#007AFF' : (isDark ? '#2C2C2E' : '$gray3')}
                 shadowColor={on ? '#007AFF' : '#000'}
                 shadowOffset={{ width: 0, height: 6 }}
-                shadowOpacity={on ? 0.15 : 0.03}
+                shadowOpacity={on ? 0.15 : (isDark ? 0.3 : 0.03)}
                 shadowRadius={12}
                 elevation={on ? 6 : 2}
                 mb="$3"
-                pressStyle={{ scale: 0.98, bg: on ? 'rgba(0,122,255,0.05)' : '$gray1' }}
+                pressStyle={{ scale: 0.98, bg: on ? 'rgba(0,122,255,0.05)' : (isDark ? '#2C2C2E' : '$gray1') }}
               >
                 <XStack ai="center" jc="space-between" f={1} w="100%">
                   <XStack ai="center" gap="$3.5">
                     <YStack>
                        <UserAvatar uri={p.avatarUrl ?? undefined} label={(p.username || "U").slice(0, 1).toUpperCase()} size={48} />
                        {on && (
-                         <Circle pos="absolute" bottom={-2} right={-2} size={18} bg="#007AFF" bw={2} boc="white" ai="center" jc="center">
-                            <Check size={10} color="white" strokeWidth={4} />
-                         </Circle>
+                          <Circle pos="absolute" bottom={-2} right={-2} size={18} bg="#007AFF" bw={2} boc={isDark ? '#1C1C1E' : 'white'} ai="center" jc="center">
+                             <Check size={10} color="white" strokeWidth={4} />
+                          </Circle>
                        )}
                     </YStack>
                     <YStack>
-                      <Text fontSize={17} fontWeight="900" color={on ? '#007AFF' : '$gray12'}>{p.username}</Text>
-                      <Text fontSize={13} color="$gray10" fontWeight="600">@{p.uniqueId.toLowerCase()}</Text>
+                      <Text fontSize={17} fontWeight="900" color={on ? '#007AFF' : (isDark ? 'white' : '$gray12')}>{p.username}</Text>
+                      <Text fontSize={13} color={isDark ? '#94A3B8' : '$gray10'} fontWeight="600">@{p.uniqueId.toLowerCase()}</Text>
                     </YStack>
                   </XStack>
                   <Circle 
                     size={28} 
                     borderWidth={2.5} 
-                    borderColor={on ? '#007AFF' : '$gray4'} 
+                    borderColor={on ? '#007AFF' : (isDark ? '#2C2C2E' : '$gray4')} 
                     bg={on ? '#007AFF' : 'transparent'}
                     ai="center" 
                     jc="center"
@@ -376,21 +379,21 @@ export default function SessionParticipantsScreen() {
 
       {/* Footer Sticky Button */}
       <YStack 
-        bg="white" 
+        bg={isDark ? '#1C1C1E' : 'white'} 
         p="$5" 
         pb={insets.bottom + 105} 
         borderTopLeftRadius={32} 
         borderTopRightRadius={32}
         shadowColor="#000"
         shadowOffset={{ width: 0, height: -10 }}
-        shadowOpacity={0.08}
+        shadowOpacity={isDark ? 0.3 : 0.08}
         shadowRadius={20}
         elevation={20}
       >
         <Button
           onPress={goNext}
           disabled={!canNext}
-          bg={canNext ? "#007AFF" : "$gray8"}
+          bg={canNext ? "#007AFF" : (isDark ? '#2C2C2E' : '$gray8')}
           h={56}
           br={16}
           shadowColor="#007AFF"
@@ -400,8 +403,8 @@ export default function SessionParticipantsScreen() {
           pressStyle={{ scale: 0.98 }}
         >
           <XStack ai="center" gap="$2">
-            <UserCheck size={20} color="white" />
-            <Text col="white" fos={18} fow="800">{t('common.next', 'Davom etish')}</Text>
+            <UserCheck size={20} color={canNext ? 'white' : (isDark ? '#4E4E50' : '$gray10')} />
+            <Text col={canNext ? 'white' : (isDark ? '#4E4E50' : '$gray10')} fos={18} fow="800">{t('common.next', 'Davom etish')}</Text>
           </XStack>
         </Button>
       </YStack>

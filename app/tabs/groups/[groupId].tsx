@@ -30,11 +30,11 @@ export default function GroupDetailsScreen() {
   const { groupId } = useLocalSearchParams<{ groupId: string }>();
   const gid = Number(groupId);
   const router = useRouter();
-
   const { current, loading, error, openGroup, renameGroup, deleteGroup, addMember, removeMember } = useGroupsStore();
   const { friends, fetchAll: fetchFriends } = useFriendsStore();
   const me = useAppStore(s => s.user);
-
+  const theme = useAppStore(s => s.theme);
+  const isDark = theme === 'dark';
   const [editing, setEditing] = useState(false);
   const [newName, setNewName] = useState('');
   const [filter, setFilter] = useState('');
@@ -146,7 +146,7 @@ export default function GroupDetailsScreen() {
   if (!current) return <YStack f={1} p="$4"><Paragraph>{t('groups.none', 'No group')}</Paragraph></YStack>;
 
   return (
-    <YStack f={1} p="$4" gap="$3" bg="$background">
+    <YStack f={1} p="$4" gap="$3" bg={isDark ? '#000000' : 'white'}>
       {/* Back (text-only) with chevron) */}
       <XStack>
         <Button
@@ -158,9 +158,9 @@ export default function GroupDetailsScreen() {
           chromeless
           bg="transparent"
           borderWidth={0}
-          color="$gray12"
+          color={isDark ? 'white' : '$gray12'}
           pressStyle={{ opacity: 0.6 }}
-          icon={<ChevronLeft size={18} color="$gray12" />}
+          icon={<ChevronLeft size={18} color={isDark ? 'white' : '$gray12'} />}
         >
           {t('groups.details.backToGroups', 'Back to Groups')}
         </Button>
@@ -170,7 +170,7 @@ export default function GroupDetailsScreen() {
       <XStack ai="center" gap="$2">
         <XStack f={1} ai="center" gap="$2" minHeight={22}>
           {!editing ? (
-            <Text numberOfLines={1} fontSize={14} fontWeight="400">
+            <Text numberOfLines={1} fontSize={18} fontWeight="900" color={isDark ? 'white' : '#1E293B'}>
               {title}
             </Text>
           ) : (
@@ -183,9 +183,9 @@ export default function GroupDetailsScreen() {
               px={10}
               borderRadius={8}
               fontSize={14}
-              bg="$backgroundPress"
-              color="$gray12"
-              placeholderTextColor="$gray10"
+              bg={isDark ? '#2C2C2E' : '$backgroundPress'}
+              color={isDark ? 'white' : '$gray12'}
+              placeholderTextColor={isDark ? '#94A3B8' : '$gray10'}
               borderWidth={0}
               returnKeyType="done"
               onSubmitEditing={onRenameConfirm}
@@ -200,7 +200,7 @@ export default function GroupDetailsScreen() {
               circular
               size="$2"
               aria-label={t('groups.details.rename', 'Rename')}
-              icon={<Pencil size={18} color="$gray12" />}
+              icon={<Pencil size={18} color={isDark ? 'white' : '$gray12'} />}
               onPress={() => setEditing(true)}
             />
             <Button
@@ -231,7 +231,7 @@ export default function GroupDetailsScreen() {
               circular
               size="$2"
               aria-label={t('common.cancel', 'Cancel rename')}
-              icon={<IconX size={18} color="$gray11" />}
+              icon={<IconX size={18} color={isDark ? '#94A3B8' : '$gray11'} />}
               onPress={() => { setNewName(title); setEditing(false); }}
             />
           </XStack>
@@ -263,14 +263,14 @@ export default function GroupDetailsScreen() {
           </Button>
         )}
       </XStack>
-      <Separator />
+      <Separator borderColor={isDark ? '#2C2C2E' : '$gray3'} />
 
       {/* MEMBERS */}
-      <Paragraph fow="700" fos="$6">{t('groups.details.members', 'Members')}</Paragraph>
+      <Paragraph fow="700" fos="$6" color={isDark ? 'white' : '#1E293B'}>{t('groups.details.members', 'Members')}</Paragraph>
       {members.length === 0 ? (
-        <Paragraph col="$gray10">{t('groups.details.noMembers', 'No members yet')}</Paragraph>
+        <Paragraph col={isDark ? '#94A3B8' : '$gray10'}>{t('groups.details.noMembers', 'No members yet')}</Paragraph>
       ) : (
-        <YStack borderWidth={1} borderColor="$gray5" borderRadius={8} overflow="hidden">
+        <YStack borderWidth={1} borderColor={isDark ? '#2C2C2E' : '$gray5'} borderRadius={8} overflow="hidden">
           {members.map((m, idx) => {
             const uid = m.uniqueId;
             const label = m.displayName || m.username || uid;
@@ -282,12 +282,12 @@ export default function GroupDetailsScreen() {
 
             return (
               <React.Fragment key={uid ?? `${label}-${idx}`}>
-                <XStack h={60} ai="center" jc="space-between" px="$4" bg="$green3">
+                <XStack h={60} ai="center" jc="space-between" px="$4" bg={isDark ? '#1C1C1E' : 'white'}>
                   <XStack ai="center" gap="$3">
-                    <UserAvatar uri={avatarUrl ?? undefined} label={(label || "U").slice(0, 1).toUpperCase()} size={36} textSize={14} backgroundColor="$gray5" />
+                    <UserAvatar uri={avatarUrl ?? undefined} label={(label || "U").slice(0, 1).toUpperCase()} size={36} textSize={14} backgroundColor={isDark ? '#2C2C2E' : '$gray5'} />
                     <YStack>
-                      <Text fontSize={17} fontWeight="600">{label}</Text>
-                      {!!uid && <Paragraph fontSize={14} color="$gray10">{fmtUid(uid)}</Paragraph>}
+                      <Text fontSize={17} fontWeight="600" color={isDark ? 'white' : '$gray12'}>{label}</Text>
+                      {!!uid && <Paragraph fontSize={14} color={isDark ? '#94A3B8' : '$gray10'}>{fmtUid(uid)}</Paragraph>}
                     </YStack>
                   </XStack>
 
@@ -300,37 +300,37 @@ export default function GroupDetailsScreen() {
                     )}
                   </XStack>
                 </XStack>
-                {idx < (members.length - 1) && <Separator />}
+                {idx < (members.length - 1) && <Separator borderColor={isDark ? '#2C2C2E' : '$gray3'} />}
               </React.Fragment>
             );
           })}
         </YStack>
       )}
 
-      <Separator />
+      <Separator borderColor={isDark ? '#2C2C2E' : '$gray3'} />
   
-        {/* ADD FROM FRIENDS */}
-        <Paragraph fow="700" fos="$6">{t('groups.details.addFromFriends', 'Add from friends')}</Paragraph>
-        <Input
-          value={filter}
-          onChangeText={setFilter}
-          placeholder={t('groups.details.searchPlaceholder', 'Search friends…')}
+      {/* ADD FROM FRIENDS */}
+      <Paragraph fow="700" fos="$6" color={isDark ? 'white' : '#1E293B'}>{t('groups.details.addFromFriends', 'Add from friends')}</Paragraph>
+      <Input
+        value={filter}
+        onChangeText={setFilter}
+        placeholder={t('groups.details.searchPlaceholder', 'Search friends…')}
         h={41}
         px={16}
         borderRadius={10}
         fontSize={14}
         fontWeight="500"
-        color="$gray12"
-        placeholderTextColor="$gray10"
-        bg="$backgroundPress"
+        color={isDark ? 'white' : '$gray12'}
+        placeholderTextColor={isDark ? '#94A3B8' : '$gray10'}
+        bg={isDark ? '#2C2C2E' : '$backgroundPress'}
         borderWidth={0}
         returnKeyType="search"
       />
 
       {(candidates ?? []).length === 0 ? (
-        <Paragraph col="$gray10" mt="$2">{t('groups.details.noFriendsToAdd', 'No friends to add')}</Paragraph>
+        <Paragraph col={isDark ? '#94A3B8' : '$gray10'} mt="$2">{t('groups.details.noFriendsToAdd', 'No friends to add')}</Paragraph>
       ) : (
-        <YStack borderWidth={1} borderColor="$gray5" borderRadius={8} overflow="hidden" mt="$2">
+        <YStack borderWidth={1} borderColor={isDark ? '#2C2C2E' : '$gray5'} borderRadius={8} overflow="hidden" mt="$2">
           {candidates.map((u, idx) => {
             const uid = u.uniqueId;
             const label = u.displayName || u.username || uid;
@@ -339,12 +339,12 @@ export default function GroupDetailsScreen() {
 
             return (
               <React.Fragment key={uid ?? `${label}-${idx}`}>
-                <XStack h={60} ai="center" jc="space-between" px="$4">
+                <XStack h={60} ai="center" jc="space-between" px="$4" bg={isDark ? '#1C1C1E' : 'white'}>
                   <XStack ai="center" gap="$3">
-                    <UserAvatar uri={avatarUrl ?? undefined} label={(label || "U").slice(0, 1).toUpperCase()} size={36} textSize={14} backgroundColor="$gray5" />
+                    <UserAvatar uri={avatarUrl ?? undefined} label={(label || "U").slice(0, 1).toUpperCase()} size={36} textSize={14} backgroundColor={isDark ? '#2C2C2E' : '$gray5'} />
                     <YStack>
-                      <Text fontSize={17} fontWeight="600">{label}</Text>
-                      {!!uid && <Paragraph fontSize={14} color="$gray10">{fmtUid(uid)}</Paragraph>}
+                      <Text fontSize={17} fontWeight="600" color={isDark ? 'white' : '$gray12'}>{label}</Text>
+                      {!!uid && <Paragraph fontSize={14} color={isDark ? '#94A3B8' : '$gray10'}>{fmtUid(uid)}</Paragraph>}
                     </YStack>
                   </XStack>
 
@@ -354,7 +354,7 @@ export default function GroupDetailsScreen() {
                     </Button>
                   )}
                 </XStack>
-                {idx < (candidates.length - 1) && <Separator />}
+                {idx < (candidates.length - 1) && <Separator borderColor={isDark ? '#2C2C2E' : '$gray3'} />}
               </React.Fragment>
             );
           })}

@@ -8,6 +8,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { InviteQR } from '@/shared/ui/InviteQR';
 import { GroupsApi } from '@/features/groups/api/groups.api';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
+import { useAppStore } from '@/shared/lib/stores/app-store';
 
 type InviteDTO = { url: string; expiresAt: string };
 
@@ -15,6 +16,8 @@ export default function GroupInviteScreen() {
   const { groupId } = useLocalSearchParams<{ groupId?: string }>();
   const router = useRouter();
   const { t } = useTranslation();
+  const theme = useAppStore(s => s.theme);
+  const isDark = theme === 'dark';
 
   const [data, setData] = useState<InviteDTO | null>(null);
   const [loading, setLoading] = useState(false);
@@ -38,20 +41,21 @@ export default function GroupInviteScreen() {
 
   return (
     <ScreenContainer>
-      <YStack f={1} p="$4" gap="$4" bg="$background">
+      <YStack f={1} p="$4" gap="$4" bg={isDark ? '#000000' : 'white'}>
         <XStack ai="center" jc="space-between">
           <Button
             size="$2"
             h={28}
             chromeless
             onPress={goBack}
-            icon={<ChevronLeft size={18} color="$gray12" />}
+            color={isDark ? 'white' : '$gray12'}
+            icon={<ChevronLeft size={18} color={isDark ? 'white' : '$gray12'} />}
           >
             {t('common.back', 'Back')}
           </Button>
           <XStack ai="center" gap="$2">
-            <QrCode size={18} color="$gray12" />
-            <Paragraph fow="700" fos="$6">
+            <QrCode size={18} color={isDark ? 'white' : '$gray12'} />
+            <Paragraph fow="700" fos="$6" color={isDark ? 'white' : '#1E293B'}>
               {t('groups.invite.title', 'Group QR')}
             </Paragraph>
           </XStack>
@@ -60,7 +64,7 @@ export default function GroupInviteScreen() {
 
         <YStack f={1} ai="center" jc="center" gap="$4">
           {!groupId ? (
-            <Paragraph col="$gray10">{t('groups.invite.invalid', 'Invalid group')}</Paragraph>
+            <Paragraph col={isDark ? '#94A3B8' : '$gray10'}>{t('groups.invite.invalid', 'Invalid group')}</Paragraph>
           ) : loading && !data ? (
             <Spinner />
           ) : data ? (
@@ -71,12 +75,14 @@ export default function GroupInviteScreen() {
                 expiresAt={data.expiresAt}
               />
               <Button onPress={refresh} size="$3" borderRadius="$3">
-                {t('groups.invite.new', 'New QR')}
+                <Paragraph color="white" fow="800">
+                  {t('groups.invite.new', 'New QR')}
+                </Paragraph>
               </Button>
             </>
           ) : (
             <>
-              <Paragraph>{t('groups.invite.error', 'Failed to get invite')}</Paragraph>
+              <Paragraph color={isDark ? '#94A3B8' : '$gray12'}>{t('groups.invite.error', 'Failed to get invite')}</Paragraph>
               <Button onPress={refresh}>{t('common.retry', 'Retry')}</Button>
               <Button onPress={goBack} variant="outlined">
                 {t('common.back', 'Back')}

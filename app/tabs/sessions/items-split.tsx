@@ -44,7 +44,7 @@ const toLocalItems = (source: ReceiptSplitItem[]): Item[] =>
     quantity: item.quantity,
     assignedTo: [...item.assignedTo],
     perPersonCount: item.perPersonCount ? { ...item.perPersonCount } : {},
-    splitMode: item.splitMode ?? (Number.isInteger(item.quantity) && item.quantity > 1 ? 'count' : 'equal'),
+    splitMode: item.splitMode ?? (Number.isInteger(Number(item.quantity)) && Number(item.quantity) > 1 ? 'count' : 'equal'),
     kind: item.kind,
     totalPrice: item.totalPrice,
   }));
@@ -66,15 +66,18 @@ const toStoreItems = (source: Item[]): ReceiptSplitItem[] =>
   });
 
 export default function ItemsSplitScreen() {
-  const { participants: participantsParam, receiptId } = useLocalSearchParams<{
+  const { participants: participantsParam, receiptId, groupId } = useLocalSearchParams<{
     participants?: string;
     receiptId?: string;
+    groupId?: string;
   }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
 
   const me = useAppStore((s) => s.user);
+  const theme = useAppStore((s) => s.theme);
+  const isDark = theme === 'dark';
   const session = useReceiptSessionStore((s) => s.session);
   const storeItems = useReceiptSessionStore((s) => s.items);
   const storeParticipants = useReceiptSessionStore((s) => s.participants);
@@ -133,14 +136,19 @@ export default function ItemsSplitScreen() {
     try {
       setStoreItems(toStoreItems(items));
       await finalizeSession();
-      router.push('/tabs/sessions/finish');
+      router.push({
+        pathname: '/tabs/sessions/finish',
+        params: {
+          groupId: groupId
+        }
+      });
     } catch (e) {
       console.error('Finalize failed:', e);
     }
   };
 
   return (
-    <YStack f={1} bg="white">
+    <YStack f={1} bg={isDark ? '#000000' : 'white'}>
       {/* Premium Header */}
       <LinearGradient
         colors={['#007AFF', '#0055FF']}
@@ -186,24 +194,24 @@ export default function ItemsSplitScreen() {
             return (
               <YStack 
                 key={item.id}
-                bg="white" 
+                bg={isDark ? '#1C1C1E' : 'white'} 
                 br={24} 
                 p="$4" 
                 gap="$4"
                 shadowColor={isDone ? "#007AFF" : "#000"}
                 shadowOffset={{ width: 0, height: 8 }}
-                shadowOpacity={isDone ? 0.08 : 0.04}
+                shadowOpacity={isDone ? 0.08 : (isDark ? 0.3 : 0.04)}
                 shadowRadius={20}
                 elevation={6}
                 borderWidth={1.5}
-                borderColor={isDone ? "rgba(0,122,255,0.2)" : "$gray3"}
+                borderColor={isDone ? "rgba(0,122,255,0.2)" : (isDark ? '#2C2C2E' : '$gray3')}
               >
                 <XStack jc="space-between" ai="center">
                   <YStack f={1} gap="$1">
-                    <Text fos={17} fow="800" col="$gray12">{item.name}</Text>
+                    <Text fos={17} fow="800" col={isDark ? 'white' : '$gray12'}>{item.name}</Text>
                     <XStack ai="center" gap="$2">
-                      <Text fos={13} col="$gray9" fow="600">{item.quantity}x {item.price.toLocaleString()} {storeCurrency}</Text>
-                      <View w={4} h={4} br={2} bg="$gray5" />
+                      <Text fos={13} col={isDark ? '#94A3B8' : '$gray9'} fow="600">{item.quantity}x {item.price.toLocaleString()} {storeCurrency}</Text>
+                      <View w={4} h={4} br={2} bg={isDark ? '#4E4E50' : '$gray5'} />
                       <Text fos={13} col="#007AFF" fow="700">{(item.quantity * item.price).toLocaleString()} {storeCurrency}</Text>
                     </XStack>
                   </YStack>
@@ -212,8 +220,8 @@ export default function ItemsSplitScreen() {
                       <Check size={14} color="white" strokeWidth={3} />
                     </Circle>
                   ) : (
-                    <Circle size={24} bg="$gray2" ai="center" jc="center" borderWidth={1} borderColor="$gray4">
-                      <Plus size={14} color="$gray8" />
+                    <Circle size={24} bg={isDark ? '#2C2C2E' : '$gray2'} ai="center" jc="center" borderWidth={1} borderColor={isDark ? '#4E4E50' : '$gray4'}>
+                      <Plus size={14} color={isDark ? '#94A3B8' : '$gray8'} />
                     </Circle>
                   )}
                 </XStack>
@@ -225,7 +233,7 @@ export default function ItemsSplitScreen() {
                     return (
                       <Pressable key={p.uniqueId} onPress={() => handleToggleParticipant(item.id, p.uniqueId)}>
                         <XStack 
-                          bg={selected ? 'rgba(0,122,255,0.1)' : '$gray2'} 
+                          bg={selected ? 'rgba(0,122,255,0.15)' : (isDark ? '#2D3748' : '$gray2')} 
                           br={12} 
                           px="$3" 
                           h={36} 
@@ -235,7 +243,7 @@ export default function ItemsSplitScreen() {
                           borderColor={selected ? '#007AFF' : 'transparent'}
                         >
                           <UserAvatar uri={undefined} label={p.username.slice(0, 1).toUpperCase()} size={20} textSize={10} />
-                          <Text col={selected ? '#007AFF' : '$gray11'} fos={13} fow="700">{p.username}</Text>
+                          <Text col={selected ? '#007AFF' : (isDark ? '#E2E8F0' : '$gray11')} fos={13} fow="700">{p.username}</Text>
                           {mode === 'count' && selected && (
                             <Circle size={18} bg="#007AFF" ai="center" jc="center">
                               <Text col="white" fos={10} fow="900">{count}</Text>
@@ -247,14 +255,14 @@ export default function ItemsSplitScreen() {
                   })}
                 </XStack>
 
-                <XStack jc="space-between" ai="center" pt="$2" borderTopWidth={1} borderColor="$gray2">
+                <XStack jc="space-between" ai="center" pt="$2" borderTopWidth={1} borderColor={isDark ? '#2C2C2E' : '$gray2'}>
                   <XStack ai="center" gap="$2">
-                    <Info size={14} color="$gray9" />
-                    <Text fos={12} col="$gray9" fow="600">
+                    <Info size={14} color={isDark ? '#94A3B8' : '$gray9'} />
+                    <Text fos={12} col={isDark ? '#94A3B8' : '$gray9'} fow="600">
                       {mode === 'equal' ? t('sessions.split.mode_equal', 'Teng taqsimlash') : t('sessions.split.mode_count', 'Dona boyicha taqsimlash')}
                     </Text>
                   </XStack>
-                  {Number.isInteger(item.quantity) && item.quantity > 1 ? (
+                  {Number.isInteger(Number(item.quantity)) && Number(item.quantity) > 1 ? (
                     <Button 
                       unstyled 
                       onPress={() => {
@@ -275,14 +283,14 @@ export default function ItemsSplitScreen() {
 
       {/* Footer Summary */}
       <YStack 
-        bg="white" 
+        bg={isDark ? '#1C1C1E' : 'white'} 
         p="$5" 
         pb={insets.bottom + 105} 
         borderTopLeftRadius={32} 
         borderTopRightRadius={32}
         shadowColor="#000"
         shadowOffset={{ width: 0, height: -10 }}
-        shadowOpacity={0.1}
+        shadowOpacity={isDark ? 0.3 : 0.1}
         shadowRadius={20}
         elevation={20}
       >

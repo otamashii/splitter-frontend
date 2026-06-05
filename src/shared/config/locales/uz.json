@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Splitter",
+    "name": "Receipt Splitter",
     "subtitle": "Do'stlar bilan oson hisob-kitob"
   },
   "features": {
@@ -13,7 +13,7 @@
   },
   "welcome": {
     "message": "Xush kelibsiz! Boshlaymiz",
-    "newUser": "Splitterda yangimisiz?",
+    "newUser": "Receipt Splitterda yangimisiz?",
     "newUserDesc": "Hisob yarating va pulni bo'lishni boshlang",
     "existingUser": "Hisobingiz bormi?"
   },
@@ -57,6 +57,10 @@
     "my_friends": "Mening do'stlarim",
     "not_found": "Do'stlar topilmadi",
     "empty": "Do'stlar hali yo'q",
+    "friend_profile": "Do'st profili",
+    "invite_banner_title": "Yangi do'stlar qo'shing",
+    "invite_banner_desc": "Nickname yoki QR-kod yordamida do'stlaringizni toping",
+    "delete_confirm": "{{name}}ni do'stlaringiz ro'yxatidan o'chirmoqchimisiz?",
     "common": {
       "unknownUser": "Noma'lum foydalanuvchi"
     },
@@ -159,8 +163,8 @@
     "type_label": "TUR",
     "private_type": "Shaxsiy",
     "group_type": "Guruh",
-    "private_bio": "Splitter ilovasi orqali bog'lanish",
-    "group_bio": "Splitter guruhi orqali bog'lanish",
+    "private_bio": "Receipt Splitter ilovasi orqali bog'lanish",
+    "group_bio": "Receipt Splitter guruhi orqali bog'lanish",
     "actions": {
       "markAllRead": "Hamma o'qilgan",
       "markAllReadSuccess": "Hamma xabarlar o'qildi",
@@ -361,14 +365,14 @@
     "not_found": "Ma'lumot topilmadi",
     "back": "Ortga qaytish",
     "report": {
-      "header": "SPLITTER — HISOB CHEKI",
+      "header": "RECEIPT SPLITTER — HISOB CHEKI",
       "name": "Hisob nomi:",
       "date": "Sana:",
       "participants": "Ishtirokchilar:",
       "items": "MAHSULOTLAR:",
       "total": "JAMI:",
       "by_participants": "ISHTIROKCHILAR BO'YICHA:",
-      "footer": "Splitter App orqali yaratildi"
+      "footer": "Receipt Splitter App orqali yaratildi"
     }
   },
   "settings": {
@@ -436,7 +440,7 @@
       "share_plan": "👥 To'lovlar rejasi:",
       "debt": "Qarz",
       "paid": "To'landi",
-      "share_footer": "Splitter ilovasi orqali hisoblandi. 📱",
+      "share_footer": "Receipt Splitter ilovasi orqali hisoblandi. 📱",
       "note_prefix": "📌 \"{{name}}\" bo'yicha eslatma:",
       "total_share": "Jami ulush",
       "paid_label": "To'ladi",

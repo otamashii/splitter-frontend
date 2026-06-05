@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { useGroupsStore } from '@/features/groups/model/groups.store';
 import UserAvatar from '@/shared/ui/UserAvatar';
 import { useAppStore } from '@/shared/lib/stores/app-store';
+import { apiClient } from '@/features/auth/api';
 
 export default function GroupsScreen() {
   const router = useRouter();
@@ -31,6 +32,20 @@ export default function GroupsScreen() {
 
   const theme = useAppStore(s => s.theme);
   const isDark = theme === 'dark';
+  const [navigating, setNavigating] = useState<number | null>(null);
+
+  const openGroupChat = async (groupId: number, groupName: string) => {
+    if (navigating) return;
+    setNavigating(groupId);
+    try {
+      const { data } = await apiClient.get(`/chats/group/${groupId}`);
+      router.push(`/tabs/chat/${data.chatId}?title=${encodeURIComponent(groupName)}`);
+    } catch (e) {
+      console.error('Failed to open group chat', e);
+    } finally {
+      setNavigating(null);
+    }
+  };
 
   return (
     <YStack f={1} bg={isDark ? '#000000' : 'white'}>
@@ -48,7 +63,20 @@ export default function GroupsScreen() {
         }}
       >
         <XStack ai="center" jc="space-between">
-          <Text col="white" fos={24} fow="900">{t('groups.title', 'Groups')}</Text>
+          <XStack ai="center" gap="$3">
+            <Pressable 
+              onPress={() => router.back()}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.4 : 1,
+                transform: [{ scale: pressed ? 0.85 : 1 }]
+              })}
+            >
+              <YStack p="$2" br={12} bg="rgba(255,255,255,0.15)">
+                <ChevronLeft size={24} color="white" />
+              </YStack>
+            </Pressable>
+            <Text col="white" fos={24} fow="900">{t('groups.title', 'Groups')}</Text>
+          </XStack>
           <Link href="/tabs/groups/create" asChild>
             <Pressable>
               <YStack p="$2.5" br={14} bg="rgba(255,255,255,0.2)">
@@ -77,7 +105,11 @@ export default function GroupsScreen() {
         </YStack>
       </LinearGradient>
 
-      <ScrollView f={1} p="$5" showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={{ flex: 1 }} 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 20, paddingBottom: 120 }}
+      >
         <YStack gap="$4">
           {loading && !groups.length ? (
             <YStack ai="center" py="$10">
@@ -85,12 +117,12 @@ export default function GroupsScreen() {
             </YStack>
           ) : filtered.length === 0 ? (
             <YStack ai="center" py="$20" gap="$4">
-              <Circle size={100} bg="$gray2" ai="center" jc="center">
-                <Users size={48} color="$gray8" strokeWidth={1} />
+              <Circle size={100} bg={isDark ? '#1C1C1E' : '$gray2'} ai="center" jc="center">
+                <Users size={48} color={isDark ? '#94A3B8' : '$gray8'} strokeWidth={1} />
               </Circle>
               <YStack ai="center" gap="$1">
-                <Text col="$gray11" fos={18} fow="800">{t('groups.none', 'No groups yet')}</Text>
-                <Text col="$gray9" ta="center" px="$8">
+                <Text col={isDark ? 'white' : '$gray11'} fos={18} fow="800">{t('groups.none', 'No groups yet')}</Text>
+                <Text col={isDark ? '#94A3B8' : '$gray9'} ta="center" px="$8">
                   {t('groups.create_hint', 'Create a group to split bills with multiple friends')}
                 </Text>
               </YStack>
@@ -102,8 +134,11 @@ export default function GroupsScreen() {
             </YStack>
           ) : (
             filtered.map((g: any) => (
-              <Link key={g.id} href={`/tabs/chat/${g.id}?type=group`} asChild>
-                <Pressable>
+              <Pressable 
+                key={g.id} 
+                onPress={() => openGroupChat(g.id, g.name)}
+                disabled={navigating === g.id}
+              >
                   <XStack 
                     bg={isDark ? '#1C1C1E' : 'white'} 
                     br={28} 
@@ -138,21 +173,20 @@ export default function GroupsScreen() {
                       <YStack gap="$1">
                         <Text fos={18} fow="900" col={isDark ? 'white' : '#1E293B'}>{g.name}</Text>
                         <XStack ai="center" gap="$1.5">
-                          <Users size={12} color="$gray9" />
-                          <Text fos={12} col="$gray9" fow="700">
+                          <Users size={12} color={isDark ? '#94A3B8' : '$gray9'} />
+                          <Text fos={12} col={isDark ? '#94A3B8' : '$gray9'} fow="700">
                              {t('groups.members_count', { count: g.membersCount || 0 })}
                           </Text>
-                          <View w={3} h={3} br={2} bg="$gray7" />
+                          <View w={3} h={3} br={2} bg={isDark ? '#2C2C2E' : '$gray7'} />
                           <Text fos={11} fow="800" col="#34C759" textTransform="uppercase">
                             {t('groups.active', 'Active')}
                           </Text>
                         </XStack>
                       </YStack>
                     </XStack>
-                    <ChevronRight size={20} color="$gray8" />
+                    <ChevronRight size={20} color={isDark ? '#94A3B8' : '$gray8'} />
                   </XStack>
                 </Pressable>
-              </Link>
             ))
           )}
         </YStack>
