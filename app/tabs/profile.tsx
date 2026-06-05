@@ -16,6 +16,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import UserAvatar from '@/shared/ui/UserAvatar';
 import { useAppStore } from '@/shared/lib/stores/app-store';
 import { changePassword, resetAvatar, updateEmail, updateUsername, uploadAvatar } from '@/features/auth/api';
+import { LANGUAGE_OPTIONS } from '@/shared/config/languages';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -51,6 +52,7 @@ export default function ProfileScreen() {
   const logout = useAppStore(s => s.logout);
   const theme = useAppStore(s => s.theme);
   const currency = useAppStore(s => s.currency);
+  const language = useAppStore(s => s.language);
   const isDark = theme === 'dark';
 
   const handleLogout = () => {
@@ -112,7 +114,7 @@ export default function ProfileScreen() {
             </YStack>
             <XStack bg="rgba(255,255,255,0.1)" br={20} px="$4" py="$1.5" ai="center" gap="$2">
                <Shield size={14} color="white" />
-               <Text col="white" fontSize={12} fontWeight="800" textTransform="uppercase">Verified Account</Text>
+               <Text col="white" fontSize={12} fontWeight="800" textTransform="uppercase">{t('profile.labels.verified', 'Verified Account')}</Text>
             </XStack>
           </YStack>
         </LinearGradient>
@@ -122,32 +124,32 @@ export default function ProfileScreen() {
           <YStack bg={isDark ? '#1C1C1E' : 'white'} br={32} p="$2" shadowColor="#000" shadowOpacity={isDark ? 0.3 : 0.03} shadowRadius={20} elevation={5}>
               <ProfileMenuItem 
                 icon={UserIcon} 
-                label="Shaxsiy ma'lumotlar" 
+                label={t('profile.info.title', 'Shaxsiy ma\'lumotlar')} 
                 onPress={() => router.push('/tabs/settings/personal')}
               />
              <Separator ml={60} borderColor={isDark ? '#2C2C2E' : '$gray3'} />
-                           <ProfileMenuItem 
+                            <ProfileMenuItem 
                 icon={Mail} 
-                label="Email sozlamalari" 
+                label={t('profile.info.emailLabel', 'Email sozlamalari')} 
                 onPress={() => router.push('/tabs/settings/email')}
               />
              <Separator ml={60} borderColor={isDark ? '#2C2C2E' : '$gray3'} />
-                           <ProfileMenuItem 
+                            <ProfileMenuItem 
                 icon={Lock} 
-                label="Xavfsizlik" 
+                label={t('profile.password.title', 'Xavfsizlik')} 
                 onPress={() => router.push('/tabs/settings/security')}
               />
              <Separator ml={60} borderColor={isDark ? '#2C2C2E' : '$gray3'} />
               <ProfileMenuItem 
                 icon={Languages} 
-                label="Til (Language)" 
-                rightContent={<Text fontWeight="700" col="$gray9">O'zbekcha</Text>} 
+                label={t('settings.language.title', 'Til')} 
+                rightContent={<Text fontWeight="700" col="$gray9">{LANGUAGE_OPTIONS.find(o => o.code === language)?.label || 'English'}</Text>} 
                 onPress={() => router.push('/tabs/settings/language')}
               />
               <Separator ml={60} borderColor={isDark ? '#2C2C2E' : '$gray3'} />
               <ProfileMenuItem 
                 icon={Coins} 
-                label="Asosiy valyuta" 
+                label={t('settings.currency.title', 'Asosiy valyuta')} 
                 rightContent={<Text fontWeight="700" col="$gray9">{currency}</Text>} 
                 onPress={() => router.push('/tabs/settings/currency')}
               />
@@ -157,19 +159,19 @@ export default function ProfileScreen() {
           <YStack bg={isDark ? '#1C1C1E' : 'white'} br={32} p="$2" shadowColor="#000" shadowOpacity={isDark ? 0.3 : 0.03} shadowRadius={20} elevation={5}>
              <ProfileMenuItem 
                icon={Settings} 
-               label="Sozlamalar" 
+               label={t('navigation.tabs.settings', 'Sozlamalar')} 
                color="#8B5CF6" 
                onPress={() => router.push('/tabs/settings')}
              />
              <Separator ml={60} borderColor={isDark ? '#2C2C2E' : '$gray3'} />
-                           <ProfileMenuItem 
+                            <ProfileMenuItem 
                 icon={Bell} 
-                label="Bildirishnomalar" 
+                label={t('settings.notifications.title', 'Bildirishnomalar')} 
                 color="#F59E0B" 
                 onPress={() => router.push('/tabs/settings/notifications')}
               />
              <Separator ml={60} borderColor={isDark ? '#2C2C2E' : '$gray3'} />
-             <ProfileMenuItem icon={HelpCircle} label="Yordam va qo'llab-quvvatlash" color="#10B981" />
+             <ProfileMenuItem icon={HelpCircle} label={t('common.help', 'Yordam va qo\'llab-quvvatlash')} color="#10B981" />
           </YStack>
 
           {/* Logout */}
@@ -182,7 +184,7 @@ export default function ProfileScreen() {
             br={20}
             icon={<LogOut size={20} color="#FF3B30" />}
           >
-            <Text col="#FF3B30" fontWeight="800" fontSize={16}>Chiqish</Text>
+            <Text col="#FF3B30" fontWeight="800" fontSize={16}>{t('profile.logout', 'Chiqish')}</Text>
           </Button>
 
           <YStack ai="center" mt="$4" mb="$10">

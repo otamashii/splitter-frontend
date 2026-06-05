@@ -11,7 +11,7 @@ import { useAppStore } from '@/shared/lib/stores/app-store';
 type Props = { type: 'incoming' | 'outgoing' };
 
 export function RequestList({ type }: Props) {
-  const { requestsRaw, fetchAll, loading, error } = useFriendsStore();
+  const { requests, fetchAll, loading, error } = useFriendsStore();
   const meUniqueId = useAppStore((s) => s.user?.uniqueId);
 
   const [busyId, setBusyId] = useState<number | null>(null);
@@ -28,8 +28,8 @@ export function RequestList({ type }: Props) {
   }, [notice]);
 
   const arr = useMemo(
-    () => (type === 'incoming' ? requestsRaw?.incoming : requestsRaw?.outgoing) ?? [],
-    [requestsRaw, type]
+    () => (type === 'incoming' ? requests?.incoming : requests?.outgoing) ?? [],
+    [requests, type]
   );
 
   const wrap = useCallback(

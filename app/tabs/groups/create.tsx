@@ -139,10 +139,10 @@ export default function GroupCreateScreen() {
     try {
       const created = await createGroup(name.trim());
       setGroupId(created.id);
-      notice.ok(t('groups.create.notice.success', 'Group created'));
+      notice.ok(t('groups.new.notice.success', 'Group created'));
       await openGroup(created.id);
     } catch (error: any) {
-      notice.err(error?.message ?? t('groups.create.notice.error', 'Failed to create group'));
+      notice.err(error?.message ?? t('groups.new.notice.error', 'Failed to create group'));
     } finally {
       setCreating(false);
     }
@@ -154,9 +154,9 @@ export default function GroupCreateScreen() {
     try {
       await addMember(groupId, uid);
       await openGroup(groupId);
-      notice.ok(t('groups.create.notice.memberAdded', 'Member added'));
+      notice.ok(t('groups.new.notice.memberAdded', 'Member added'));
     } catch (error: any) {
-      notice.err(error?.message ?? t('groups.create.notice.addFailed', 'Failed to add member'));
+      notice.err(error?.message ?? t('groups.new.notice.addFailed', 'Failed to add member'));
     } finally {
       setOpUid(null);
     }
@@ -168,9 +168,9 @@ export default function GroupCreateScreen() {
     try {
       await removeMember(groupId, uid);
       await openGroup(groupId);
-      notice.ok(t('groups.create.notice.memberRemoved', 'Member removed'));
+      notice.ok(t('groups.new.notice.memberRemoved', 'Member removed'));
     } catch (error: any) {
-      notice.err(error?.message ?? t('groups.create.notice.removeFailed', 'Failed to remove member'));
+      notice.err(error?.message ?? t('groups.new.notice.removeFailed', 'Failed to remove member'));
     } finally {
       setOpUid(null);
     }
@@ -200,7 +200,7 @@ export default function GroupCreateScreen() {
               <ChevronLeft size={24} color="white" />
             </YStack>
           </Pressable>
-          <Text col="white" fos={18} fow="900">{t('groups.create.title', 'Guruh yaratish')}</Text>
+          <Text col="white" fos={18} fow="900">{t('groups.new.title', 'Guruh yaratish')}</Text>
           <YStack w={40} />
         </XStack>
       </LinearGradient>
@@ -209,43 +209,43 @@ export default function GroupCreateScreen() {
         {notice.node}
 
       <XStack gap="$2" ai="center">
-        <Input
-          f={1}
-          value={name}
-          onChangeText={setName}
-          placeholder={t('groups.create.namePlaceholder', 'Group name')}
-          editable={!groupId}
-          returnKeyType="done"
-          onSubmitEditing={onCreate}
-        />
-        <Button onPress={onCreate} disabled={!!groupId || creating}>
-          {creating ? '...' : t('groups.create.action', 'Create')}
-        </Button>
-      </XStack>
-
-      <Separator />
-
-      {!groupId ? (
-        <Paragraph col="$gray10">
-          {t('groups.create.emptyState', 'Create a group to add members.')}
-        </Paragraph>
-      ) : loading && !current ? (
-        <Spinner />
-      ) : (
-        <>
-          <Paragraph fow="700" fos="$6">
-            {t('groups.create.manageMembers', 'Add or remove members')}
-          </Paragraph>
           <Input
-            value={filter}
-            onChangeText={setFilter}
-            placeholder={t('groups.create.searchPlaceholder', 'Search friends…')}
-            returnKeyType="search"
+            f={1}
+            value={name}
+            onChangeText={setName}
+            placeholder={t('groups.new.namePlaceholder', 'Group name')}
+            editable={!groupId}
+            returnKeyType="done"
+            onSubmitEditing={onCreate}
           />
+          <Button onPress={onCreate} disabled={!!groupId || creating}>
+            {creating ? '...' : t('groups.new.action', 'Create')}
+          </Button>
+        </XStack>
+  
+        <Separator />
+  
+        {!groupId ? (
+          <Paragraph col="$gray10">
+            {t('groups.new.emptyState', 'Create a group to add members.')}
+          </Paragraph>
+        ) : loading && !current ? (
+          <Spinner />
+        ) : (
+          <>
+            <Paragraph fow="700" fos="$6">
+              {t('groups.new.manageMembers', 'Add or remove members')}
+            </Paragraph>
+            <Input
+              value={filter}
+              onChangeText={setFilter}
+              placeholder={t('groups.new.searchPlaceholder', 'Search friends…')}
+              returnKeyType="search"
+            />
 
           {(rows ?? []).length === 0 ? (
             <Paragraph col="$gray10">
-              {t('groups.create.noFriends', 'No friends to display')}
+              {t('groups.new.noFriends', 'No friends to display')}
             </Paragraph>
           ) : (
             <YStack borderWidth={1} borderColor="$gray5" borderRadius={8} overflow="hidden">
@@ -298,7 +298,7 @@ export default function GroupCreateScreen() {
                               onPress={() => row.uid && onRemove(row.uid)}
                               disabled={!row.uid || busy}
                               pressStyle={{ bg: '$red3' }}
-                              aria-label={t('groups.create.removeMember', 'Remove member')}
+                              aria-label={t('groups.new.removeMember', 'Remove member')}
                             />
                           </>
                         ) : (
@@ -310,7 +310,7 @@ export default function GroupCreateScreen() {
                             onPress={() => row.uid && onAdd(row.uid)}
                             disabled={!row.uid || busy}
                             pressStyle={{ bg: '$blue3' }}
-                            aria-label={t('groups.create.addMember', 'Add member')}
+                            aria-label={t('groups.new.addMember', 'Add member')}
                           />
                         )}
                       </XStack>

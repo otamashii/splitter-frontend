@@ -44,7 +44,7 @@ const toLocalItems = (source: ReceiptSplitItem[]): Item[] =>
     quantity: item.quantity,
     assignedTo: [...item.assignedTo],
     perPersonCount: item.perPersonCount ? { ...item.perPersonCount } : {},
-    splitMode: item.splitMode ?? (item.quantity > 1 ? 'count' : 'equal'),
+    splitMode: item.splitMode ?? (Number.isInteger(item.quantity) && item.quantity > 1 ? 'count' : 'equal'),
     kind: item.kind,
     totalPrice: item.totalPrice,
   }));
@@ -116,12 +116,13 @@ export default function ItemsSplitScreen() {
       } else {
         const current = it.perPersonCount?.[pId] || 0;
         const totalAssigned = Object.values(it.perPersonCount || {}).reduce((a, b) => a + (b || 0), 0);
-        if (current > 0) {
+        // Cycle through 0 -> 1 -> ... -> quantity -> 0
+        if (totalAssigned < it.quantity) {
+          return { ...it, perPersonCount: { ...it.perPersonCount, [pId]: current + 1 } };
+        } else if (current > 0) {
           const next = { ...it.perPersonCount };
           delete next[pId];
           return { ...it, perPersonCount: next };
-        } else if (totalAssigned < it.quantity) {
-          return { ...it, perPersonCount: { ...it.perPersonCount, [pId]: 1 } };
         }
         return it;
       }
@@ -253,14 +254,18 @@ export default function ItemsSplitScreen() {
                       {mode === 'equal' ? t('sessions.split.mode_equal', 'Teng taqsimlash') : t('sessions.split.mode_count', 'Dona boyicha taqsimlash')}
                     </Text>
                   </XStack>
-                  <Button 
-                    unstyled 
-                    onPress={() => {
-                        setLocalItems(prev => prev.map(it => it.id === item.id ? { ...it, splitMode: mode === 'equal' ? 'count' : 'equal', assignedTo: [], perPersonCount: {} } : it));
-                    }}
-                  >
+                  {Number.isInteger(item.quantity) && item.quantity > 1 ? (
+                    <Button 
+                      unstyled 
+                      onPress={() => {
+                          setLocalItems(prev => prev.map(it => it.id === item.id ? { ...it, splitMode: mode === 'equal' ? 'count' : 'equal', assignedTo: [], perPersonCount: {} } : it));
+                      }}
+                    >
                     <Text col="#007AFF" fos={12} fow="800">{t('sessions.split.change_mode', 'O\'zgartirish')}</Text>
                   </Button>
+                  ) : (
+                    <View />
+                  )}
                 </XStack>
               </YStack>
             );

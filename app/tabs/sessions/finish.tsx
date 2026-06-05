@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Pressable, StyleSheet, TextInput, Share } from 'react-native';
+import { Pressable, TextInput, Share } from 'react-native';
 import { YStack, XStack, Text, Button, Circle, ScrollView, View, Separator, Spinner, Sheet } from 'tamagui';
-import { Check, ChevronLeft, ChevronRight, ArrowRight, Wallet, History, Share2, MessageSquare, Send } from '@tamagui/lucide-icons';
+import { Check, ChevronLeft, Wallet, Share2, MessageSquare, Send } from '@tamagui/lucide-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useReceiptSessionStore, type FinishPayload } from '@/features/receipt/model/receipt-session.store';
@@ -38,15 +38,13 @@ export default function FinishScreen() {
   const grandTotal = payload?.grandTotal || 0;
   const participantTotals = payload?.totalsByParticipant || [];
   const allocations = payload?.allocations || [];
-  const sessionName = payload?.sessionName || t('sessions.finish.default_name', 'Xarajat yakuni');
-
-  // Assuming 'allocations' contains the share info.
+  const sessionName = payload?.sessionName || t('sessions.finish.default_name', 'Session Result');
 
   const handleShare = async () => {
     try {
-      let text = `📊 ${sessionName} - Xarajatlar yakuni\n\n`;
-      text += `💰 Jami summa: ${grandTotal.toLocaleString()} ${currency}\n\n`;
-      text += `👥 To'lovlar rejasi:\n`;
+      let text = t('sessions.finish.share_title', { name: sessionName }) + '\n\n';
+      text += t('sessions.finish.share_total', { total: grandTotal.toLocaleString(), currency }) + '\n\n';
+      text += t('sessions.finish.share_plan', 'Settlement Plan:') + '\n';
       
       participantTotals.forEach(p => {
         const paidStr = paidAmounts[p.uniqueId] || p.amountOwed.toString();
@@ -55,14 +53,14 @@ export default function FinishScreen() {
         
         text += `• ${p.username}: ${p.amountOwed.toLocaleString()} ${currency}`;
         if (debt > 0) {
-          text += ` (Qarz: ${debt.toLocaleString()} ${currency})`;
+          text += ` (${t('sessions.finish.debt', 'Debt')}: ${debt.toLocaleString()} ${currency})`;
         } else {
-          text += ` (To'landi ✅)`;
+          text += ` (${t('sessions.finish.paid', 'Paid')} ✅)`;
         }
         text += `\n`;
       });
       
-      text += `\nSplitter ilovasi orqali hisoblandi. 📱`;
+      text += `\n${t('sessions.finish.share_footer', 'Calculated via Splitter app. 📱')}`;
       
       await Share.share({
         message: text,
@@ -77,11 +75,9 @@ export default function FinishScreen() {
     setSendingComment(true);
     try {
       const { itemName, participantId } = commentTarget;
-      // 1. Create/Get Chat
       const chatRes = await api.post('/chats', { uniqueId: participantId });
       const chatId = chatRes.data.id;
-      // 2. Send Message
-      const msg = `📌 "${itemName}" bo'yicha eslatma:\n${commentText.trim()}`;
+      const msg = `${t('sessions.finish.note_prefix', { name: itemName })}\n${commentText.trim()}`;
       await api.post(`/chats/${chatId}/messages`, { content: msg });
       
       setCommentTarget(null);
@@ -114,7 +110,7 @@ export default function FinishScreen() {
               <ChevronLeft size={24} color="white" />
             </YStack>
           </Pressable>
-          <Text col="white" fos={18} fow="900">{t('sessions.finish.title', 'Natija')}</Text>
+          <Text col="white" fos={18} fow="900">{t('sessions.finish.title', 'Result')}</Text>
           <Pressable onPress={handleShare}>
             <YStack p="$2" br={12} bg="rgba(255,255,255,0.2)">
               <Share2 size={24} color="white" />
@@ -140,7 +136,7 @@ export default function FinishScreen() {
           {/* Settlement Plan Section */}
           <YStack gap="$3">
             <Text fos={14} fow="800" col="$gray9" textTransform="uppercase" ml="$2">
-               {t('sessions.finish.settlement', 'To\'lovlar rejasi')}
+               {t('sessions.finish.settlement', 'Settlement Plan')}
             </Text>
             <YStack bg="white" br={24} p="$5" gap="$4" shadowColor="#000" shadowOpacity={0.05} shadowRadius={15} elevation={5}>
               {participantTotals.map((p, i) => {
@@ -163,14 +159,18 @@ export default function FinishScreen() {
                         <YStack ai="flex-end">
                           <Text fos={16} fow="900" col="#007AFF">{owed.toLocaleString()} {currency}</Text>
                           <View bg="rgba(0,122,255,0.1)" px="$2" py="$0.5" br={6} mt="$1">
-                            <Text fos={10} fow="800" col="#007AFF" textTransform="uppercase">Jami ulush</Text>
+                            <Text fos={10} fow="800" col="#007AFF" textTransform="uppercase">
+                              {t('sessions.finish.total_share', 'Total Share')}
+                            </Text>
                           </View>
                         </YStack>
                       </XStack>
 
                       <XStack ai="center" jc="space-between" mt="$2" gap="$4">
                         <YStack f={1}>
-                          <Text fos={11} fow="800" col="$gray9" mb="$1" textTransform="uppercase">To'ladi</Text>
+                          <Text fos={11} fow="800" col="$gray9" mb="$1" textTransform="uppercase">
+                            {t('sessions.finish.paid_label', 'Paid')}
+                          </Text>
                           <TextInput
                             value={paidStr}
                             onChangeText={(val) => setPaidAmounts(prev => ({ ...prev, [p.uniqueId]: val }))}
@@ -188,7 +188,7 @@ export default function FinishScreen() {
                         </YStack>
                         <YStack ai="flex-end" jc="center" pt="$4">
                            <Text fos={11} fow="800" col={debt > 0 ? '$red10' : '$green10'} textTransform="uppercase">
-                             {debt > 0 ? 'Qarz' : 'To\'landi'}
+                             {debt > 0 ? t('sessions.finish.debt', 'Debt') : t('sessions.finish.paid', 'Paid')}
                            </Text>
                            <Text fos={15} fow="900" col={debt > 0 ? '$red10' : '$green10'}>
                              {Math.abs(debt).toLocaleString()} {currency}
@@ -206,7 +206,7 @@ export default function FinishScreen() {
           {/* Details Breakdown */}
           <YStack gap="$3">
             <Text fos={14} fow="800" col="$gray9" textTransform="uppercase" ml="$2">
-               {t('sessions.finish.breakdown', 'Tafsilotlar')}
+               {t('sessions.finish.breakdown', 'Breakdown')}
             </Text>
             {payload?.totalsByItem?.map((item) => (
               <YStack 
@@ -269,13 +269,12 @@ export default function FinishScreen() {
             h={56}
             br={16}
           >
-            <Text col="$gray12" fos={16} fow="800">{t('common.close', 'Yopish')}</Text>
+            <Text col="$gray12" fos={16} fow="800">{t('common.close', 'Close')}</Text>
           </Button>
           <Button
             f={2}
             onPress={async () => {
               try {
-                // Send notifications for debts
                 for (const p of participantTotals) {
                   const paidStr = paidAmounts[p.uniqueId] || p.amountOwed.toString();
                   const paidNum = parseFloat(paidStr) || 0;
@@ -283,11 +282,9 @@ export default function FinishScreen() {
 
                   if (debt > 0) {
                     try {
-                      // 1. Create/Get Chat
                       const chatRes = await api.post('/chats', { uniqueId: p.uniqueId });
                       const chatId = chatRes.data.id;
-                      // 2. Send Message
-                      const msg = `Salom! "${payload?.sessionName || 'Xarajat'}" bo'yicha sizda ${debt.toLocaleString()} ${currency} qarz qoldi. Iltimos, imkon bo'lganda o'tkazib yuboring. 😊`;
+                      const msg = t('sessions.finish.debt_notification', { name: sessionName, amount: debt.toLocaleString(), currency });
                       await api.post(`/chats/${chatId}/messages`, { content: msg });
                     } catch (chatErr) {
                       console.warn(`Failed to notify ${p.uniqueId}:`, chatErr);
@@ -308,7 +305,7 @@ export default function FinishScreen() {
             icon={finalizing ? <Spinner color="white" /> : <Wallet size={20} color="white" />}
           >
             <Text col="white" fos={16} fow="800">
-              {finalizing ? '' : t('sessions.finish.confirm_payment', 'To\'lovni tasdiqlash')}
+              {finalizing ? '' : t('sessions.finish.confirm_payment', 'Confirm Payment')}
             </Text>
           </Button>
         </XStack>
@@ -330,7 +327,9 @@ export default function FinishScreen() {
           <YStack gap="$4" mt="$2">
             <XStack jc="space-between" ai="center">
               <YStack>
-                <Text fos={18} fow="900" col="$gray12">{commentTarget?.participantId} uchun eslatma</Text>
+                <Text fos={18} fow="900" col="$gray12">
+                  {t('sessions.finish.note_for', { name: commentTarget?.participantId })}
+                </Text>
                 <Text fos={13} col="$gray10" fow="600">{commentTarget?.itemName}</Text>
               </YStack>
               <Pressable onPress={() => setCommentTarget(null)}>
@@ -343,7 +342,7 @@ export default function FinishScreen() {
             <TextInput
               autoFocus
               multiline
-              placeholder="Eslatma matnini kiriting..."
+              placeholder={t('sessions.finish.note_placeholder', 'Enter note text...')}
               value={commentText}
               onChangeText={setCommentText}
               style={{
@@ -365,7 +364,7 @@ export default function FinishScreen() {
               br={14}
               icon={sendingComment ? <Spinner color="white" /> : <Send size={18} color="white" />}
             >
-              <Text col="white" fow="800">Yuborish</Text>
+              <Text col="white" fow="800">{t('sessions.finish.send', 'Send')}</Text>
             </Button>
           </YStack>
         </Sheet.Frame>

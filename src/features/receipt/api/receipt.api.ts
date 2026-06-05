@@ -12,6 +12,22 @@ export interface ParseReceiptRequest {
   qrData?: string;
 }
 
+export interface CreateSessionRequest {
+  groupId?: number;
+  serviceFee?: number;
+  total?: number;
+}
+
+export interface CreateSessionResponse {
+  id: number;
+  creatorId: number;
+  groupId: number | null;
+  serviceFee: number;
+  total: number;
+  status: string;
+  createdAt: string;
+}
+
 export type ParsedReceiptItemKind = 'item' | 'fee' | 'discount' | string;
 
 export interface ParsedReceiptItem {
@@ -130,6 +146,15 @@ export const ReceiptApi = {
   async close(sessionId: number): Promise<void> {
     try {
       await apiClient.patch(`/sessions/${sessionId}/close`);
+    } catch (error) {
+      throw normalizeError(error);
+    }
+  },
+
+  async createSession(payload?: CreateSessionRequest): Promise<CreateSessionResponse> {
+    try {
+      const { data } = await apiClient.post<CreateSessionResponse>('/sessions', payload || {});
+      return data;
     } catch (error) {
       throw normalizeError(error);
     }

@@ -94,7 +94,7 @@ function MainActionCard({ title, subtitle, icon: Icon, colors, onPress }: { titl
 
 function HistoryCard({ bill, onPress }: { bill: SessionHistoryEntry, onPress: () => void }) {
   const { t } = useTranslation();
-  const theme = useAppStore(s => s.theme);
+  const { theme, language } = useAppStore();
   const isDark = theme === 'dark';
   return (
     <Pressable onPress={onPress} style={({ pressed }) => ({
@@ -130,7 +130,7 @@ function HistoryCard({ bill, onPress }: { bill: SessionHistoryEntry, onPress: ()
               {bill.sessionName || 'Hisob'}
             </Text>
             <Text fontSize={11} col="$gray9" fontWeight="700" mt="$0.5">
-              {new Date(bill.finalizedAt || bill.createdAt).toLocaleDateString('uz-UZ', { day: '2-digit', month: 'short' })}
+              {new Date(bill.finalizedAt || bill.createdAt).toLocaleDateString(language, { day: '2-digit', month: 'short' })}
             </Text>
           </YStack>
         </XStack>
@@ -156,6 +156,7 @@ export default function HomePage() {
   const { sessions, loading, fetchHistory, forceRefresh } = useSessionsHistoryStore();
   const theme = useAppStore(s => s.theme);
   const currency = useAppStore(s => s.currency);
+  const language = useAppStore(s => s.language);
   const setTheme = useAppStore(s => s.setTheme);
   const isDark = theme === 'dark';
 
@@ -172,13 +173,13 @@ export default function HomePage() {
   // Joriy oy nomi va shu oydagi sessiyalar soni
   const { currentMonthName, currentMonthCount } = useMemo(() => {
     const now = new Date();
-    const monthName = now.toLocaleDateString('uz-UZ', { month: 'long' });
+    const monthName = now.toLocaleDateString(language, { month: 'long' });
     const count = sessions.filter(s => {
       const d = new Date(s.finalizedAt || s.createdAt);
       return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
     }).length;
     return { currentMonthName: monthName, currentMonthCount: count };
-  }, [sessions]);
+  }, [sessions, language]);
 
   return (
     <View f={1} bg={isDark ? '#000000' : '#F8F9FA'}>
@@ -278,15 +279,15 @@ export default function HomePage() {
           {/* Main Quick Actions */}
           <XStack gap="$4">
              <MainActionCard 
-                title="Scan Receipt" 
-                subtitle="Chekni skanerlang va avtomat taqsimlang" 
+                title={t('navigation.scanReceipt', 'Scan Receipt')} 
+                subtitle={t('features.scanDesc', 'Chekni skanerlang va avtomat taqsimlang')} 
                 icon={ScanLine} 
                 colors={['#007AFF', '#00C6FF']}
                 onPress={() => router.push('/tabs/scan-receipt')}
              />
-             <MainActionCard 
-                title="Manual Entry" 
-                subtitle="Xarajatlarni qo'lda kiritish va bo'lish" 
+              <MainActionCard 
+                title={t('sessions.manual.title', 'Manual Entry')} 
+                subtitle={t('features.splitDesc', 'Xarajatlarni qo\'lda kiritish va bo\'lish')} 
                 icon={PlusCircle} 
                 colors={['#8B5CF6', '#D946EF']}
                 onPress={() => router.push('/tabs/sessions/create')}
@@ -295,21 +296,21 @@ export default function HomePage() {
 
           {/* Service Grid - ULTRA PREMIUM */}
           <YStack gap="$4">
-             <Text col={isDark ? 'white' : '#1E293B'} fontSize={18} fontWeight="900" letterSpacing={-0.5}>Xizmatlar</Text>
+             <Text col={isDark ? 'white' : '#1E293B'} fontSize={18} fontWeight="900" letterSpacing={-0.5}>{t('home.features.services', 'Xizmatlar')}</Text>
              <XStack jc="space-between">
-                <ServiceButton icon={Users} label="Do'stlar" color="#007AFF" onPress={() => router.push('/tabs/friends')} />
-                <ServiceButton icon={UserPlus} label="Guruhlar" color="#8B5CF6" onPress={() => router.push('/tabs/groups')} />
-                <ServiceButton icon={MessageSquare} label="Chatlar" color="#10B981" onPress={() => router.push('/tabs/chat')} />
-                <ServiceButton icon={Calculator} label="Kalkulyator" color="#F59E0B" onPress={() => router.push('/tabs/calculator')} />
+                <ServiceButton icon={Users} label={t('navigation.tabs.friends', 'Do\'stlar')} color="#007AFF" onPress={() => router.push('/tabs/friends')} />
+                <ServiceButton icon={UserPlus} label={t('navigation.groups.title', 'Guruhlar')} color="#8B5CF6" onPress={() => router.push('/tabs/groups')} />
+                <ServiceButton icon={MessageSquare} label={t('navigation.tabs.chat', 'Chatlar')} color="#10B981" onPress={() => router.push('/tabs/chat')} />
+                <ServiceButton icon={Calculator} label={t('calculator.title', 'Kalkulyator')} color="#F59E0B" onPress={() => router.push('/tabs/calculator')} />
              </XStack>
           </YStack>
 
           {/* Recent History */}
           <YStack gap="$4">
              <XStack jc="space-between" ai="center">
-                <Text col={isDark ? 'white' : '#1E293B'} fontSize={18} fontWeight="900" letterSpacing={-0.5}>Oxirgi amallar</Text>
+                <Text col={isDark ? 'white' : '#1E293B'} fontSize={18} fontWeight="900" letterSpacing={-0.5}>{t('home.recent_actions', 'Oxirgi amallar')}</Text>
                 <Pressable onPress={() => router.push('/tabs/sessions/history')}>
-                  <Text col="#007AFF" fontWeight="800" fontSize={13}>Hammasi</Text>
+                  <Text col="#007AFF" fontWeight="800" fontSize={13}>{t('home.all', 'Hammasi')}</Text>
                 </Pressable>
              </XStack>
              
@@ -329,7 +330,7 @@ export default function HomePage() {
                 {!loading && !sessions.length && (
                   <YStack bg={isDark ? '#1C1C1E' : 'white'} br={24} p="$6" ai="center" gap="$2">
                     <ReceiptText size={40} color="$gray4" />
-                    <Text col="$gray9" fontWeight="700">Hozircha amallar yo'q</Text>
+                    <Text col="$gray9" fontWeight="700">{t('home.no_actions', 'Hozircha amallar yo\'q')}</Text>
                   </YStack>
                 )}
              </YStack>
@@ -347,7 +348,7 @@ export default function HomePage() {
               <XStack ai="center" jc="space-between">
                  <YStack gap="$1" f={1}>
                     <Text col="white" fontSize={18} fontWeight="900">Premium Splitter</Text>
-                    <Text col="white" opacity={0.8} fontSize={13} fontWeight="600">Barcha funksiyalardan cheksiz foydalaning</Text>
+                    <Text col="white" opacity={0.8} fontSize={13} fontWeight="600">{t('welcome.newUserDesc', 'Barcha funksiyalardan cheksiz foydalaning')}</Text>
                  </YStack>
                  <Circle size={56} bg="rgba(255,255,255,0.2)" ai="center" jc="center">
                     <CreditCard size={28} color="white" />

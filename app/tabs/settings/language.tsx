@@ -40,7 +40,7 @@ export default function LanguageScreen() {
               <ChevronLeft size={24} color="white" />
             </YStack>
           </Pressable>
-          <Text col="white" fos={20} fow="900">Tilni tanlang</Text>
+          <Text col="white" fos={20} fow="900">{t('settings.language.title', 'Tilni tanlang')}</Text>
         </XStack>
       </LinearGradient>
 
@@ -51,10 +51,10 @@ export default function LanguageScreen() {
                 <Languages size={44} color="#8B5CF6" />
              </Circle>
              <YStack ai="center" gap="$1">
-               <Text fos={20} fow="900" col={isDark ? 'white' : '#1E293B'}>
-                 {LANGUAGE_OPTIONS.find(o => o.code === language)?.label}
-               </Text>
-               <Text fos={14} col="$gray9" ta="center" fow="600">Ilovadan foydalanish uchun qulay tilni tanlang</Text>
+                <Text fos={20} fow="900" col={isDark ? 'white' : '#1E293B'}>
+                  {LANGUAGE_OPTIONS.find(o => o.code === language)?.label}
+                </Text>
+               <Text fos={14} col="$gray9" ta="center" fow="600">{t('settings.language.description', 'Ilovadan foydalanish uchun qulay tilni tanlang')}</Text>
              </YStack>
           </YStack>
 
@@ -79,7 +79,9 @@ export default function LanguageScreen() {
                           <Text fos={24}>{opt.flag}</Text>
                         </Circle>
                         <YStack>
-                          <Text fos={17} fow="800" col={isDark ? 'white' : '#1E293B'}>{opt.label}</Text>
+                          <Text fos={17} fow="800" col={isDark ? 'white' : '#1E293B'}>
+                            {t(`settings.language.options.${opt.code}`, opt.label)}
+                          </Text>
                           <Text fos={12} col="$gray9" fow="700" opacity={0.8}>{opt.shortLabel.toUpperCase()}</Text>
                         </YStack>
                       </XStack>

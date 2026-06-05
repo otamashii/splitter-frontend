@@ -27,7 +27,7 @@ export default function HistoryIndexScreen() {
   const filterYear  = params.year  ? parseInt(params.year)           : null;
 
   const { sessions, loading, fetchHistory, forceRefresh } = useSessionsHistoryStore();
-  const theme = useAppStore(s => s.theme);
+  const { theme, language } = useAppStore();
   const isDark = theme === 'dark';
 
   useEffect(() => {
@@ -45,11 +45,11 @@ export default function HistoryIndexScreen() {
 
   // Title: if filtered show month name, else generic
   const screenTitle = useMemo(() => {
-    if (filterMonth === null || filterYear === null) return t('history.title', 'Xarajatlar tarixi');
+    if (filterMonth === null || filterYear === null) return t('navigation.history', 'Recent Actions');
     const d = new Date(filterYear, filterMonth, 1);
-    const monthName = d.toLocaleDateString('uz-UZ', { month: 'long', year: 'numeric' });
+    const monthName = d.toLocaleDateString(language, { month: 'long', year: 'numeric' });
     return monthName.charAt(0).toUpperCase() + monthName.slice(1);
-  }, [filterMonth, filterYear, t]);
+  }, [filterMonth, filterYear, t, language]);
 
   return (
     <YStack f={1} bg={isDark ? '#000000' : '#F8F9FA'}>
@@ -132,7 +132,7 @@ export default function HistoryIndexScreen() {
                         {session.sessionName || 'Hisob'}
                       </Text>
                       <Text fontSize={11} col="$gray9" fontWeight="700" mt="$0.5">
-                        {new Date(session.finalizedAt || session.createdAt).toLocaleDateString('uz-UZ', { day: '2-digit', month: 'short' })}
+                        {new Date(session.finalizedAt || session.createdAt).toLocaleDateString(language, { day: '2-digit', month: 'short' })}
                       </Text>
                     </YStack>
                   </XStack>

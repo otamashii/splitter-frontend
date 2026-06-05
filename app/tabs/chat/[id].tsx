@@ -138,7 +138,8 @@ export default function ChatRoomScreen() {
     return chat.members.find((m: any) => String(m.userId) !== String(currentUser.id))?.user;
   }, [chat, currentUser]);
 
-  const displayTitle = chat?.type === 'GROUP' ? chat.group?.name : (otherMember?.username || initialTitle || 'Chat');
+  const isGroup = chat?.type === 'GROUP';
+  const displayTitle = isGroup ? chat.group?.name : (otherMember?.displayName || otherMember?.username || initialTitle || 'Chat');
 
   const fetchChatData = async () => {
     try {
@@ -398,15 +399,35 @@ export default function ChatRoomScreen() {
 
     return (
       <View style={[S.messageWrapper, isMe ? S.messageWrapperMe : S.messageWrapperThem]}>
+        {!isMe && isGroup && (
+          <View mr="$2" alignSelf="flex-end">
+            <UserAvatar 
+              uri={item.sender?.avatarUrl} 
+              label={item.sender?.username?.charAt(0).toUpperCase() || 'U'} 
+              size={32} 
+            />
+          </View>
+        )}
         <Pressable 
           onLongPress={() => setShowMessageActions(item)}
           style={({ pressed }) => [
             S.messageBubble, 
             isMe ? (isDark ? S.bubbleMeDark : S.bubbleMeLight) : (isDark ? S.bubbleThemDark : S.bubbleThemLight),
             isMe ? S.bubbleRadiusMe : S.bubbleRadiusThem,
+            {
+              shadowColor: '#000',
+              shadowOpacity: 0.05,
+              shadowRadius: 5,
+              elevation: 1,
+            },
             pressed && { opacity: 0.8 }
           ]}
         >
+          {!isMe && isGroup && (
+            <Text fontSize={12} fontWeight="800" color="#007AFF" mb="$1">
+              {item.sender?.displayName || item.sender?.username}
+            </Text>
+          )}
           {item.forwardFrom && (
             <XStack ai="center" gap="$1" mb="$1">
               <ArrowUpRight size={12} color={isMe ? 'rgba(255,255,255,0.6)' : '$gray10'} />
@@ -417,14 +438,14 @@ export default function ChatRoomScreen() {
           )}
           {item.replyTo && (
             <YStack 
-              bg="rgba(0,0,0,0.05)" 
+              bg={isMe ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.05)'} 
               br={8} 
               p="$2" 
               mb="$2" 
               borderLeftWidth={3} 
-              borderColor="#007AFF"
+              borderColor={isMe ? 'white' : '#007AFF'}
             >
-              <Text fontSize={12} fontWeight="800" color="#007AFF" numberOfLines={1}>
+              <Text fontSize={12} fontWeight="800" color={isMe ? 'white' : '#007AFF'} numberOfLines={1}>
                 {item.replyTo.sender.username}
               </Text>
               <Text fontSize={13} color={isMe ? 'rgba(255,255,255,0.8)' : '$gray11'} numberOfLines={1}>
@@ -677,11 +698,16 @@ export default function ChatRoomScreen() {
             <YStack w="100%" gap="$4">
               <XStack ai="center" gap="$4">
                 <Circle size={44} bg="$gray2"><UsersIcon size={20} color="$gray10" /></Circle>
-                <YStack>
-                   <Text fontSize={12} col="$gray9" fontWeight="600">{t('chat.type', 'TUR')}</Text>
-                   <Text fontSize={16} fontWeight="700" col={isDark ? 'white' : '#1A1A1A'}>
-                     {chat?.type === 'GROUP' ? t('chat.group', 'Guruh') : t('chat.private', 'Shaxsiy')}
-                   </Text>
+                <YStack gap="$1.5">
+                    <Text col="$gray9" fos={11} fow="800" ls={1} textTransform="uppercase">
+                      {t('chat.type_label', 'TYPE')}
+                    </Text>
+                    <XStack ai="center" gap="$2">
+                      <View w={8} h={8} br={4} bg={isGroup ? '#007AFF' : '#34C759'} />
+                      <Text col="$gray12" fos={16} fow="800">
+                        {isGroup ? t('chat.group_type', 'Group') : t('chat.private_type', 'Private')}
+                      </Text>
+                    </XStack>
                 </YStack>
               </XStack>
 
@@ -698,10 +724,12 @@ export default function ChatRoomScreen() {
               <XStack ai="center" gap="$4">
                 <Circle size={44} bg="$gray2"><MessageSquare size={20} color="$gray10" /></Circle>
                 <YStack>
-                   <Text fontSize={12} col="$gray9" fontWeight="600">BIO</Text>
-                   <Text fontSize={16} fontWeight="700" col={isDark ? 'white' : '#1A1A1A'}>
-                     {chat?.type === 'GROUP' ? t('chat.groupBio', 'Splitter guruhi orqali bog\'lanish') : t('chat.privateBio', 'Splitter ilovasi orqali bog\'lanish')}
-                   </Text>
+                  <Text col="$gray9" fos={11} fow="800" ls={1} textTransform="uppercase">BIO</Text>
+                  <Text col="$gray11" fos={15} fow="500" lh={22}>
+                    {isGroup 
+                      ? t('chat.group_bio', 'Connected via Splitter group') 
+                      : t('chat.private_bio', 'Connected via Splitter app')}
+                  </Text>
                 </YStack>
               </XStack>
             </YStack>

@@ -16,7 +16,7 @@ const languages = LANGUAGE_OPTIONS.map((option) => ({
 
 export default function Welcome() {
   const token = useAppStore((state) => state.token);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const currentLanguage = useAppStore((state) => state.language);
   const setLanguage = useAppStore((state) => state.setLanguage);
 
@@ -26,6 +26,7 @@ export default function Welcome() {
   const changeLanguage = (langCode: LanguageCode) => {
     if (langCode === currentLanguage) return;
     setLanguage(langCode);
+    i18n.changeLanguage(langCode);
   };
 
   return (

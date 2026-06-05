@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Chek Bo'lish",
+    "name": "Splitter",
     "subtitle": "Do'stlar bilan oson hisob-kitob"
   },
   "features": {
@@ -13,7 +13,7 @@
   },
   "welcome": {
     "message": "Xush kelibsiz! Boshlaymiz",
-    "newUser": "Chek Bo'lishda yangimisiz?",
+    "newUser": "Splitterda yangimisiz?",
     "newUserDesc": "Hisob yarating va pulni bo'lishni boshlang",
     "existingUser": "Hisobingiz bormi?"
   },
@@ -31,7 +31,9 @@
     "usernamePlaceholder": "Foydalanuvchi nomini kiriting",
     "forgotPassword": "Parolni unutdingizmi?",
     "noAccount": "Hisobingiz yo'qmi?",
-    "haveAccount": "Hisobingiz bormi?"
+    "haveAccount": "Hisobingiz bormi?",
+    "loginError": "Tizimga kirishda xatolik yuz berdi",
+    "registerError": "Ro'yxatdan o'tishda xatolik yuz berdi"
   },
   "common": {
     "welcome": "Xush kelibsiz",
@@ -43,28 +45,20 @@
     "continue": "Davom etish",
     "back": "Orqaga",
     "delete": "O'chirish",
-    "edit": "Tahrirlash"
+    "edit": "Tahrirlash",
+    "next": "Davom etish",
+    "close": "Yopish",
+    "finish": "Tugatish",
+    "help": "Yordam va qo'llab-quvvatlash"
   },
   "friends": {
     "title": "Do'stlar",
-    "requests": "So'rovlar",
-    "add": "Do'st qo'shish",
-    "empty": "Hali do'stlar yo'q. Qo'shish uchun + ni bosing.",
-    "searchPlaceholder": "UniqueId kiriting, masalan: USER#1234",
-    "send": "So'rov yuborish",
-    "remove": "O'chirish",
-    "loading": "Yuklanmoqda...",
-    "error": "Yuklab bo'lmadi",
+    "search_placeholder": "Do'stlarni izlash...",
+    "my_friends": "Mening do'stlarim",
+    "not_found": "Do'stlar topilmadi",
+    "empty": "Do'stlar hali yo'q",
     "common": {
       "unknownUser": "Noma'lum foydalanuvchi"
-    },
-    "search": {
-      "noResults": "Natija topilmadi",
-      "error": "Qidiruvda xatolik",
-      "inviteSent": "{{target}}ga so'rov yuborildi",
-      "inviteFailed": "So'rov yuborib bo'lmadi",
-      "placeholder": "Nickname yoki uniqueId...",
-      "hint": "Noyob ID (uniqueId) orqali do'stlaringizni qidiring"
     },
     "status": {
       "add": "Qo'shish",
@@ -72,45 +66,133 @@
       "friend": "Do'st",
       "requested": "Yuborilgan",
       "incoming": "Kiruvchi"
+    },
+    "requests": {
+      "title": "So'rovlar",
+      "pending": "Kutilmoqda",
+      "incoming": "Kiruvchi",
+      "outgoing": "Yuborilgan",
+      "search": "Qidirish",
+      "scan": "Skanerlash",
+      "none_incoming": "Kiruvchi so'rovlar yo'q",
+      "none_incoming_hint": "Sizga hali hech kim do'stlik so'rovi yubormadi",
+      "none_outgoing": "Yuborilgan so'rovlar yo'q",
+      "none_outgoing_hint": "Siz hali hech kimga do'stlik so'rovi yubormadingiz"
+    },
+    "search": {
+      "placeholder": "Nickname yoki uniqueId...",
+      "noResults": "Natija topilmadi",
+      "error": "Qidiruvda xatolik",
+      "inviteSent": "{{target}}ga so'rov yuborildi",
+      "inviteFailed": "So'rov yuborib bo'lmadi",
+      "findTitle": "Foydalanuvchini toping",
+      "hint": "Noyob ID (uniqueId) orqali do'stlaringizni qidiring"
+    }
+  },
+  "groups": {
+    "title": "Guruhlar",
+    "members_count": "{{count}} ta a'zo",
+    "active": "Faol guruh",
+    "none": "Guruhlar hali yo'q",
+    "create": "Guruh yaratish",
+    "create_hint": "Ko'p do'stlar bilan xarajatlarni bo'lish uchun guruh yarating",
+    "active_label": "Faol",
+    "new": {
+      "title": "Guruh yaratish",
+      "namePlaceholder": "Guruh nomi",
+      "action": "Yaratish",
+      "emptyState": "A'zolarni qo'shish uchun guruh yarating.",
+      "manageMembers": "A'zolarni qo'shish yoki o'chirish",
+      "searchPlaceholder": "Do'stlarni izlash...",
+      "noFriends": "Ko'rsatish uchun do'stlar yo'q",
+      "removeMember": "A'zoni o'chirish",
+      "addMember": "A'zo qo'shish",
+      "notice": {
+        "success": "Guruh yaratildi",
+        "error": "Guruh yaratishda xatolik yuz berdi",
+        "memberAdded": "A'zo qo'shildi",
+        "addFailed": "A'zo qo'shishda xatolik yuz berdi",
+        "memberRemoved": "A'zo o'chirildi",
+        "removeFailed": "A'zoni o'chirishda xatolik yuz berdi"
+      }
+    },
+    "details": {
+      "title": "Guruh ma'lumotlari",
+      "members": "A'zolar",
+      "addFromFriends": "Do'stlar orasidan qo'shish",
+      "noMembers": "A'zolar hali yo'q",
+      "noFriendsToAdd": "Qo'shish uchun do'stlar yo'q",
+      "searchPlaceholder": "Do'stlarni izlash...",
+      "backToGroups": "Guruhlarga qaytish",
+      "rename": "Nomini o'zgartirish",
+      "delete": "Guruhni o'chirish",
+      "deleteConfirmTitle": "Guruhni o'chirish",
+      "deleteConfirmMessage": "Haqiqatan ham ushbu guruhni o'chirmoqchimisiz? Ushbu amalni ortga qaytarib bo'lmaydi.",
+      "groupChat": "Guruh suhbati",
+      "add": "Qo'shish",
+      "remove": "O'chirish"
+    },
+    "invite": {
+      "title": "Guruh QR kodi",
+      "invalid": "Noto'g'ri guruh",
+      "description": "Ushbu guruhga taklif qilish",
+      "new": "Yangi QR",
+      "error": "Taklifnomani olishda xatolik yuz berdi"
     }
   },
   "chat": {
-    "title": "Chat",
+    "title": "Chatlar",
+    "none": "Chatlar yo'q",
+    "none_hint": "Do'stlaringizga xabar yuborishni boshlang",
+    "group_tag": "Guruh",
+    "no_messages": "Xabarlar yo'q",
+    "members": "a'zolar",
     "placeholder": "Xabar yozing...",
+    "forwarded": "{{username}} dan yo'naltirildi",
+    "edited": "tahrirlandi",
+    "editing": "Xabarni tahrirlash",
     "replyingTo": "Javob berish",
     "replyToSelf": "O'zingizga javob",
-    "editing": "Xabarni tahrirlash",
-    "edited": "tahrirlandi",
-    "forwarded": "Yo'naltirildi: {{username}}",
-    "forwardTo": "Kimga yuboramiz?",
-    "noFriends": "Do'stlar topilmadi",
+    "forwardTo": "Yo'naltirish",
+    "noFriends": "Yo'naltirish uchun do'stlar topilmadi",
+    "groupChat": "Guruh suhbati",
+    "type_label": "TUR",
+    "private_type": "Shaxsiy",
+    "group_type": "Guruh",
+    "private_bio": "Splitter ilovasi orqali bog'lanish",
+    "group_bio": "Splitter guruhi orqali bog'lanish",
     "actions": {
+      "markAllRead": "Hamma o'qilgan",
+      "markAllReadSuccess": "Hamma xabarlar o'qildi",
+      "newGroup": "Yangi guruh",
+      "settings": "Sozlamalar",
       "reply": "Javob berish",
       "edit": "Tahrirlash",
       "forward": "Yo'naltirish",
-      "delete": "Chatni o'chirish",
+      "search": "Qidirish",
+      "mute": "Ovozni o'chirish",
       "clear": "Tarixni tozalash",
-      "search": "Xabarlarni qidirish",
-      "mute": "Ovozni o'chirish"
-    },
-    "attachments": {
-      "gallery": "Galereya",
-      "location": "Lokatsiya",
-      "file": "Fayl",
-      "soon": "Yaqinda qo'shiladi!",
-      "myLocation": "📍 Mening lokatsiyam:"
-    },
-    "recording": {
-      "delete": "O'chirish",
-      "error": "Ovoz yozishni boshlab bo'lmadi. Iltimos qaytadan urinib ko'ring."
+      "delete": "Chatni o'chirish"
     },
     "alerts": {
+      "markAllReadSuccess": "Hamma xabarlar o'qildi",
       "clearTitle": "Tarixni tozalash",
       "clearMessage": "Haqiqatdan ham suhbatni tozalamoqchimisiz?",
       "deleteTitle": "Chatni o'chirish",
-      "deleteMessage": "Haqiqatdan ham ushbu chatni o'chirmoqchimisiz?",
-      "locationError": "Lokatsiyani ulashish uchun ruxsat kerak",
+      "deleteMessage": "Haqiqatdan ham ushbu chatni o'chirmoqchimisiz? Bu amalni qaytarib bo'lmaydi.",
+      "locationError": "Lokatsiyani aniqlash uchun ruxsat berilmadi",
       "locationFail": "Lokatsiyani aniqlashda xatolik yuz berdi"
+    },
+    "attachments": {
+      "soon": "Yaqinda qo'shiladi!",
+      "gallery": "Galereya",
+      "location": "Lokatsiya",
+      "file": "Fayl",
+      "myLocation": "Mening lokatsiyam"
+    },
+    "recording": {
+      "error": "Ovoz yozishni boshlab bo'lmadi",
+      "delete": "O'chirish"
     }
   },
   "home": {
@@ -118,27 +200,44 @@
       "greeting": "Salom, {{name}}!",
       "friendFallback": "do'stim"
     },
+    "total_spent": "Jami xarajat",
+    "recent_actions": "So'nggi harakatlar",
     "scan": {
       "cta": "Taklifni skanerlang"
     },
+    "all": "Hammasi",
+    "no_actions": "Hozircha amallar yo'q",
+    "month_sessions": "Shu oyda {{count}} ta hisob",
+    "no_sessions_this_month": "Bu oyda hali hisob yo'q",
     "actions": {
       "friends": "Do'stlar",
       "groups": "Guruhlar"
     },
     "recent": {
-      "title": "So'nggi hisoblar",
+      "title": "So'nggi harakatlar",
       "showMore": "Ko'proq ko'rish",
-      "loading": "Hisoblar yuklanmoqda...",
-      "empty": "Hali hisoblar mavjud emas",
+      "loading": "Harakatlar yuklanmoqda...",
+      "empty": "Hali harakatlar mavjud emas",
       "summary": "{{date}} • {{participants}}",
-      "fallbackName": "Hisob",
+      "fallbackName": "Harakat",
       "participants": "{{count}} ishtirokchi",
       "participants_one": "{{count}} ishtirokchi",
       "participants_other": "{{count}} ishtirokchi",
       "amount": "{{currency}} {{amount}}"
     },
     "features": {
-      "title": "Nimalar qilishingiz mumkin"
+      "title": "Nimalar qilishingiz mumkin",
+      "services": "Xizmatlar"
+    },
+    "services": {
+      "scan": "Chekni skanerlash",
+      "manual": "Qo'lda kiritish",
+      "history": "Tarix",
+      "friends": "Do'stlar",
+      "groups": "Guruhlar",
+      "settings": "Sozlamalar",
+      "calculator": "Kalkulyator",
+      "profile": "Profil"
     }
   },
   "profile": {
@@ -151,7 +250,8 @@
     },
     "labels": {
       "guest": "Mehmon",
-      "notAvailable": "Mavjud emas"
+      "notAvailable": "Mavjud emas",
+      "verified": "Tasdiqlangan profil"
     },
     "avatar": {
       "title": "Avatar",
@@ -184,12 +284,12 @@
     "logout": "Chiqish",
     "copy": {
       "successTitle": "Nusxa olindi",
-      "successMessage": "{{field}} almashish buferiga nusxalandi.",
+      "successMessage": "{{field}} nusxalandi.",
       "unavailableMessage": "{{field}} hali mavjud emas."
     },
     "alerts": {
       "permissionTitle": "Ruxsat kerak",
-      "permissionMessage": "Avatar tanlash uchun galereyaga kirishga ruxsat bering.",
+      "permissionMessage": "Avatar tanlash uchun galereyaga ruxsat bering.",
       "unavailableTitle": "Mavjud emas",
       "avatarLoginRequired": "Avatarni yangilash uchun tizimga kiring.",
       "profileLoginRequired": "Profilni yangilash uchun tizimga kiring.",
@@ -219,6 +319,9 @@
     "mainMenu": "Bosh menyu",
     "tabs": {
       "home": "Bosh sahifa",
+      "friends": "Do'stlar",
+      "chat": "Chatlar",
+      "scan": "Skaner",
       "settings": "Sozlamalar",
       "profile": "Profil"
     },
@@ -227,6 +330,7 @@
       "create": "Yangi guruh",
       "details": "Guruh"
     },
+    "profile": "Profil",
     "scanInvite": "Taklifni skanerlash",
     "friendQr": "Do'st QR kodi",
     "groupQr": "Guruh QR kodi",
@@ -234,11 +338,41 @@
     "participants": "Ishtirokchilar",
     "itemsSplit": "Xarajatlarni bo'lish",
     "finish": "Yakunlash",
-    "history": "So'nggi hisoblar",
-    "historyDetails": "Hisob tafsilotlari",
-    "search": "Qidiruv"
+    "history": "So'nggi harakatlar",
+    "historyDetails": "Tafsilotlar",
+    "search": "Qidiruv",
+    "empty": "Hozircha tarix yo'q",
+    "total_bill": "Umumiy hisob",
+    "participants_count": "ISHTIROKCHI",
+    "date": "SANA",
+    "settlement": "Hisob-kitob (Qarzlar)",
+    "payer": "To'lovchi",
+    "you": "Siz",
+    "other_participant": "Boshqa ishtirokchi",
+    "owes_you": "sizga qarzdor",
+    "owes_payer": "to'lovchiga qarzdor",
+    "participants_breakdown": "Ishtirokchilar bo'yicha",
+    "items_count": "{{count}} ta mahsulot",
+    "all_items": "Umumiy mahsulotlar",
+    "item_id": "Tovar ID",
+    "grand_total": "JAMI",
+    "download_report": "Hisobotni yuklab olish",
+    "loading": "Yuklanmoqda...",
+    "not_found": "Ma'lumot topilmadi",
+    "back": "Ortga qaytish",
+    "report": {
+      "header": "SPLITTER — HISOB CHEKI",
+      "name": "Hisob nomi:",
+      "date": "Sana:",
+      "participants": "Ishtirokchilar:",
+      "items": "MAHSULOTLAR:",
+      "total": "JAMI:",
+      "by_participants": "ISHTIROKCHILAR BO'YICHA:",
+      "footer": "Splitter App orqali yaratildi"
+    }
   },
   "settings": {
+    "title": "Sozlamalar",
     "language": {
       "title": "Til",
       "description": "Ilovada ishlatiladigan tilni tanlang.",
@@ -247,10 +381,70 @@
         "ja": "Yapon tili",
         "uz": "O'zbek tili"
       }
+    },
+    "notifications": {
+      "title": "Bildirishnomalar",
+      "push": "Push bildirishnomalar",
+      "email": "Email bildirishnomalar"
+    },
+    "currency": {
+      "title": "Valyuta",
+      "description": "Asosiy valyutani tanlang."
     }
   },
   "calculator": {
     "title": "Kalkulyator"
+  },
+  "sessions": {
+    "manual": {
+      "title": "Qo'lda kiritish",
+      "default_name": "Yangi hisob",
+      "unnamed_item": "Nomsiz mahsulot",
+      "session_name": "Hisob nomi",
+      "session_name_placeholder": "masalan: Tushlik, Kechki ovqat",
+      "items": "Mahsulotlar",
+      "items_count": "mahsulot",
+      "item_name": "Nomi",
+      "item_name_placeholder": "Pitsa, Burger...",
+      "item_price": "Narxi",
+      "item_quantity": "Soni",
+      "add_item": "Mahsulot qo'shish",
+      "total": "Jami summa:"
+    },
+    "participants": {
+      "title": "Ishtirokchilar",
+      "search": "Ism yoki @username...",
+      "groups": "Guruhlar",
+      "people": "Odamlar",
+      "selected": "tanlandi"
+    },
+    "split": {
+      "title": "Taqsimlash",
+      "progress": "Jarayon",
+      "mode_equal": "Teng taqsimlash",
+      "mode_count": "Dona boyicha taqsimlash",
+      "change_mode": "O'zgartirish"
+    },
+    "finish": {
+      "title": "Natija",
+      "default_name": "Xarajat yakuni",
+      "settlement": "To'lovlar rejasi",
+      "breakdown": "Tafsilotlar",
+      "confirm_payment": "To'lovni tasdiqlash",
+      "share_title": "📊 {{name}} - Xarajatlar yakuni",
+      "share_total": "💰 Jami summa: {{total}} {{currency}}",
+      "share_plan": "👥 To'lovlar rejasi:",
+      "debt": "Qarz",
+      "paid": "To'landi",
+      "share_footer": "Splitter ilovasi orqali hisoblandi. 📱",
+      "note_prefix": "📌 \"{{name}}\" bo'yicha eslatma:",
+      "total_share": "Jami ulush",
+      "paid_label": "To'ladi",
+      "note_for": "{{name}} uchun eslatma",
+      "note_placeholder": "Eslatma matnini kiriting...",
+      "send": "Yuborish",
+      "debt_notification": "Salom! \"{{name}}\" bo'yicha sizda {{amount}} {{currency}} qarz qoldi. Iltimos, imkon bo'lganda o'tkazib yuboring. 😊"
+    }
   },
   "scan": {
     "permissions": {
@@ -259,10 +453,13 @@
       "button": "Ruxsat berish"
     },
     "scanner": {
-      "tip": "Do'stingizning kodini skanerlang",
       "title": "Skaner",
+      "tip": "Do'stingizning kodini skanerlang",
       "gallery": "Galereya",
-      "myQr": "Mening QR"
+      "myQr": "Mening QR",
+      "scan_ready": "Tayyor",
+      "waiting": "QR kutilyapti...",
+      "manual": "Qo'lda"
     },
     "myQr": {
       "share": "Ulashish",
@@ -273,11 +470,6 @@
     "result": {
       "addFriend": "Do'stlarga qo'shish",
       "error": "QR kod topilmadi yoki xato"
-    }
-  },
-  "friends": {
-    "search": {
-      "findTitle": "Foydalanuvchini toping"
     }
   }
 }

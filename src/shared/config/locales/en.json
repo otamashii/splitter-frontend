@@ -1,27 +1,27 @@
 {
   "app": {
-    "name": "Receipt Splitter",
+    "name": "Splitter",
     "subtitle": "Split bills easily with friends"
   },
   "features": {
-    "scan": "Scan",
-    "scanDesc": "Take photos of your receipts",
-    "split": "Split Bills", 
-    "splitDesc": "Divide costs with friends",
-    "calculate": "Calculate",
-    "calculateDesc": "Know who owes what"
+    "scan": "Scan Receipt",
+    "scanDesc": "Take a photo of your receipts",
+    "split": "Split Bills",
+    "splitDesc": "Divide expenses with friends",
+    "calculate": "Auto Calculate",
+    "calculateDesc": "Know exactly who owes what"
   },
   "welcome": {
     "message": "Welcome! Let's get started",
-    "newUser": "New to Receipt Splitter?",
-    "newUserDesc": "Create an account to start splitting bills",
+    "newUser": "New to Splitter?",
+    "newUserDesc": "Create an account and start splitting",
     "existingUser": "Already have an account?"
   },
   "auth": {
     "signIn": "Sign In",
     "signInDesc": "Welcome back! Please sign in to continue",
     "createAccount": "Create Account",
-    "createAccountDesc": "Join us to start splitting bills with friends",
+    "createAccountDesc": "Start splitting bills with your friends now",
     "email": "Email",
     "emailPlaceholder": "Enter your email",
     "password": "Password",
@@ -32,8 +32,8 @@
     "forgotPassword": "Forgot Password?",
     "noAccount": "Don't have an account?",
     "haveAccount": "Already have an account?",
-    "loginError": "An error occurred during login",
-    "registerError": "An error occurred during registration"
+    "loginError": "Login failed",
+    "registerError": "Registration failed"
   },
   "common": {
     "welcome": "Welcome",
@@ -43,28 +43,22 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "continue": "Continue",
-    "back": "Back"
+    "back": "Back",
+    "delete": "Delete",
+    "edit": "Edit",
+    "next": "Continue",
+    "close": "Close",
+    "finish": "Finish",
+    "help": "Help & Support"
   },
   "friends": {
     "title": "Friends",
-    "requests": "Requests",
-    "add": "Add Friend",
-    "empty": "No friends yet. Tap + to add.",
-    "searchPlaceholder": "Enter uniqueId, e.g. USER#1234",
-    "send": "Send request",
-    "remove": "Remove",
-    "loading": "Loading...",
-    "error": "Failed to load",
+    "search_placeholder": "Search friends...",
+    "my_friends": "My Friends",
+    "not_found": "No friends found",
+    "empty": "No friends yet",
     "common": {
-      "unknownUser": "Unknown User"
-    },
-    "search": {
-      "noResults": "No results found",
-      "error": "Search failed",
-      "inviteSent": "Invite sent to {{target}}",
-      "inviteFailed": "Could not send invite",
-      "placeholder": "Nickname or uniqueId...",
-      "hint": "Search friends by their Unique ID"
+      "unknownUser": "Unknown user"
     },
     "status": {
       "add": "Add",
@@ -72,73 +66,178 @@
       "friend": "Friend",
       "requested": "Requested",
       "incoming": "Incoming"
+    },
+    "requests": {
+      "title": "Requests",
+      "pending": "Pending",
+      "incoming": "Incoming",
+      "outgoing": "Sent",
+      "search": "Search",
+      "scan": "Scan",
+      "none_incoming": "No incoming requests",
+      "none_incoming_hint": "No one has sent you a friend request yet",
+      "none_outgoing": "No sent requests",
+      "none_outgoing_hint": "You haven't sent any friend requests yet"
+    },
+    "search": {
+      "placeholder": "Nickname or uniqueId...",
+      "noResults": "No results found",
+      "error": "Search failed",
+      "inviteSent": "Invite sent to {{target}}",
+      "inviteFailed": "Could not send invite",
+      "findTitle": "Find a user",
+      "hint": "Search friends by their Unique ID"
+    }
+  },
+  "groups": {
+    "title": "Groups",
+    "members_count": "{{count}} members",
+    "active": "Active group",
+    "none": "No groups yet",
+    "create": "Create Group",
+    "create_hint": "Create a group to split bills with multiple friends",
+    "active_label": "Active",
+    "new": {
+      "title": "Create Group",
+      "namePlaceholder": "Group name",
+      "action": "Create",
+      "emptyState": "Create a group to add members.",
+      "manageMembers": "Add or remove members",
+      "searchPlaceholder": "Search friends...",
+      "noFriends": "No friends to display",
+      "removeMember": "Remove member",
+      "addMember": "Add member",
+      "notice": {
+        "success": "Group created",
+        "error": "Failed to create group",
+        "memberAdded": "Member added",
+        "addFailed": "Failed to add member",
+        "memberRemoved": "Member removed",
+        "removeFailed": "Failed to remove member"
+      }
+    },
+    "details": {
+      "title": "Group Details",
+      "members": "Members",
+      "addFromFriends": "Add from friends",
+      "noMembers": "No members yet",
+      "noFriendsToAdd": "No friends to add",
+      "searchPlaceholder": "Search friends...",
+      "backToGroups": "Back to Groups",
+      "rename": "Rename",
+      "delete": "Delete Group",
+      "deleteConfirmTitle": "Delete Group",
+      "deleteConfirmMessage": "Are you sure you want to delete this group? This action cannot be undone.",
+      "groupChat": "Group Chat",
+      "add": "Add",
+      "remove": "Remove"
+    },
+    "invite": {
+      "title": "Group QR",
+      "invalid": "Invalid group",
+      "description": "Invite to this group",
+      "new": "New QR",
+      "error": "Failed to get invite"
     }
   },
   "chat": {
-    "title": "Chat",
-    "placeholder": "Type a message...",
-    "replyingTo": "Replying to",
-    "replyToSelf": "Reply to yourself",
-    "editing": "Editing message",
+    "title": "Chats",
+    "none": "No chats yet",
+    "none_hint": "Start messaging your friends",
+    "group_tag": "Group",
+    "no_messages": "No messages",
+    "members": "members",
+    "placeholder": "Message...",
+    "forwarded": "Forwarded from {{username}}",
     "edited": "edited",
-    "forwarded": "Forwarded from: {{username}}",
-    "forwardTo": "Forward to whom?",
-    "noFriends": "No friends found",
+    "editing": "Editing message",
+    "replyingTo": "Replying to",
+    "replyToSelf": "Replying to yourself",
+    "forwardTo": "Forward to",
+    "noFriends": "No friends found to forward",
+    "groupChat": "Group Chat",
+    "type_label": "TYPE",
+    "private_type": "Private",
+    "group_type": "Group",
+    "private_bio": "Connected via Splitter app",
+    "group_bio": "Connected via Splitter group",
     "actions": {
+      "markAllRead": "Mark all as read",
+      "markAllReadSuccess": "All messages marked as read",
+      "newGroup": "New Group",
+      "settings": "Settings",
       "reply": "Reply",
       "edit": "Edit",
       "forward": "Forward",
-      "delete": "Delete Chat",
+      "search": "Search",
+      "mute": "Mute",
       "clear": "Clear History",
-      "search": "Search Messages",
-      "mute": "Mute Notifications"
+      "delete": "Delete Chat"
+    },
+    "alerts": {
+      "markAllReadSuccess": "All messages marked as read",
+      "clearTitle": "Clear History",
+      "clearMessage": "Are you sure you want to clear all messages in this chat?",
+      "deleteTitle": "Delete Chat",
+      "deleteMessage": "Are you sure you want to delete this chat? This action cannot be undone.",
+      "locationError": "Permission to access location was denied",
+      "locationFail": "Failed to get location"
     },
     "attachments": {
+      "soon": "Coming soon!",
       "gallery": "Gallery",
       "location": "Location",
       "file": "File",
-      "soon": "Coming soon!",
-      "myLocation": "📍 My Location:"
+      "myLocation": "My Location"
     },
     "recording": {
-      "delete": "Delete",
-      "error": "Failed to start recording. Please try again."
-    },
-    "alerts": {
-      "clearTitle": "Clear History",
-      "clearMessage": "Are you sure you want to clear this chat?",
-      "deleteTitle": "Delete Chat",
-      "deleteMessage": "Are you sure you want to delete this chat?",
-      "locationError": "Permission needed to share location",
-      "locationFail": "Failed to determine location"
+      "error": "Failed to start recording",
+      "delete": "Delete"
     }
   },
   "home": {
     "header": {
-      "greeting": "Hi, {{name}}!",
+      "greeting": "Hello, {{name}}!",
       "friendFallback": "friend"
     },
+    "total_spent": "Total Spent",
+    "recent_actions": "Recent Actions",
     "scan": {
-      "cta": "Scan invite"
+      "cta": "Scan Invite"
     },
+    "all": "All",
+    "no_actions": "No actions yet",
+    "month_sessions": "{{count}} sessions this month",
+    "no_sessions_this_month": "No sessions this month",
     "actions": {
       "friends": "Friends",
       "groups": "Groups"
     },
     "recent": {
-      "title": "Recent bills",
+      "title": "Recent Actions",
       "showMore": "Show more",
-      "loading": "Loading recent bills...",
-      "empty": "No bills yet",
+      "loading": "Loading actions...",
+      "empty": "No actions yet",
       "summary": "{{date}} • {{participants}}",
-      "fallbackName": "Bill",
+      "fallbackName": "Action",
       "participants": "{{count}} participants",
       "participants_one": "{{count}} participant",
       "participants_other": "{{count}} participants",
       "amount": "{{currency}} {{amount}}"
     },
     "features": {
-      "title": "What you can do"
+      "title": "What you can do",
+      "services": "Services"
+    },
+    "services": {
+      "scan": "Scan Receipt",
+      "manual": "Manual Entry",
+      "history": "History",
+      "friends": "Friends",
+      "groups": "Groups",
+      "settings": "Settings",
+      "calculator": "Calculator",
+      "profile": "Profile"
     }
   },
   "profile": {
@@ -151,118 +250,216 @@
     },
     "labels": {
       "guest": "Guest",
-      "notAvailable": "N/A"
+      "notAvailable": "N/A",
+      "verified": "Verified Account"
     },
     "avatar": {
       "title": "Avatar",
-      "hint": "Uploaded avatars are delivered via our CDN and refresh instantly.",
+      "hint": "Avatars are updated immediately via our CDN.",
       "upload": "Upload from phone",
       "uploading": "Uploading...",
-      "reset": "Reset avatar",
+      "reset": "Reset Avatar",
       "resetting": "Resetting..."
     },
     "info": {
-      "title": "User information",
+      "title": "User Information",
       "usernameLabel": "Username",
-      "usernamePlaceholder": "Enter a new username",
+      "usernamePlaceholder": "Enter new username",
       "emailLabel": "Email",
-      "emailPlaceholder": "Enter a new email",
+      "emailPlaceholder": "Enter new email",
       "userId": "User ID"
     },
     "password": {
-      "title": "Change password",
-      "currentLabel": "Current password",
+      "title": "Change Password",
+      "currentLabel": "Current Password",
       "currentPlaceholder": "Enter current password",
-      "newLabel": "New password",
+      "newLabel": "New Password",
       "newPlaceholder": "Enter new password",
-      "confirmLabel": "Confirm new password",
-      "confirmPlaceholder": "Confirm new password",
-      "requirements": "Password must be at least 8 characters and include uppercase, lowercase, number, and special symbol.",
-      "submit": "Change password",
+      "confirmLabel": "Confirm New Password",
+      "confirmPlaceholder": "Repeat new password",
+      "requirements": "Min 8 chars, including uppercase, lowercase, number, and special char.",
+      "submit": "Change Password",
       "updating": "Updating..."
     },
-    "logout": "Log out",
+    "logout": "Log Out",
     "copy": {
       "successTitle": "Copied",
-      "successMessage": "{{field}} copied to the clipboard.",
-      "unavailableMessage": "{{field}} is not available yet."
+      "successMessage": "{{field}} copied to clipboard.",
+      "unavailableMessage": "{{field}} not available yet."
     },
     "alerts": {
-      "permissionTitle": "Permission needed",
-      "permissionMessage": "Please allow access to your photo library to pick an avatar.",
+      "permissionTitle": "Permission Required",
+      "permissionMessage": "Allow access to gallery to pick an avatar.",
       "unavailableTitle": "Unavailable",
-      "avatarLoginRequired": "Sign in to update your avatar.",
-      "profileLoginRequired": "Sign in to update your profile.",
-      "passwordLoginRequired": "Sign in to change your password.",
-      "avatarUpdateFailed": "Could not update the avatar.",
-      "avatarResetFailed": "Could not reset the avatar.",
-      "usernameUpdateFailed": "Could not update the username.",
-      "emailUpdateFailed": "Could not update the email.",
-      "passwordChangeFailed": "Could not change the password.",
-      "logoutFailed": "Could not log out. Please try again.",
-      "imageMissing": "Image file is missing a URI.",
-      "uploadReadFailed": "Unable to read the selected file for upload."
+      "avatarLoginRequired": "Sign in to update avatar.",
+      "profileLoginRequired": "Sign in to update profile.",
+      "passwordLoginRequired": "Sign in to change password.",
+      "avatarUpdateFailed": "Failed to update avatar.",
+      "avatarResetFailed": "Failed to reset avatar.",
+      "usernameUpdateFailed": "Failed to update username.",
+      "emailUpdateFailed": "Failed to update email.",
+      "passwordChangeFailed": "Failed to change password.",
+      "logoutFailed": "Failed to log out. Please try again.",
+      "imageMissing": "No image file URI found.",
+      "uploadReadFailed": "Failed to read selected file."
     },
     "validation": {
-      "usernameRequired": "Username cannot be empty",
-      "usernameMin": "Username must be at least 2 characters",
-      "emailRequired": "Email cannot be empty",
-      "emailInvalid": "Enter a valid email address",
-      "passwordCurrent": "Enter your current password",
-      "passwordLength": "New password must be at least 8 characters",
-      "passwordComplexity": "Password must include uppercase, lowercase, number, and special character",
-      "passwordMismatch": "Passwords do not match",
-      "passwordDifferent": "Choose a different password"
+      "usernameRequired": "Username is required.",
+      "usernameMin": "Username must be at least 2 chars.",
+      "emailRequired": "Email is required.",
+      "emailInvalid": "Enter a valid email.",
+      "passwordCurrent": "Enter current password.",
+      "passwordLength": "New password must be at least 8 chars.",
+      "passwordComplexity": "Must include uppercase, lowercase, number, and special char.",
+      "passwordMismatch": "Passwords do not match.",
+      "passwordDifferent": "Please pick a different password."
     }
   },
   "navigation": {
-    "mainMenu": "Main menu",
+    "mainMenu": "Main Menu",
     "tabs": {
       "home": "Home",
+      "friends": "Friends",
+      "chat": "Chat",
+      "scan": "Scan",
       "settings": "Settings",
       "profile": "Profile"
     },
     "groups": {
       "title": "Groups",
-      "create": "New group",
+      "create": "New Group",
       "details": "Group"
     },
+    "profile": "Profile",
     "scanInvite": "Scan Invite",
-    "friendQr": "My Friend QR",
+    "friendQr": "Friend QR",
     "groupQr": "Group QR",
     "scanReceipt": "Scan Receipt",
     "participants": "Participants",
-    "itemsSplit": "Items Split",
+    "itemsSplit": "Split Items",
     "finish": "Finish",
-    "history": "Recent bills",
-    "historyDetails": "Bill details",
-    "search": "Search"
+    "history": "Recent Actions",
+    "historyDetails": "Action Details",
+    "search": "Search",
+    "empty": "No history yet",
+    "total_bill": "Total Bill",
+    "participants_count": "PARTICIPANTS",
+    "date": "DATE",
+    "settlement": "Settlement (Debts)",
+    "payer": "Payer",
+    "you": "You",
+    "other_participant": "Other participant",
+    "owes_you": "owes you",
+    "owes_payer": "owes payer",
+    "participants_breakdown": "Participants Breakdown",
+    "items_count": "{{count}} items",
+    "all_items": "All Items",
+    "item_id": "Item ID",
+    "grand_total": "TOTAL",
+    "download_report": "Download Report",
+    "loading": "Loading...",
+    "not_found": "Information not found",
+    "back": "Go back",
+    "report": {
+      "header": "SPLITTER — RECEIPT",
+      "name": "Session name:",
+      "date": "Date:",
+      "participants": "Participants:",
+      "items": "ITEMS:",
+      "total": "TOTAL:",
+      "by_participants": "BY PARTICIPANTS:",
+      "footer": "Generated via Splitter App"
+    }
   },
   "settings": {
+    "title": "Settings",
     "language": {
       "title": "Language",
-      "description": "Choose the language used across the app.",
+      "description": "Select the language used in the app.",
       "options": {
         "en": "English",
         "ja": "Japanese",
         "uz": "Uzbek"
       }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "push": "Push Notifications",
+      "email": "Email Notifications"
+    },
+    "currency": {
+      "title": "Currency",
+      "description": "Select your primary currency."
     }
   },
   "calculator": {
     "title": "Calculator"
   },
+  "sessions": {
+    "manual": {
+      "title": "Manual Entry",
+      "default_name": "Manual Session",
+      "unnamed_item": "Unnamed Item",
+      "session_name": "Session Name",
+      "session_name_placeholder": "e.g., Lunch, Dinner",
+      "items": "Items",
+      "items_count": "items",
+      "item_name": "Name",
+      "item_name_placeholder": "Pizza, Burger...",
+      "item_price": "Price",
+      "item_quantity": "Qty",
+      "add_item": "Add Item",
+      "total": "Total Amount:"
+    },
+    "participants": {
+      "title": "Participants",
+      "search": "Name or @username...",
+      "groups": "Groups",
+      "people": "People",
+      "selected": "selected"
+    },
+    "split": {
+      "title": "Split Items",
+      "progress": "Progress",
+      "mode_equal": "Split Equally",
+      "mode_count": "Split by Count",
+      "change_mode": "Change Mode"
+    },
+    "finish": {
+      "title": "Result",
+      "default_name": "Session Result",
+      "settlement": "Settlement Plan",
+      "breakdown": "Breakdown",
+      "confirm_payment": "Confirm Payment",
+      "share_title": "📊 {{name}} - Session Result",
+      "share_total": "💰 Grand Total: {{total}} {{currency}}",
+      "share_plan": "👥 Settlement Plan:",
+      "debt": "Debt",
+      "paid": "Paid",
+      "share_footer": "Calculated via Splitter app. 📱",
+      "note_prefix": "📌 Note on \"{{name}}\":",
+      "total_share": "Total Share",
+      "paid_label": "Paid",
+      "note_for": "Note for {{name}}",
+      "note_placeholder": "Enter note text...",
+      "send": "Send",
+      "debt_notification": "Hello! You have a debt of {{amount}} {{currency}} from \"{{name}}\". Please transfer it when you can. 😊"
+    }
+  },
   "scan": {
     "permissions": {
       "title": "Camera permission required",
       "message": "Please grant camera permission to scan QR codes",
-      "button": "Grant permission"
+      "button": "Grant"
     },
     "scanner": {
-      "tip": "Scan your friend's code",
       "title": "Scanner",
+      "tip": "Scan your friend's code",
       "gallery": "Gallery",
-      "myQr": "My QR"
+      "myQr": "My QR",
+      "scan_ready": "Ready",
+      "waiting": "Waiting for QR...",
+      "manual": "Manual"
     },
     "myQr": {
       "share": "Share",

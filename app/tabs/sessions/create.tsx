@@ -26,8 +26,7 @@ export default function ManualCreateScreen() {
     { id: Math.random().toString(), name: '', price: '', quantity: '1' }
   ]);
 
-  const setStoreSessionName = useReceiptSessionStore(s => s.setSessionName);
-  const setStoreItems = useReceiptSessionStore(s => s.setItems);
+  const createManualSession = useReceiptSessionStore(s => s.createManualSession);
 
   const addItem = () => {
     setItems([...items, { id: Math.random().toString(), name: '', price: '', quantity: '1' }]);
@@ -43,9 +42,8 @@ export default function ManualCreateScreen() {
     setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i));
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     const finalName = sessionName || t('sessions.manual.default_name', 'Manual Session');
-    setStoreSessionName(finalName);
     
     const storeItems = items.map(item => ({
       id: item.id,
@@ -58,8 +56,12 @@ export default function ManualCreateScreen() {
       perPersonCount: {}
     }));
 
-    setStoreItems(storeItems);
-    router.push('/tabs/sessions/participants');
+    try {
+      await createManualSession(finalName, storeItems);
+      router.push('/tabs/sessions/participants');
+    } catch (e) {
+      console.error('Failed to create manual session', e);
+    }
   };
 
   const total = items.reduce((acc, item) => acc + (parseFloat(item.price) || 0) * (parseFloat(item.quantity) || 1), 0);

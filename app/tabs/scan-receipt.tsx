@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View, ActivityIndicator, Pressable, Dimensions, Alert } from 'react-native';
+import { StyleSheet, View, Pressable, Dimensions } from 'react-native';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useRouter } from 'expo-router';
@@ -8,6 +8,7 @@ import { ChevronLeft, QrCode, AlertTriangle, Zap, ZapOff, Camera as CameraIcon, 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BlurView } from 'expo-blur';
 import * as ImagePicker from 'expo-image-picker';
+import { useTranslation } from 'react-i18next';
 import Animated, { 
   useSharedValue, 
   useAnimatedStyle, 
@@ -28,10 +29,11 @@ const FRAME_RADIUS = 32;
 const FRAME_Y = (SCREEN_HEIGHT - FRAME_SIZE) / 2 - 80;
 const FRAME_X = (SCREEN_WIDTH - FRAME_SIZE) / 2;
 
-const getDefaultSessionName = () => {
+const getDefaultSessionName = (t: any) => {
   const now = new Date();
   const pad = (value: number) => value.toString().padStart(2, '0');
-  return `Chek ${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  const dateStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  return `${t('sessions.manual.default_name', 'Session')} ${dateStr}`;
 };
 
 export default function ScanReceiptScreen() {
@@ -39,6 +41,7 @@ export default function ScanReceiptScreen() {
   const isFocused = useIsFocused();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   const parsing = useReceiptSessionStore((s) => s.parsing);
   const parseReceipt = useReceiptSessionStore((s) => s.parseReceipt);
@@ -91,7 +94,7 @@ export default function ScanReceiptScreen() {
     setLocalError(null);
     
     try {
-      const sessionName = getDefaultSessionName();
+      const sessionName = getDefaultSessionName(t);
       setSessionNameStore(sessionName);
 
       await parseReceipt({
@@ -102,7 +105,7 @@ export default function ScanReceiptScreen() {
 
       router.push('/tabs/sessions/participants');
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Chekni o\'qishda xatolik yuz berdi';
+      const message = error instanceof Error ? error.message : t('scan.result.error', 'Scan failed');
       setLocalError(message);
       setTimeout(() => setScanned(false), 3000);
     }
@@ -199,7 +202,9 @@ export default function ScanReceiptScreen() {
               <ChevronLeft size={28} color="white" />
             </BlurView>
           </Pressable>
-          <Text col="white" fow="800" fos={18} style={S.textShadow}>Skanerlash</Text>
+          <Text col="white" fow="800" fos={18} style={S.textShadow}>
+            {t('scan.scanner.title', 'Scanner')}
+          </Text>
           <Pressable onPress={() => setFlash(!flash)} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, transform: [{ scale: pressed ? 0.9 : 1 }] })}>
             <BlurView intensity={40} tint="dark" style={S.glassButton}>
               {flash ? <Zap size={22} color="#FFD60A" /> : <ZapOff size={22} color="white" />}
@@ -227,7 +232,7 @@ export default function ScanReceiptScreen() {
                   <ImageIcon size={26} color="white" />
                 </BlurView>
               </Pressable>
-              <Text col="white" fos={11} fow="700" opacity={0.8}>Galereya</Text>
+              <Text col="white" fos={11} fow="700" opacity={0.8}>{t('scan.scanner.gallery', 'Gallery')}</Text>
             </YStack>
 
             <YStack ai="center" gap="$3">
@@ -255,7 +260,7 @@ export default function ScanReceiptScreen() {
                 </Circle>
               </Pressable>
               <Text col="white" fos={14} fow="900" style={S.textShadow}>
-                {currentQr ? 'Tayyor' : 'QR kutilyapti...'}
+                {currentQr ? t('scan.scanner.scan_ready', 'Ready') : t('scan.scanner.waiting', 'Waiting...')}
               </Text>
             </YStack>
 
@@ -265,7 +270,7 @@ export default function ScanReceiptScreen() {
                    <QrCode size={26} color="white" />
                 </BlurView>
               </Pressable>
-              <Text col="white" fos={11} fow="700" opacity={0.8}>Qo'lda</Text>
+              <Text col="white" fos={11} fow="700" opacity={0.8}>{t('scan.scanner.manual', 'Manual')}</Text>
             </YStack>
           </XStack>
         </YStack>
@@ -288,8 +293,6 @@ const S = StyleSheet.create({
   glassButton: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   roundButton: { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   textShadow: { textShadowColor: 'rgba(0,0,0,0.5)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 },
-  qrDetectedOverlay: { ...StyleSheet.absoluteFillObject, ai: 'center', jc: 'center' },
-  qrIndicator: { padding: 20, borderRadius: 40, overflow: 'hidden' },
-  loaderOverlay: { ...StyleSheet.absoluteFillObject, ai: 'center', jc: 'center', backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: FRAME_RADIUS },
+  loaderOverlay: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: FRAME_RADIUS },
   errorToast: { paddingHorizontal: 20, paddingVertical: 12, borderRadius: 20, maxWidth: '90%', overflow: 'hidden' },
 });

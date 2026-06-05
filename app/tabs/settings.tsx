@@ -15,7 +15,7 @@ import { LANGUAGE_OPTIONS, type LanguageCode } from '@/shared/config/languages';
 
 export default function SettingsScreen() {
   const { user, setUser, language, setLanguage } = useAppStore();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isLoggedIn = !!user;
 
   const [usernameValue, setUsernameValue] = useState(user?.username ?? '');
@@ -62,6 +62,7 @@ export default function SettingsScreen() {
   const handleLanguageChange = (code: LanguageCode) => {
     if (code === language) return;
     setLanguage(code);
+    i18n.changeLanguage(code);
   };
 
   const handleSaveUsername = async () => {
@@ -111,11 +112,11 @@ export default function SettingsScreen() {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-      Alert.alert('Password updated', 'Your password has been changed.');
+      Alert.alert(t('profile.success.passwordTitle', 'Password updated'), t('profile.success.password', 'Your password has been changed.'));
     } catch (error) {
       console.error('Password change failed:', error);
-      const message = error instanceof Error ? error.message : 'Could not change the password.';
-      Alert.alert('Error', message);
+      const message = error instanceof Error ? error.message : t('profile.errors.passwordChangeFailed', 'Could not change the password.');
+      Alert.alert(t('common.error', 'Error'), message);
     } finally {
       setIsChangingPassword(false);
     }
@@ -151,10 +152,10 @@ export default function SettingsScreen() {
               {/* Header */}
               <YStack space="$3" mt="$4">
                 <Text fontSize={20} fontWeight="700">
-                  Account settings
+                  {t('profile.info.title', 'Account settings')}
                 </Text>
                 <Text color="$gray10">
-                  Update your username and password using the forms below.
+                  {t('profile.password.requirements', 'Update your username and password using the forms below.')}
                 </Text>
               </YStack>
 
@@ -197,24 +198,24 @@ export default function SettingsScreen() {
 
               {/* USERNAME */}
               <YStack space="$3">
-                <Text fontSize={16} fontWeight="600">Username</Text>
+                <Text fontSize={16} fontWeight="600">{t('profile.info.usernameLabel', 'Username')}</Text>
                 <Input
                   value={usernameValue}
                   onChangeText={setUsernameValue}
-                  placeholder="Enter a new username"
+                  placeholder={t('profile.info.usernamePlaceholder', 'Enter a new username')}
                   textInputProps={{ autoCapitalize: 'none', autoCorrect: false }}
                   error={usernameError || undefined}
                 />
                 <XStack space="$2">
                   <Button
-                    title={isUpdatingUsername ? 'Saving...' : 'Save username'}
+                    title={isUpdatingUsername ? t('common.loading', 'Saving...') : t('common.confirm', 'Save username')}
                     variant="primary"
                     size="medium"
                     disabled={!usernameDirty || isUpdatingUsername}
                     onPress={handleSaveUsername}
                   />
                   <Button
-                    title="Reset"
+                    title={t('common.cancel', 'Reset')}
                     variant="outline"
                     size="medium"
                     disabled={!usernameDirty}
@@ -227,31 +228,31 @@ export default function SettingsScreen() {
 
               {/* PASSWORD */}
               <YStack space="$3">
-                <Text fontSize={16} fontWeight="600">Password</Text>
+                <Text fontSize={16} fontWeight="600">{t('profile.password.title', 'Password')}</Text>
                 <PasswordInput
                   value={currentPassword}
                   onChangeText={setCurrentPassword}
-                  placeholder="Current password"
+                  placeholder={t('profile.password.currentPlaceholder', 'Current password')}
                   textInputProps={{ returnKeyType: 'next' }}
                 />
                 <PasswordInput
                   value={newPassword}
                   onChangeText={setNewPassword}
-                  placeholder="New password"
+                  placeholder={t('profile.password.newPlaceholder', 'New password')}
                   textInputProps={{ returnKeyType: 'next' }}
                 />
                 <Text fontSize={12} color="$gray10">
-                  Password must be at least 8 characters and include uppercase, lowercase, number, and special symbol.
+                  {t('profile.password.requirements', 'Password must be at least 8 characters and include uppercase, lowercase, number, and special symbol.')}
                 </Text>
                 <PasswordInput
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
-                  placeholder="Confirm new password"
+                  placeholder={t('profile.password.confirmPlaceholder', 'Confirm new password')}
                   error={passwordError || undefined}
                   textInputProps={{ returnKeyType: 'done' }}
                 />
                 <Button
-                  title={isChangingPassword ? 'Updating...' : 'Change password'}
+                  title={isChangingPassword ? t('common.loading', 'Updating...') : t('profile.password.submit', 'Change password')}
                   variant="primary"
                   size="medium"
                   disabled={isChangingPassword}

@@ -1,19 +1,19 @@
 {
   "app": {
-    "name": "レシートスプリッター",
+    "name": "Splitter",
     "subtitle": "友だちと簡単に割り勘"
   },
   "features": {
-    "scan": "スキャン",
+    "scan": "レシートスキャン",
     "scanDesc": "レシートを撮影しましょう",
     "split": "割り勘",
     "splitDesc": "友だちと費用を分ける",
-    "calculate": "計算",
+    "calculate": "自動計算",
     "calculateDesc": "誰がいくら支払うかを把握"
   },
   "welcome": {
     "message": "ようこそ！さっそく始めましょう",
-    "newUser": "レシートスプリッターは初めてですか？",
+    "newUser": "Splitterは初めてですか？",
     "newUserDesc": "アカウントを作成して割り勘を始めましょう",
     "existingUser": "すでにアカウントをお持ちですか？"
   },
@@ -45,28 +45,20 @@
     "continue": "続ける",
     "back": "戻る",
     "delete": "削除",
-    "edit": "編集"
+    "edit": "編集",
+    "next": "次へ",
+    "close": "閉じる",
+    "finish": "完了",
+    "help": "ヘルプとサポート"
   },
   "friends": {
     "title": "友だち",
-    "requests": "リクエスト",
-    "add": "友だちを追加",
-    "empty": "まだ友だちがいません。+ をタップして追加しましょう。",
-    "searchPlaceholder": "ID を入力してください (例: USER#1234)",
-    "send": "リクエストを送信",
-    "remove": "削除",
-    "loading": "読み込み中...",
-    "error": "読み込みに失敗しました",
+    "search_placeholder": "友だちを検索...",
+    "my_friends": "マイフレンド",
+    "not_found": "友だちが見つかりませんでした",
+    "empty": "まだ友だちがいません",
     "common": {
       "unknownUser": "不明なユーザー"
-    },
-    "search": {
-      "noResults": "結果が見つかりませんでした",
-      "error": "検索に失敗しました",
-      "inviteSent": "{{target}}さんに招待を送信しました",
-      "inviteFailed": "招待を送信できませんでした",
-      "placeholder": "ニックネームまたはユーザーID...",
-      "hint": "ユーザーIDで友だちを検索します"
     },
     "status": {
       "add": "追加",
@@ -74,45 +66,133 @@
       "friend": "友だち",
       "requested": "申請中",
       "incoming": "承認待ち"
+    },
+    "requests": {
+      "title": "リクエスト",
+      "pending": "保留中",
+      "incoming": "承認待ち",
+      "outgoing": "送信済み",
+      "search": "検索",
+      "scan": "スキャン",
+      "none_incoming": "承認待ちのリクエストはありません",
+      "none_incoming_hint": "まだ友だち申請は届いていません",
+      "none_outgoing": "送信済みのリクエストはありません",
+      "none_outgoing_hint": "友だち申請はまだ送っていません"
+    },
+    "search": {
+      "placeholder": "ニックネームまたはユーザーID...",
+      "noResults": "結果が見つかりませんでした",
+      "error": "検索に失敗しました",
+      "inviteSent": "{{target}}さんに招待を送信しました",
+      "inviteFailed": "招待を送信できませんでした",
+      "findTitle": "ユーザーを見つける",
+      "hint": "ユーザーIDで友だちを検索します"
+    }
+  },
+  "groups": {
+    "title": "グループ",
+    "members_count": "{{count}} 人のメンバー",
+    "active": "アクティブなグループ",
+    "none": "グループはまだありません",
+    "create": "グループを作成",
+    "create_hint": "複数の友だちと費用を分担するためにグループを作成してください",
+    "active_label": "有効",
+    "new": {
+      "title": "グループを作成",
+      "namePlaceholder": "グループ名",
+      "action": "作成",
+      "emptyState": "メンバーを追加するにはグループを作成してください。",
+      "manageMembers": "メンバーの追加または削除",
+      "searchPlaceholder": "友だちを検索...",
+      "noFriends": "表示する友だちがいません",
+      "removeMember": "メンバーを削除",
+      "addMember": "メンバーを追加",
+      "notice": {
+        "success": "グループを作成しました",
+        "error": "グループの作成に失敗しました",
+        "memberAdded": "メンバーを追加しました",
+        "addFailed": "メンバーの追加に失敗しました",
+        "memberRemoved": "メンバーを削除しました",
+        "removeFailed": "メンバーの削除に失敗しました"
+      }
+    },
+    "details": {
+      "title": "グループの詳細",
+      "members": "メンバー",
+      "addFromFriends": "友だちから追加",
+      "noMembers": "メンバーはまだいません",
+      "noFriendsToAdd": "追加できる友だちがいません",
+      "searchPlaceholder": "友だちを検索...",
+      "backToGroups": "グループ一覧へ",
+      "rename": "名前を変更",
+      "delete": "グループを削除",
+      "deleteConfirmTitle": "グループの削除",
+      "deleteConfirmMessage": "本当にこのグループを削除しますか？この操作は取り消せません。",
+      "groupChat": "グループチャット",
+      "add": "追加",
+      "remove": "削除"
+    },
+    "invite": {
+      "title": "グループQRコード",
+      "invalid": "無効なグループ",
+      "description": "このグループに招待",
+      "new": "新しいQR",
+      "error": "招待の取得に失敗しました"
     }
   },
   "chat": {
     "title": "チャット",
+    "none": "チャットはまだありません",
+    "none_hint": "友だちにメッセージを送りましょう",
+    "group_tag": "グループ",
+    "no_messages": "メッセージはありません",
+    "members": "メンバー",
     "placeholder": "メッセージを入力...",
+    "forwarded": "{{username}} から転送",
+    "edited": "編集済み",
+    "editing": "メッセージを編集",
     "replyingTo": "返信先",
     "replyToSelf": "自分への返信",
-    "editing": "メッセージを編集",
-    "edited": "編集済み",
-    "forwarded": "転送元: {{username}}",
-    "forwardTo": "誰に転送しますか？",
-    "noFriends": "友だちが見つかりませんでした",
+    "forwardTo": "転送先",
+    "noFriends": "転送先が見つかりませんでした",
+    "groupChat": "グループチャット",
+    "type_label": "タイプ",
+    "private_type": "プライベート",
+    "group_type": "グループ",
+    "private_bio": "Splitterアプリで接続",
+    "group_bio": "Splitterグループで接続",
     "actions": {
+      "markAllRead": "すべて既読にする",
+      "markAllReadSuccess": "すべてのメッセージを既読にしました",
+      "newGroup": "新しいグループ",
+      "settings": "設定",
       "reply": "返信",
       "edit": "編集",
       "forward": "転送",
-      "delete": "チャットを削除",
+      "search": "検索",
+      "mute": "ミュート",
       "clear": "履歴を消去",
-      "search": "メッセージを検索",
-      "mute": "通知をオフ"
-    },
-    "attachments": {
-      "gallery": "ギャラリー",
-      "location": "位置情報",
-      "file": "ファイル",
-      "soon": "近日公開予定です！",
-      "myLocation": "📍 現在地:"
-    },
-    "recording": {
-      "delete": "削除",
-      "error": "録音を開始できませんでした。もう一度お試しください。"
+      "delete": "チャットを削除"
     },
     "alerts": {
+      "markAllReadSuccess": "すべてのメッセージを既読にしました",
       "clearTitle": "履歴を消去",
       "clearMessage": "このチャットの履歴を消去してもよろしいですか？",
       "deleteTitle": "チャットを削除",
-      "deleteMessage": "このチャットを削除してもよろしいですか？",
-      "locationError": "位置情報を共有するには権限が必要です",
+      "deleteMessage": "このチャットを削除してもよろしいですか？この操作は取り消せません。",
+      "locationError": "位置情報へのアクセスが拒否されました",
       "locationFail": "位置情報の取得に失敗しました"
+    },
+    "attachments": {
+      "soon": "近日公開予定！",
+      "gallery": "ギャラリー",
+      "location": "位置情報",
+      "file": "ファイル",
+      "myLocation": "現在地"
+    },
+    "recording": {
+      "error": "録音を開始できませんでした",
+      "delete": "削除"
     }
   },
   "home": {
@@ -120,27 +200,44 @@
       "greeting": "{{name}}さん、こんにちは！",
       "friendFallback": "友だち"
     },
+    "total_spent": "総支出",
+    "recent_actions": "最近の活動",
     "scan": {
       "cta": "招待をスキャンする"
     },
+    "all": "すべて",
+    "no_actions": "まだ活動はありません",
+    "month_sessions": "今月は {{count}} 件のセッション",
+    "no_sessions_this_month": "今月はまだセッションがありません",
     "actions": {
       "friends": "友だち",
       "groups": "グループ"
     },
     "recent": {
-      "title": "最近の明細",
+      "title": "最近の活動",
       "showMore": "もっと見る",
-      "loading": "最近の明細を読み込み中...",
-      "empty": "まだ明細がありません",
+      "loading": "読み込み中...",
+      "empty": "まだ活動がありません",
       "summary": "{{date}} • {{participants}}",
-      "fallbackName": "明細",
+      "fallbackName": "活動",
       "participants": "{{count}} 人",
       "participants_one": "{{count}} 人",
       "participants_other": "{{count}} 人",
       "amount": "{{currency}} {{amount}}"
     },
     "features": {
-      "title": "できること"
+      "title": "できること",
+      "services": "サービス"
+    },
+    "services": {
+      "scan": "レシートスキャン",
+      "manual": "手動入力",
+      "history": "履歴",
+      "friends": "友だち",
+      "groups": "グループ",
+      "settings": "設定",
+      "calculator": "電卓",
+      "profile": "プロフィール"
     }
   },
   "profile": {
@@ -153,7 +250,8 @@
     },
     "labels": {
       "guest": "ゲスト",
-      "notAvailable": "該当なし"
+      "notAvailable": "該当なし",
+      "verified": "認証済みアカウント"
     },
     "avatar": {
       "title": "アバター",
@@ -186,7 +284,7 @@
     "logout": "ログアウト",
     "copy": {
       "successTitle": "コピーしました",
-      "successMessage": "{{field}}をクリップボードにコピーしました。",
+      "successMessage": "{{field}}をコピーしました。",
       "unavailableMessage": "{{field}}はまだ利用できません。"
     },
     "alerts": {
@@ -221,6 +319,9 @@
     "mainMenu": "メインメニュー",
     "tabs": {
       "home": "ホーム",
+      "friends": "友だち",
+      "chat": "チャット",
+      "scan": "スキャン",
       "settings": "設定",
       "profile": "プロフィール"
     },
@@ -229,6 +330,7 @@
       "create": "新しいグループ",
       "details": "グループ"
     },
+    "profile": "プロフィール",
     "scanInvite": "招待をスキャン",
     "friendQr": "友だちのQRコード",
     "groupQr": "グループQRコード",
@@ -236,11 +338,41 @@
     "participants": "参加者",
     "itemsSplit": "アイテムの分割",
     "finish": "完了",
-    "history": "最近の明細",
-    "historyDetails": "明細の詳細",
-    "search": "検索"
+    "history": "履歴",
+    "historyDetails": "詳細",
+    "search": "検索",
+    "empty": "履歴がありません",
+    "total_bill": "合計請求額",
+    "participants_count": "参加者",
+    "date": "日付",
+    "settlement": "清算（未払い）",
+    "payer": "支払者",
+    "you": "あなた",
+    "other_participant": "他の参加者",
+    "owes_you": "さんからあなたへ",
+    "owes_payer": "さんから支払者へ",
+    "participants_breakdown": "参加者ごとの詳細",
+    "items_count": "{{count}} 個のアイテム",
+    "all_items": "全アイテム",
+    "item_id": "アイテムID",
+    "grand_total": "合計",
+    "download_report": "レポートをダウンロード",
+    "loading": "読み込み中...",
+    "not_found": "情報が見つかりませんでした",
+    "back": "戻る",
+    "report": {
+      "header": "SPLITTER — 領収書",
+      "name": "セッション名:",
+      "date": "日付:",
+      "participants": "参加者:",
+      "items": "アイテム:",
+      "total": "合計:",
+      "by_participants": "参加者ごとの詳細:",
+      "footer": "Splitterアプリで作成"
+    }
   },
   "settings": {
+    "title": "設定",
     "language": {
       "title": "言語",
       "description": "アプリ全体で使用する言語を選択してください。",
@@ -249,10 +381,70 @@
         "ja": "日本語",
         "uz": "ウズベク語"
       }
+    },
+    "notifications": {
+      "title": "通知",
+      "push": "プッシュ通知",
+      "email": "メール通知"
+    },
+    "currency": {
+      "title": "通貨",
+      "description": "主要な通貨を選択してください。"
     }
   },
   "calculator": {
     "title": "電卓"
+  },
+  "sessions": {
+    "manual": {
+      "title": "手動入力",
+      "default_name": "新しいセッション",
+      "unnamed_item": "名称未設定アイテム",
+      "session_name": "セッション名",
+      "session_name_placeholder": "例: ランチ, ディナー",
+      "items": "アイテム",
+      "items_count": "アイテム",
+      "item_name": "名前",
+      "item_name_placeholder": "ピザ, バーガー...",
+      "item_price": "価格",
+      "item_quantity": "数量",
+      "add_item": "アイテムを追加",
+      "total": "合計金額:"
+    },
+    "participants": {
+      "title": "参加者",
+      "search": "名前または@ユーザー名...",
+      "groups": "グループ",
+      "people": "ユーザー",
+      "selected": "選択済み"
+    },
+    "split": {
+      "title": "割り当て",
+      "progress": "進捗",
+      "mode_equal": "均等に分割",
+      "mode_count": "個数で分割",
+      "change_mode": "モード変更"
+    },
+    "finish": {
+      "title": "結果",
+      "default_name": "割り勘結果",
+      "settlement": "清算プラン",
+      "breakdown": "詳細",
+      "confirm_payment": "支払いを確定",
+      "share_title": "📊 {{name}} - 割り勘結果",
+      "share_total": "💰 合計金額: {{total}} {{currency}}",
+      "share_plan": "👥 清算プラン:",
+      "debt": "未払い",
+      "paid": "支払い済み",
+      "share_footer": "Splitterアプリで計算されました。 📱",
+      "note_prefix": "📌 \"{{name}}\" に関するメモ:",
+      "total_share": "合計負担額",
+      "paid_label": "支払い",
+      "note_for": "{{name}} へのメモ",
+      "note_placeholder": "メモの内容を入力...",
+      "send": "送信",
+      "debt_notification": "こんにちは！ \"{{name}}\" に関して {{amount}} {{currency}} の未払いがあります。お手すきの際にお願いします。 😊"
+    }
   },
   "scan": {
     "permissions": {
@@ -261,10 +453,13 @@
       "button": "許可する"
     },
     "scanner": {
-      "tip": "友だちのコードをスキャンしてください",
       "title": "スキャナー",
+      "tip": "友だちのコードをスキャンしてください",
       "gallery": "ギャラリー",
-      "myQr": "マイQR"
+      "myQr": "マイQR",
+      "scan_ready": "準備完了",
+      "waiting": "スキャン中...",
+      "manual": "手動入力"
     },
     "myQr": {
       "share": "共有",
@@ -275,11 +470,6 @@
     "result": {
       "addFriend": "友だちに追加",
       "error": "QRコードが見つからないか無効です"
-    }
-  },
-  "friends": {
-    "search": {
-      "findTitle": "ユーザーを見つける"
     }
   }
 }

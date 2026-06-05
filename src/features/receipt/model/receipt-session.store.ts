@@ -78,6 +78,7 @@ interface ReceiptSessionStore {
   setLastFinishPayload: (payload?: FinishPayload) => void;
 
   parseReceipt: (payload: ParseReceiptRequest) => Promise<ParseReceiptResponse>;
+  createManualSession: (sessionName: string, items: ReceiptSplitItem[]) => Promise<void>;
   finalizeSession: () => Promise<FinalizeReceiptResponse>;
   closeSession: () => Promise<void>;
   reset: () => void;
@@ -136,7 +137,7 @@ export const useReceiptSessionStore = create<ReceiptSessionStore>((set, get) => 
         quantity: item.quantity,
         totalPrice: item.totalPrice,
         kind: item.kind,
-        splitMode: item.quantity > 1 ? 'count' : 'equal',
+        splitMode: Number.isInteger(item.quantity) && item.quantity > 1 ? 'count' : 'equal',
         assignedTo: [],
         perPersonCount: {},
       }));
@@ -163,6 +164,29 @@ export const useReceiptSessionStore = create<ReceiptSessionStore>((set, get) => 
       return response;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to parse receipt';
+      set({ parsing: false, parseError: message });
+      throw error;
+    }
+  },
+
+  createManualSession: async (sessionName, items) => {
+    set({ parsing: true, parseError: undefined });
+    try {
+      const response = await ReceiptApi.createSession();
+      set({
+        parsing: false,
+        session: {
+          sessionId: response.id,
+          sessionName,
+          language: 'uz', // default
+        },
+        items,
+        participants: [],
+        finalized: undefined,
+        finalizeError: undefined,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to create session';
       set({ parsing: false, parseError: message });
       throw error;
     }
